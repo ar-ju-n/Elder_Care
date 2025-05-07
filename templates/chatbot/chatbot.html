@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card bg-dark text-white">
+                <div class="card-header bg-primary">
+                    <h3 class="mb-0">AI Assistant</h3>
+                </div>
+                <div class="card-body">
+                    <div id="chat-messages" class="mb-3" style="height: 300px; overflow-y: auto; background-color: #212529; border-radius: 8px; padding: 15px;">
+                        <div class="message bot-message">
+                            <div class="message-content">
+                                Hello! I'm your AI assistant. How can I help you today?
+                            </div>
+                        </div>
+                    </div>
+                    <form id="chat-form" class="d-flex">
+                        <input type="text" id="user-input" class="form-control me-2" placeholder="Type your message..." style="background-color: #2c3034; color: white; border-color: #495057;">
+                        <button type="submit" class="btn btn-primary">Send</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .message {
+        margin-bottom: 10px;
+        padding: 10px;
+        border-radius: 10px;
+        max-width: 80%;
+        color: #212529;
+    }
+    .user-message {
+        background-color: #0d6efd;
+        color: white;
+        margin-left: auto;
+    }
+    .bot-message {
+        background-color: #e9ecef;
+        margin-right: auto;
+    }
+    .message-content {
+        word-wrap: break-word;
+    }
+    
+    /* Fix for dark mode */
+    [data-bs-theme="dark"] .message {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    [data-bs-theme="dark"] .user-message {
+        background-color: #0d6efd;
+        color: white;
+    }
+    [data-bs-theme="dark"] .bot-message {
+        background-color: #343a40;
+        color: white;
+    }
+    [data-bs-theme="dark"] #user-input {
+        background-color: #2c3034;
+        color: white;
+        border-color: #495057;
+    }
+    [data-bs-theme="dark"] #chat-messages {
+        background-color: #212529;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const chatForm = document.getElementById('chat-form');
+        const userInput = document.getElementById('user-input');
+        const chatMessages = document.getElementById('chat-messages');
+
+        // Add initial message with better visibility
+        const initialMessage = chatMessages.querySelector('.bot-message');
+        if (initialMessage) {
+            initialMessage.style.display = 'block';
+            initialMessage.style.backgroundColor = document.documentElement.getAttribute('data-bs-theme') === 'dark' ? '#343a40' : '#e9ecef';
+            initialMessage.style.color = document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'white' : '#212529';
+        }
+
+        chatForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const message = userInput.value.trim();
+            if (!message) return;
+            
+            // Add user message to chat
+            addMessage(message, 'user');
+            userInput.value = '';
+            
+            // Send message to API
+            fetch('{% url "chatbot:chatbot_api" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: 'message=' + encodeURIComponent(message)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    addMessage('Error: ' + data.error, 'bot');
+                } else {
+                    addMessage(data.response, 'bot');
+                }
+            })
+            .catch(error => {
+                addMessage('Sorry, there was an error processing your request.', 'bot');
+                console.error('Error:', error);
+            });
+        });
+        
+        function addMessage(content, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message`;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.textContent = content;
+            
+            messageDiv.appendChild(contentDiv);
+            chatMessages.appendChild(messageDiv);
+            
+            // Apply proper styling based on theme
+            const isDarkTheme = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+            if (sender === 'user') {
+                messageDiv.style.backgroundColor = '#0d6efd';
+                messageDiv.style.color = 'white';
+            } else {
+                messageDiv.style.backgroundColor = isDarkTheme ? '#343a40' : '#e9ecef';
+                messageDiv.style.color = isDarkTheme ? 'white' : '#212529';
+            }
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    });
+</script>
+{% endblock %}

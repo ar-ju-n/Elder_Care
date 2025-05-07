@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Find Caregivers{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h1 class="mb-4">Find Caregivers</h1>
+  
+  <div class="row">
+    {% if caregivers %}
+      {% for caregiver in caregivers %}
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <div class="d-flex align-items-center mb-3">
+                {% if caregiver.profile_picture %}
+                  <img src="{{ caregiver.profile_picture.url }}" alt="{{ caregiver.get_full_name }}" class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover; max-width: 40px;">
+                {% else %}
+                  <img src="/static/images/default-avatar.png" alt="{{ caregiver.get_full_name }}" class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover; max-width: 40px;">
+                {% endif %}
+                <div>
+                  <h5 class="card-title mb-1">{{ caregiver.get_full_name|default:caregiver.username }}</h5>
+                  <p class="text-muted mb-0">Caregiver</p>
+                </div>
+              </div>
+              
+              {% if caregiver.bio %}
+                <p class="card-text">{{ caregiver.bio|truncatechars:100 }}</p>
+              {% else %}
+                <p class="card-text text-muted">No bio available</p>
+              {% endif %}
+              
+              <div class="d-grid">
+                <a href="{% url 'eldercare_chat:request_caregiver' caregiver.id %}" class="btn btn-primary">
+                  <i class="bi bi-person-plus-fill me-2"></i> Connect
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="col-12">
+        <div class="alert alert-info">
+          <p>No caregivers available at the moment. Please check back later.</p>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+

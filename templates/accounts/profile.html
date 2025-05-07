@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Profile Hero Image -->
+<div class="text-center mb-4">
+  <img src="https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&w=1200&q=80" alt="Profile Elderly" class="img-fluid rounded shadow" style="max-height: 320px; object-fit: cover; width: 100%;">
+</div>
+
+<div class="container py-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-success text-white">
+      <h4 class="mb-0">My Profile</h4>
+    </div>
+    <div class="card-body">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-success alert-dismissible fade show">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+      
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="row">
+          <div class="col-md-3 text-center mb-4">
+            {% if user.profile_picture %}
+              <img src="{{ user.profile_picture.url }}" alt="{{ user.username }}" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+            {% else %}
+              <img src="/static/images/default-profile.jpg" alt="{{ user.username }}" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+            {% endif %}
+            
+            <div>
+              <label for="id_profile_picture" class="form-label">Change Picture</label>
+              <input type="file" name="profile_picture" id="id_profile_picture" class="form-control">
+            </div>
+          </div>
+          
+          <div class="col-md-9">
+            <div class="mb-3">
+              <label for="id_username" class="form-label">Username</label>
+              <input type="text" name="username" id="id_username" value="{{ user.username }}" class="form-control">
+            </div>
+            
+            <div class="mb-3">
+              <label for="id_email" class="form-label">Email</label>
+              <input type="email" name="email" id="id_email" value="{{ user.email }}" class="form-control">
+            </div>
+            
+            <div class="mb-3">
+              <label for="id_bio" class="form-label">Bio</label>
+              <textarea name="bio" id="id_bio" class="form-control" rows="4">{{ user.bio }}</textarea>
+            </div>
+          </div>
+        </div>
+        
+        <hr>
+        
+        <h5 class="mb-3">Preferences</h5>
+        
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="id_language_preference" class="form-label">Language</label>
+            <select name="language_preference" id="id_language_preference" class="form-select">
+              <option value="en" {% if user.language_preference == 'en' %}selected{% endif %}>English</option>
+              <option value="ne" {% if user.language_preference == 'ne' %}selected{% endif %}>Nepali</option>
+              <option value="hi" {% if user.language_preference == 'hi' %}selected{% endif %}>Hindi</option>
+            </select>
+          </div>
+          
+          <div class="col-md-6">
+            <label for="id_timezone" class="form-label">Timezone</label>
+            <select name="timezone" id="id_timezone" class="form-select">
+              <option value="UTC" {% if user.timezone == 'UTC' %}selected{% endif %}>UTC</option>
+              <option value="Asia/Kathmandu" {% if user.timezone == 'Asia/Kathmandu' %}selected{% endif %}>Nepal Time</option>
+              <option value="Asia/Kolkata" {% if user.timezone == 'Asia/Kolkata' %}selected{% endif %}>India Time</option>
+              <option value="US/Eastern" {% if user.timezone == 'US/Eastern' %}selected{% endif %}>US Eastern Time</option>
+              <option value="US/Pacific" {% if user.timezone == 'US/Pacific' %}selected{% endif %}>US Pacific Time</option>
+              <option value="Europe/London" {% if user.timezone == 'Europe/London' %}selected{% endif %}>UK Time</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="mb-3 form-check">
+          <input type="checkbox" name="email_notifications" id="id_email_notifications" class="form-check-input" {% if user.email_notifications %}checked{% endif %}>
+          <label class="form-check-label" for="id_email_notifications">
+            Receive email notifications
+          </label>
+        </div>
+        
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+          <button type="submit" class="btn btn-primary">
+            Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

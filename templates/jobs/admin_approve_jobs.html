@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Approve or Reject Jobs</h2>
+<form method="post">{% csrf_token %}
+  <table class="table table-bordered">
+    <thead>
+      <tr><th>Title</th><th>Description</th><th>Posted By</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for job in jobs %}
+      <tr>
+        <td>{{ job.title }}</td>
+        <td>{{ job.description|truncatewords:12 }}</td>
+        <td>{{ job.posted_by }}</td>
+        <td>
+          <button name="job_id" value="{{ job.id }}" type="submit" class="btn btn-success btn-sm" formaction="" formmethod="post" name="action" value="approve">Approve</button>
+          <button name="job_id" value="{{ job.id }}" type="submit" class="btn btn-danger btn-sm" formaction="" formmethod="post" name="action" value="reject">Reject</button>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="4">No jobs pending approval.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</form>
+{% endblock %}

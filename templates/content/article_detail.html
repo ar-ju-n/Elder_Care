@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>{{ article.title }}</h2>
+<div>{{ article.body }}</div>
+{% if article.tags.all %}<div>Tags: {% for tag in article.tags.all %}{{ tag.name }} {% endfor %}</div>{% endif %}
+{% endblock %}

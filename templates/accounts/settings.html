@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row">
+    <div class="col-md-3">
+      {% include 'accounts/partials/sidebar.html' %}
+    </div>
+    <div class="col-md-9">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0"><i class="bi bi-gear-fill me-2"></i>Account Settings</h4>
+        </div>
+        <div class="card-body">
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+          
+          <form method="post">
+            {% csrf_token %}
+            
+            <div class="mb-4">
+              <h5>Preferences</h5>
+              <hr>
+              
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="id_language_preference" class="form-label">Language</label>
+                  <select name="language_preference" id="id_language_preference" class="form-select">
+                    <option value="en" {% if user.language_preference == 'en' %}selected{% endif %}>English</option>
+                    <option value="ne" {% if user.language_preference == 'ne' %}selected{% endif %}>Nepali</option>
+                    <option value="hi" {% if user.language_preference == 'hi' %}selected{% endif %}>Hindi</option>
+                  </select>
+                </div>
+                
+                <div class="col-md-6">
+                  <label for="id_timezone" class="form-label">Timezone</label>
+                  <select name="timezone" id="id_timezone" class="form-select">
+                    <option value="UTC" {% if user.timezone == 'UTC' %}selected{% endif %}>UTC</option>
+                    <option value="Asia/Kathmandu" {% if user.timezone == 'Asia/Kathmandu' %}selected{% endif %}>Nepal Time</option>
+                    <option value="Asia/Kolkata" {% if user.timezone == 'Asia/Kolkata' %}selected{% endif %}>India Time</option>
+                    <option value="US/Eastern" {% if user.timezone == 'US/Eastern' %}selected{% endif %}>US Eastern Time</option>
+                    <option value="US/Pacific" {% if user.timezone == 'US/Pacific' %}selected{% endif %}>US Pacific Time</option>
+                    <option value="Europe/London" {% if user.timezone == 'Europe/London' %}selected{% endif %}>UK Time</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="mb-3 form-check">
+                <input type="checkbox" name="email_notifications" id="id_email_notifications" class="form-check-input" {% if user.email_notifications %}checked{% endif %}>
+                <label class="form-check-label" for="id_email_notifications">
+                  Receive email notifications
+                </label>
+              </div>
+            </div>
+            
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save me-2"></i>Save Changes
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
+

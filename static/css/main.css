@@ -1,0 +1,29 @@
+/* Real-time clock styling */
+#real-time-clock {
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+#real-time-clock:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Make sure the clock is visible in both light and dark modes */
+[data-bs-theme="dark"] #real-time-clock {
+    color: #f8f9fa;
+}
+
+[data-bs-theme="light"] #real-time-clock {
+    color: #ffffff; /* Keep white text on green navbar */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #real-time-clock {
+        margin-bottom: 0.5rem;
+    }
+}

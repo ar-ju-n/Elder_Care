@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-4">
+  <h1 class="mb-4">
+    {% if user.is_elderly %}
+      My Caregivers
+    {% elif user.is_caregiver %}
+      My Clients
+    {% else %}
+      Chats
+    {% endif %}
+  </h1>
+  
+  <div class="row">
+    {% if assignments %}
+      {% for assignment in assignments %}
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <div class="d-flex align-items-center mb-3">
+                {% if request.user == assignment.elderly %}
+                  {% with other_user=assignment.caregiver %}
+                    {% if other_user.profile_picture %}
+                      <img src="{{ other_user.profile_picture.url }}" alt="{{ other_user.get_full_name }}" class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover; max-width: 40px;">
+                    {% else %}
+                      <img src="{% static 'images/default-avatar.png' %}" alt="{{ other_user.get_full_name }}" class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover; max-width: 40px;">
+                    {% endif %}
+                    <div>
+                      <h5 class="card-title mb-1">{{ other_user.get_full_name|default:other_user.username }}</h5>
+                      <p class="text-muted mb-0">{{ other_user.get_role_display }}</p>
+                    </div>
+                  {% endwith %}
+                {% else %}
+                  {% with other_user=assignment.elderly %}
+                    {% if other_user.profile_picture %}
+                      <img src="{{ other_user.profile_picture.url }}" alt="{{ other_user.get_full_name }}" class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover; max-width: 40px;">
+                    {% else %}
+                      <img src="{% static 'images/default-avatar.png' %}" alt="{{ other_user.get_full_name }}" class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover; max-width: 40px;">
+                    {% endif %}
+                    <div>
+                      <h5 class="card-title mb-1">{{ other_user.get_full_name|default:other_user.username }}</h5>
+                      <p class="text-muted mb-0">{{ other_user.get_role_display }}</p>
+                    </div>
+                  {% endwith %}
+                {% endif %}
+              </div>
+              
+              <div class="mb-3">
+                <p class="card-text">
+                  {% with last_message=assignment.get_last_message %}
+                    {% if last_message %}
+                      <strong>Last message:</strong> 
+                      {{ last_message.content|truncatechars:50 }}
+                      <small class="text-muted d-block mt-1">
+                        {{ last_message.timestamp|date:"M d, Y" }} at {{ last_message.timestamp|time:"g:i A" }}
+                      </small>
+                    {% else %}
+                      <em>No messages yet. Start the conversation!</em>
+                    {% endif %}
+                  {% endwith %}
+                </p>
+              </div>
+              
+              <div class="d-grid">
+                <a href="{% url 'eldercare_chat:chat_detail' assignment.id %}" class="btn btn-primary">
+                  <i class="bi bi-chat-dots-fill me-2"></i> Open Chat
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="col-12">
+        <div class="alert alert-info">
+          {% if user.is_elderly %}
+            <p>You don't have any caregivers yet. <a href="{% url 'eldercare_chat:find_caregivers' %}" class="alert-link">Find caregivers</a> to connect with.</p>
+          {% elif user.is_caregiver %}
+            <p>You don't have any clients yet. Check back later or update your profile to attract more clients.</p>
+          {% else %}
+            <p>No chats available.</p>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+
+

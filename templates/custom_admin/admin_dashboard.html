@@ -1,0 +1,27 @@
+{% extends 'custom_admin/admin_base.html' %}
+{% block content %}
+<h2>Custom Admin Dashboard</h2>
+<div class="row mt-4">
+    {% for app in apps %}
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">{{ app.name }}</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    {% for model in app.models %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="{% url 'custom_admin:admin_list' app.label model.name %}">
+                            {{ model.verbose_name_plural }}
+                        </a>
+                        <span class="badge bg-primary rounded-pill">{{ model.count }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Authentication Status</h2>
+    </div>
+    <div class="card-body">
+        <h3>Authentication Status: {% if is_authenticated %}<span class="text-success">Logged In</span>{% else %}<span class="text-danger">Not Logged In</span>{% endif %}</h3>
+        
+        {% if is_authenticated %}
+            <h4>User Details:</h4>
+            <ul>
+                <li><strong>Username:</strong> {{ user.username }}</li>
+                <li><strong>Email:</strong> {{ user.email }}</li>
+                <li><strong>Role:</strong> {{ user.role }}</li>
+                <li><strong>Is Staff:</strong> {{ user.is_staff }}</li>
+                <li><strong>Is Superuser:</strong> {{ user.is_superuser }}</li>
+            </ul>
+        {% endif %}
+        
+        <h4>Session Data:</h4>
+        <pre>{{ session_data }}</pre>
+    </div>
+</div>
+{% endblock %}

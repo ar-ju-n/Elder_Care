@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>{{ video.title }}</h2>
+<div><a href="{{ video.url }}" target="_blank">Watch Video</a></div>
+{% if video.tags.all %}<div>Tags: {% for tag in video.tags.all %}{{ tag.name }} {% endfor %}</div>{% endif %}
+{% endblock %}

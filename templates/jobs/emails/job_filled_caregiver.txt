@@ -1,0 +1,30 @@
+Dear {{ caregiver.get_full_name }},
+
+Congratulations! You have been selected for the job "{{ job.title }}".
+
+Job Details:
+- Title: {{ job.title }}
+- Location: {{ job.location }}
+- Type: {{ job.get_job_type_display }}
+- Salary Range: {{ job.salary_range }}
+- Start Date: {{ job.start_date|date:"F j, Y" }}
+- Duration: {{ job.duration }}
+- Working Hours: {{ job.working_hours }}
+
+Employer Details:
+- Name: {{ posted_by.get_full_name }}
+- Email: {{ posted_by.email }}
+- Phone: {{ posted_by.phone_number|default:"Not provided" }}
+
+Please contact the employer as soon as possible to discuss further details and arrangements.
+
+You can view the complete job details at:
+{{ site_url }}{% url 'jobs:job_detail' job.id %}
+
+Thank you for using our platform, and congratulations again on your new position!
+
+Best regards,
+The Elderly Care & Mindful Support Hub Team
+
+© {% now "Y" %} Elderly Care & Mindful Support Hub. All rights reserved.
+If you have any questions, please contact us at support@elderlycarehubnp.com

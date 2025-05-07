@@ -1,0 +1,13 @@
+$ python manage.py makemigrations accounts
+Migrations for 'accounts':
+  accounts/migrations/0002_user_bio_user_email_notifications_user_language_preference_user_timezone.py
+    - Add field bio to user
+    - Add field email_notifications to user
+    - Add field language_preference to user
+    - Add field timezone to user
+
+$ python manage.py migrate
+Operations to perform:
+  Apply all migrations: accounts, admin, auth, chatbot, content, contenttypes, custom_admin, eldercare_chat, feedback, jobs, sessions
+Running migrations:
+  Applying accounts.0002_user_bio_user_email_notifications_user_language_preference_user_timezone... OK

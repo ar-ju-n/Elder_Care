@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load content_extras %}
+{% block content %}
+<div class="section">
+  <div class="container">
+    <div class="row mb-4">
+      <div class="col-12 text-center">
+        <h2 class="mb-3 page-header">Wellness Videos</h2>
+        <img src="/static/images/nepal_exercise.jpg" alt="Exercise in Nepal" class="img-fluid rounded shadow mb-4 img-hero">
+        <p class="lead mb-5">Watch our collection of wellness videos featuring exercises, meditation, and health tips for elderly care.</p>
+      </div>
+    </div>
+    
+    <div class="row g-4">
+      {% for video in videos %}
+        <div class="col-md-4 mb-4 slide-up" style="animation-delay: {{ forloop.counter|multiply:0.1 }}s">
+          <div class="card h-100 shadow-sm content-card">
+            <div class="position-relative">
+              <img src="/static/images/video_{{ forloop.counter|modulo:5 }}.jpg" class="card-img-top" alt="{{ video.title }}">
+              <div class="position-absolute top-50 start-50 translate-middle">
+                <i class="bi bi-play-circle-fill text-white" style="font-size: 3rem; text-shadow: 0 0 10px rgba(0,0,0,0.5);"></i>
+              </div>
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">{{ video.title }}</h5>
+              <div class="content-meta">
+                <i class="bi bi-calendar3 me-2"></i>Published: {{ video.published_at|date:"F j, Y" }}
+                {% if video.tags.all %}
+                  <div class="mt-2">
+                    {% for tag in video.tags.all %}
+                      <span class="badge bg-secondary me-1">{{ tag.name }}</span>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+              <p class="card-text">{{ video.url }}</p>
+              <a href="{% url 'content:video_detail' video.pk %}" class="btn btn-primary mt-auto">
+                <i class="bi bi-play-btn me-2"></i>Watch Video
+              </a>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <div class="col-12">
+          <div class="alert alert-info">
+            <i class="bi bi-info-circle-fill me-2"></i>No videos available at the moment.
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
+
+

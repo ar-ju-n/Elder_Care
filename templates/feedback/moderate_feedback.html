@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Moderate Feedback</h2>
+<ul>
+  {% for rating in ratings %}
+    <li>{{ rating.caregiver }} - {{ rating.stars }} stars<br>{{ rating.review_text }}
+      <form method="post" style="display:inline;">{% csrf_token %}
+        <input type="hidden" name="rating_id" value="{{ rating.id }}">
+        <button name="action" value="hide">Hide</button>
+        <input name="response" placeholder="Response...">
+        <button name="action" value="respond">Respond</button>
+      </form>
+    </li>
+  {% endfor %}
+</ul>
+{% endblock %}

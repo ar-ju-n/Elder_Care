@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section text-center py-5 mb-5 position-relative" style="background: var(--hero-bg); overflow: hidden;">
+  <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80" alt="Elderly care hero" class="hero-bg-img position-absolute top-50 start-50 translate-middle w-100 h-100 object-fit-cover z-1" style="pointer-events:none; opacity: 0.32;">
+  <div class="hero-overlay position-absolute top-0 start-0 w-100 h-100 z-2" style="background: var(--hero-overlay);"></div>
+  <div class="container position-relative z-3" style="color: var(--hero-text);">
+    <h1 class="display-4 fw-bold mb-3 animate__animated animate__fadeInDown" style="text-shadow: 0 2px 12px rgba(0,0,0,0.6),0 1px 0 #333;">Welcome to the Elderly Care & Mindful Support Hub</h1>
+    <p class="lead mb-4 animate__animated animate__fadeInUp" style="text-shadow: 0 1px 8px rgba(0,0,0,0.5);">Connecting elderly individuals and caregivers for compassionate support, wellness, and community.</p>
+    <a href="/accounts/register/" class="btn btn-lg btn-success shadow animate__animated animate__pulse animate__infinite">Get Started</a>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row justify-content-center animate__animated animate__fadeInUp animate__delay-1s">
+    <div class="col-md-10">
+      <div class="row g-4">
+  <div class="row justify-content-center animate__animated animate__fadeInUp animate__delay-1s">
+    <div class="col-md-10">
+      <div class="row g-4">
+        {% if user.is_authenticated and user.is_elderly %}
+        <div class="col-md-4">
+          <div class="card shadow-sm h-100 content-card" style="background: var(--card-bg); color: var(--card-text);">
+            <img src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=600&q=80" class="card-img-top" alt="Find a Caregiver">
+            <div class="card-body">
+              <h5 class="card-title">Find a Caregiver</h5>
+              <p class="card-text">Connect with compassionate caregivers in your local community who can provide the support you need.</p>
+              <a href="/jobs/" class="btn btn-primary mt-auto">Find Caregivers</a>
+            </div>
+          </div>
+        </div>
+        {% elif user.is_authenticated and user.is_caregiver %}
+        <div class="col-md-4">
+          <div class="card shadow-sm h-100 content-card" style="background: var(--card-bg); color: var(--card-text);">
+            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=600&q=80" class="card-img-top" alt="Find a Job">
+            <div class="card-body">
+              <h5 class="card-title">Find a Job</h5>
+              <p class="card-text">Discover caregiving job opportunities in your area and help those in need.</p>
+              <a href="/jobs/" class="btn btn-primary mt-auto">Find Jobs</a>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+        <div class="col-md-4">
+          <div class="card shadow-sm h-100 content-card" style="background: var(--card-bg); color: var(--card-text);">
+            <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=600&q=80" class="card-img-top" alt="Chat System">
+            <div class="card-body">
+              <h5 class="card-title">Chat System</h5>
+              <p class="card-text">Secure messaging for elderly and caregivers. Stay connected with your loved ones.</p>
+              <a href="/chat/" class="btn btn-primary mt-auto">Go to Chat</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card shadow-sm h-100 content-card" style="background: var(--card-bg); color: var(--card-text);">
+            <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=600&q=80" class="card-img-top" alt="Wellness Articles">
+            <div class="card-body">
+              <h5 class="card-title">Wellness Articles</h5>
+              <p class="card-text">Read curated health and wellness articles tailored for elderly care in Nepal.</p>
+              <a href="/content/articles/" class="btn btn-primary mt-auto">Articles</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- How It Works Section -->
+<div class="container my-5">
+  <h3 class="text-center mb-4 fw-bold">How It Works</h3>
+  <div class="row text-center">
+    <div class="col-md-4 mb-4">
+      <div class="card border-0 shadow-sm h-100" style="background: var(--how-bg); color: var(--card-text);">
+        <div class="card-body">
+          <i class="bi bi-person-plus display-4 text-success mb-3"></i>
+          <h5 class="fw-bold">Sign Up</h5>
+          <p class="mb-0">Create your free account as an elderly user or caregiver.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-4">
+      <div class="card border-0 shadow-sm h-100" style="background: var(--how-bg); color: var(--card-text);">
+        <div class="card-body">
+          <i class="bi bi-people display-4 text-primary mb-3"></i>
+          <h5 class="fw-bold">Connect</h5>
+          <p class="mb-0">Find caregivers or job opportunities, and connect with others in the community.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-4">
+      <div class="card border-0 shadow-sm h-100" style="background: var(--how-bg); color: var(--card-text);">
+        <div class="card-body">
+          <i class="bi bi-chat-dots display-4 text-info mb-3"></i>
+          <h5 class="fw-bold">Chat & Support</h5>
+          <p class="mb-0">Send messages, get wellness resources, and receive ongoing support.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Articles Section -->
+<div class="container my-5">
+  <h3 class="text-center mb-4 fw-bold">Recent Wellness Articles</h3>
+  <div class="row justify-content-center">
+    {% for article in articles|slice:":3" %}
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm content-card">
+          <img src="/static/images/article_{{ forloop.counter|add:1|divisibleby:5|yesno:'5,1,2,3,4' }}.jpg" class="card-img-top" alt="{{ article.title }}">
+          <div class="card-body">
+            <h5 class="card-title">{{ article.title }}</h5>
+            <p class="card-text">{{ article.body|truncatewords:20 }}</p>
+            <a href="{% url 'content:article_detail' article.pk %}" class="btn btn-primary mt-auto">
+              <i class="bi bi-book me-2"></i>Read Article
+            </a>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-12">
+        <div class="alert alert-info text-center">
+          <i class="bi bi-info-circle-fill me-2"></i>No articles available at the moment.
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
+
+
+
+

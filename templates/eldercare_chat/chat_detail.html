@@ -1,0 +1,454 @@
+{% extends 'base.html' %}
+
+{% block title %}Chat with {{ assignment.caregiver.get_full_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Redesigned chat interface: modern, soft, minimal */
+  .chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 80vh;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.08);
+    background: var(--chat-bg);
+    border: 1px solid #e3e6ee;
+  }
+  .chat-header {
+    background: var(--chat-header-bg);
+    color: #333;
+    padding: 18px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e3e6ee;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .user-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #e3e6ee;
+    background: #f0f0f0;
+    max-width: 28px;
+    max-height: 28px;
+}
+.message-avatar {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #f0f0f0;
+    border: 1px solid #e3e6ee;
+    max-width: 20px;
+    max-height: 20px;
+}
+  .user-info h5 {
+    margin-bottom: 2px;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #222;
+  }
+  .user-info small {
+    color: #7c8893;
+    font-size: 0.92rem;
+  }
+  .role-badge {
+    font-size: 0.7rem;
+    padding: 2px 10px;
+    border-radius: 12px;
+    margin-left: 10px;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .role-badge.elderly {
+    background: #ffe5e2;
+    color: #d63031;
+  }
+  .role-badge.caregiver {
+    background: #e2f6ff;
+    color: #0984e3;
+  }
+  .btn-back {
+    background: #f4f7fa;
+    border: 1px solid #e3e6ee;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0984e3;
+    font-size: 1.3rem;
+    transition: background 0.2s;
+  }
+  .btn-back:hover {
+    background: #e2f6ff;
+  }
+  .messages-container {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 32px 18px 18px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: transparent;
+  }
+  .message {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+  }
+  .message.sent {
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+  }
+  .message.received {
+    justify-content: flex-start;
+  }
+  .message-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #f0f0f0;
+    border: 1px solid #e3e6ee;
+  }
+  .message-content {
+    max-width: 68vw;
+    padding: 13px 18px 10px 18px;
+    border-radius: 18px 18px 6px 18px;
+    background: var(--chat-bg);
+    color: var(--chat-text);
+    font-size: 1.02rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    position: relative;
+    word-break: break-word;
+    min-width: 60px;
+  }
+  .sent .message-content {
+    background: var(--chat-message-sent);
+    color: #fff;
+    border-radius: 18px 6px 18px 18px;
+    margin-right: 6px;
+  }
+  .received .message-content {
+    background: var(--chat-message-received);
+    color: var(--chat-text);
+    border-radius: 18px 18px 6px 18px;
+    margin-left: 6px;
+  }
+  .message-time {
+    font-size: 0.75rem;
+    margin-top: 4px;
+    opacity: 0.7;
+    text-align: right;
+    display: block;
+  }
+  .message-form {
+    display: flex;
+    align-items: center;
+    padding: 18px 18px 18px 12px;
+    background: #fff;
+    border-top: 1px solid #e3e6ee;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.03);
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    gap: 10px;
+  }
+  .message-input-container {
+    flex-grow: 1;
+    display: flex;
+  }
+  .message-input {
+    width: 100%;
+    min-width: 0;
+    resize: none;
+    padding: 13px 18px;
+    border: 1px solid #e3e6ee;
+    border-radius: 22px;
+    background: #f5f8fa;
+    font-size: 1.08rem;
+    transition: border 0.2s;
+    box-sizing: border-box;
+  }
+  .message-input:focus {
+    outline: none;
+    border: 1.5px solid #0984e3;
+    background: #fff;
+  }
+  .send-button {
+    background: linear-gradient(135deg, #a7c7ff 0%, #0984e3 100%);
+    border: none;
+    color: #fff;
+    font-size: 1.6rem;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .send-button:hover {
+    background: linear-gradient(135deg, #0984e3 0%, #a7c7ff 100%);
+  }
+  .typing-indicator {
+    display: none;
+    padding: 10px 0 0 10px;
+    font-size: 0.94rem;
+    color: #7c8893;
+    font-style: italic;
+  }
+  @media (max-width: 768px) {
+    .chat-container {
+      height: 90vh;
+      border-radius: 0;
+    }
+    .messages-container {
+      padding: 18px 5px 10px 5px;
+    }
+    .chat-header, .message-form {
+      padding-left: 8px;
+      padding-right: 8px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-3">
+  <div class="row">
+    <div class="col-md-8 mx-auto">
+      <div class="chat-container">
+        <div class="chat-header">
+  <div class="user-info">
+    <img src="{{ other_user.profile_picture.url|default:'/static/images/default-avatar.png' }}"
+         alt="{{ other_user.get_full_name }}" class="user-avatar">
+    <div>
+      <h5 class="mb-0">{{ other_user.get_full_name }}</h5>
+      <div class="d-flex align-items-center">
+        <small>
+          {% if other_user.is_online %}Online{% else %}Last seen recently{% endif %}
+        </small>
+        <span class="role-badge {% if other_user.is_elderly %}elderly{% else %}caregiver{% endif %}">
+          {% if other_user.is_elderly %}Elderly{% else %}Caregiver{% endif %}
+        </span>
+      </div>
+    </div>
+  </div>
+  <a href="{% url 'eldercare_chat:chat_list' %}" class="btn-back" title="Back to chats">
+    <i class="bi bi-arrow-left"></i>
+  </a>
+</div>
+        
+        <!-- Messages container -->
+        <div id="messagesContainer" class="messages-container">
+          {% for message in messages %}
+  <div class="message {% if message.sender == request.user %}sent{% else %}received{% endif %}"
+       data-message-id="{{ message.id }}">
+    {% if message.sender != request.user %}
+      <img src="{{ other_user.profile_picture.url|default:'/static/images/default-avatar.png' }}"
+           class="message-avatar"
+           alt="{{ other_user.get_full_name }}">
+    {% endif %}
+    <div class="message-content">
+      <div class="message-text">{{ message.content|linebreaksbr }}</div>
+      <span class="message-time">{{ message.timestamp|date:'g:i A' }}</span>
+    </div>
+    {% if message.sender == request.user %}
+      <img src="{{ request.user.profile_picture.url|default:'/static/images/default-avatar.png' }}"
+           class="message-avatar"
+           alt="{{ request.user.get_full_name }}">
+    {% endif %}
+  </div>
+{% endfor %}
+
+          <!-- Typing indicator -->
+          <div id="typingIndicator" class="typing-indicator">
+            {{ other_user.get_full_name }} is typing...
+          </div>
+        </div>
+        
+        <!-- Message form -->
+        <div class="message-form">
+  <form id="messageForm" method="post" autocomplete="off">
+    {% csrf_token %}
+    <div class="message-input-container">
+      <textarea name="content" id="messageInput" class="message-input" rows="1" placeholder="Type your message..." required></textarea>
+    </div>
+    <button type="submit" class="send-button" title="Send">
+      <i class="bi bi-send-fill"></i>
+    </button>
+  </form>
+</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const messagesContainer = document.getElementById('messagesContainer');
+    const messageForm = document.getElementById('messageForm');
+    const messageInput = document.getElementById('messageInput');
+    const typingIndicator = document.getElementById('typingIndicator');
+    let typingTimer;
+    
+    // Scroll to bottom of messages on load
+    scrollToBottom();
+    
+    // Handle form submission
+    messageForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const content = messageInput.value.trim();
+      if (!content) return;
+      
+      // Add message to UI
+      addMessage({
+        id: 'temp-' + Date.now(),
+        content: content,
+        sender_id: "{{ request.user.id }}",
+        timestamp: new Date().toISOString()
+      });
+      
+      messageInput.value = '';
+      
+      // Send message to server
+      fetch('/chat/api/send-message/{{ chat.id }}/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: 'content=' + encodeURIComponent(content)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.error) {
+          console.error(data.error);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    });
+    
+    // Add "Enter" key support
+    messageInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        messageForm.dispatchEvent(new Event('submit'));
+      }
+    });
+    
+    // Simulate typing indicator when input changes
+    messageInput.addEventListener('input', function() {
+      clearTimeout(typingTimer);
+      // TODO: In a real app, you would send a typing event to the server here
+    });
+    
+    function addMessage(message) {
+      const isSent = message.sender_id == "{{ request.user.id }}";
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${isSent ? 'sent' : 'received'}`;
+      messageDiv.dataset.messageId = message.id;
+      
+      let html = '';
+      
+      if (!isSent) {
+        const avatarUrl = "{{ other_user.profile_picture.url|default:'/static/images/default-avatar.png' }}";
+        html += `<img src="${avatarUrl}" alt="{{ other_user.get_full_name }}" class="message-avatar">`;
+      }
+      
+      html += `
+        <div class="message-content">
+          <div class="message-text">${message.content}</div>
+          <div class="message-time">${formatTime(message.timestamp)}</div>
+        </div>
+      `;
+      
+      if (isSent) {
+        const avatarUrl = "{{ request.user.profile_picture.url|default:'/static/images/default-avatar.png' }}";
+        html += `<img src="${avatarUrl}" alt="{{ request.user.get_full_name }}" class="message-avatar">`;
+      }
+      
+      messageDiv.innerHTML = html;
+      messagesContainer.appendChild(messageDiv);
+      scrollToBottom();
+    }
+    
+    function formatTime(timestamp) {
+      const date = new Date(timestamp);
+      return date.toLocaleString('en-US', {hour: 'numeric', minute: 'numeric', hour12: true});
+    }
+    
+    function scrollToBottom() {
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+    
+    // Poll for new messages every 3 seconds
+    setInterval(checkForNewMessages, 3000);
+    
+    function checkForNewMessages() {
+      const lastMessageId = getLastMessageId();
+      if (!lastMessageId) return;
+      
+      fetch(`/chat/api/check-messages/{{ chat.id }}/?last_id=${lastMessageId}`, {
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.messages && data.messages.length > 0) {
+          data.messages.forEach(message => {
+            // Only add messages from the other user
+            if (message.sender_id != "{{ request.user.id }}") {
+              addMessage(message);
+              
+              // Show typing indicator briefly when receiving a message
+              if (typingIndicator) {
+                typingIndicator.style.display = 'none';
+              }
+            }
+          });
+        }
+      })
+      .catch(error => console.error('Error checking messages:', error));
+    }
+    
+    function getLastMessageId() {
+      const messages = messagesContainer.querySelectorAll('.message');
+      if (messages.length > 0) {
+        const lastMessage = messages[messages.length - 1];
+        return lastMessage.dataset.messageId;
+      }
+      return '0'; // Default to 0 if no messages
+    }
+  });
+</script>
+{% endblock %}
+
+
+
+
+
+

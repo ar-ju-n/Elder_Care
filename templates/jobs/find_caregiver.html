@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+  <h2>Find a Caregiver</h2>
+  <p class="lead">Connect with compassionate caregivers who can provide the support you need.</p>
+  
+  <div class="row mt-4">
+    <div class="col-md-4">
+      <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+          <h5>Filter Caregivers</h5>
+        </div>
+        <div class="card-body">
+          <form method="get">
+            <div class="mb-3">
+              <label for="location" class="form-label">Location</label>
+              <input type="text" class="form-control" id="location" name="location" placeholder="Enter your area">
+            </div>
+            <div class="mb-3">
+              <label for="skills" class="form-label">Skills Needed</label>
+              <select class="form-select" id="skills" name="skills">
+                <option value="">All Skills</option>
+                <option value="medical">Medical Care</option>
+                <option value="household">Household Help</option>
+                <option value="companionship">Companionship</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Search</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-8">
+      {% if jobs %}
+        {% for job in jobs %}
+          <div class="card mb-3">
+            <div class="card-body">
+              <h5 class="card-title">{{ job.caregiver.username }}</h5>
+              <p class="card-text">{{ job.description }}</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <small class="text-muted">Location: {{ job.location }}</small>
+                <a href="{% url 'jobs:job_detail' job.id %}" class="btn btn-sm btn-primary">View Profile</a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="alert alert-info">
+          No caregivers found matching your criteria. Please try different search parameters.
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
