@@ -1,5 +1,8 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
+{% block extra_css %}<link rel="stylesheet" href="/static/css/contact.css">{% endblock %}
+
 <!-- Contact Hero Image -->
 <div class="text-center mb-4">
   <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=1200&q=80" alt="Contact Support" class="img-fluid rounded shadow" style="max-height: 320px; object-fit: cover; width: 100%;">
@@ -68,6 +71,7 @@
     </div>
   </div>
 </div>
+<script src="{% static 'js/contact.js' %}"></script>
 {% endblock %}
 
 

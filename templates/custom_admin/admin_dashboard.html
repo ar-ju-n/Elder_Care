@@ -1,4 +1,5 @@
 {% extends 'custom_admin/admin_base.html' %}
+{% load static %}
 {% block content %}
 <h2>Custom Admin Dashboard</h2>
 <div class="row mt-4">
@@ -24,4 +25,5 @@
     </div>
     {% endfor %}
 </div>
+<script src="{% static 'js/admin_dashboard.js' %}"></script>
 {% endblock %}

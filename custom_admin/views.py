@@ -207,3 +207,38 @@ def admin_bulk_delete(request, app_label, model_name):
         return redirect('custom_admin:admin_list', app_label=app_label, model_name=model_name)
     # If not POST, redirect to list view which already has the apps data
     return redirect('custom_admin:admin_list', app_label=app_label, model_name=model_name)
+
+@login_required
+@user_passes_test(is_staff)
+def admin_view(request, app_label, model_name, pk):
+    apps_data = get_app_models_data()
+    model = apps.get_model(app_label, model_name)
+    obj = get_object_or_404(model, pk=pk)
+    # Collect fields except password
+    fields = {}
+    for field in model._meta.fields:
+        if field.name != 'password':
+            fields[field.verbose_name.title() if hasattr(field, 'verbose_name') else field.name.title()] = getattr(obj, field.name)
+    # Verification logic for caregivers only
+    can_verify = False
+    is_verified = False
+    if hasattr(obj, 'is_verified') and hasattr(obj, 'is_caregiver') and callable(getattr(obj, 'is_caregiver')):
+        if obj.is_caregiver():
+            can_verify = True
+            is_verified = getattr(obj, 'is_verified', False)
+            if request.method == 'POST' and not is_verified and request.POST.get('verify'):
+                obj.is_verified = True
+                obj.save()
+                messages.success(request, f'{model._meta.verbose_name} has been verified.')
+                return redirect('custom_admin:admin_view', app_label=app_label, model_name=model_name, pk=pk)
+    return render(request, 'custom_admin/admin_view.html', {
+        'fields': fields,
+        'object': obj,
+        'model_name': model._meta.verbose_name.title(),
+        'is_verified': is_verified,
+        'can_verify': can_verify,
+        'list_url': reverse('custom_admin:admin_list', args=[app_label, model_name]),
+        'apps': apps_data,
+        'app_label': app_label,
+        'model_name': model_name,
+    })

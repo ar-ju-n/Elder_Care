@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/chat_request_list.css' %}">
+<style>
+  .chat-request-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  
+  .chat-request-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  }
+  
+  .profile-img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  }
+  
+  .request-status {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+  }
+  
+  .request-actions {
+    display: flex;
+    gap: 10px;
+  }
+</style>
+{% endblock %}
+
+<div class="container py-4">
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-primary text-white">
+      <h4 class="mb-0">Chat Requests</h4>
+    </div>
+    <div class="card-body">
+      {% if messages %}
+        
+      {% endif %}
+      
+      <div class="alert alert-info">
+  <i class="bi bi-info-circle me-2"></i>
+  No chat requests at this time.
+</div>
+    </div>
+  </div>
+  
+  {% if user.is_elderly %}
+    <div class="text-center mt-4">
+      <a href="{% url 'chat:caregiver_list' %}" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-2"></i>Find Caregivers
+      </a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+

@@ -13,4 +13,5 @@ urlpatterns = [
     path('<str:app_label>/<str:model_name>/<int:pk>/edit/', views.admin_edit, name='admin_edit'),
     path('<str:app_label>/<str:model_name>/<int:pk>/delete/', views.admin_delete, name='admin_delete'),
     path('<str:app_label>/<str:model_name>/bulk-delete/', views.admin_bulk_delete, name='admin_bulk_delete'),
+    path('<str:app_label>/<str:model_name>/<int:pk>/view/', views.admin_view, name='admin_view'),
 ]

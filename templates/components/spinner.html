@@ -1,0 +1,52 @@
+{% comment %}
+Usage: 
+- Include this template: {% include 'components/spinner.html' with size='md' color='primary' %}
+- Parameters:
+  - size: sm (small), md (medium), lg (large), xl (extra large) - default is md
+  - color: primary, secondary, success, danger, warning, info, light, dark - default is primary
+  - type: border (default) or grow
+  - text: Custom loading text - default is "Loading..."
+  - center: true/false - whether to center the spinner - default is true
+{% endcomment %}
+
+{% with size=size|default:'md' color=color|default:'primary' type=type|default:'border' text=text|default:'Loading...' center=center|default:True %}
+<div {% if center %}class="text-center"{% endif %}>
+  {% if type == 'border' %}
+    {% if size == 'sm' %}
+      <div class="spinner-border spinner-border-sm text-{{ color }}" role="status">
+        <span class="visually-hidden">{{ text }}</span>
+      </div>
+    {% elif size == 'lg' %}
+      <div class="spinner-border text-{{ color }}" style="width: 3rem; height: 3rem;" role="status">
+        <span class="visually-hidden">{{ text }}</span>
+      </div>
+    {% elif size == 'xl' %}
+      <div class="spinner-border text-{{ color }}" style="width: 4rem; height: 4rem;" role="status">
+        <span class="visually-hidden">{{ text }}</span>
+      </div>
+    {% else %}
+      <div class="spinner-border text-{{ color }}" role="status">
+        <span class="visually-hidden">{{ text }}</span>
+      </div>
+    {% endif %}
+  {% else %}
+    {% if size == 'sm' %}
+      <div class="spinner-grow spinner-grow-sm text-{{ color }}" role="status">
+        <span class="visually-hidden">{{ text }}</span>
+      </div>
+    {% elif size == 'lg' %}
+      <div class="spinner-grow text-{{ color }}" style="width: 3rem; height: 3rem;" role="status">
+        <span class="visually-hidden">{{ text }}</span>
+      </div>
+    {% elif size == 'xl' %}
+      <div class="spinner-grow text-{{ color }}" style="width: 4rem; height: 4rem;" role="status">
+        <span class="visually-hidden">{{ text }}</span>
+      </div>
+    {% else %}
+      <div class="spinner-grow text-{{ color }}" role="status">
+        <span class="visually-hidden">{{ text }}</span>
+      </div>
+    {% endif %}
+  {% endif %}
+</div>
+{% endwith %}

@@ -1,0 +1,170 @@
+:root {
+  --caregiver-card-bg: linear-gradient(135deg, #928787 70%, #f0f4f8 100%);
+  --caregiver-card-color: #212529;
+  --caregiver-card-border-color: #630000;
+  --caregiver-badge-bg: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+  --caregiver-badge-color: #020202;
+  --caregiver-badge-border: #fff;
+  --caregiver-btn-bg: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+  --caregiver-btn-color: #fff;
+  --caregiver-profile-bg: linear-gradient(135deg, #f8fafc 60%, #e0f7fa 100%);
+  --caregiver-profile-color: #495057;
+}
+[data-bs-theme="dark"] {
+  --caregiver-card-bg: linear-gradient(135deg, #23272b 70%, #181a1b 100%);
+  --caregiver-card-color: #f8f9fa;
+  --caregiver-badge-bg: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+  --caregiver-badge-color: #181a1b;
+  --caregiver-badge-border: #23272b;
+  --caregiver-btn-bg: linear-gradient(90deg, #11998e 0%, #38ef7d 100%);
+  --caregiver-btn-color: #181a1b;
+  --caregiver-profile-bg: linear-gradient(135deg, #23272b 60%, #181a1b 100%);
+  --caregiver-profile-color: #f8f9fa;
+}
+
+/* Caregiver card profile image styling */
+.caregiver-card .profile-img, .caregiver-card img.profile-img {
+  width: 96px !important;
+  height: 96px !important;
+  max-width: 100%;
+  aspect-ratio: 1/1;
+  object-fit: cover !important;
+  border-radius: 50% !important;
+  border: 3px solid var(--caregiver-card-border-color, #fff) !important;
+  box-shadow: 0 4px 12px rgba(40,167,69,0.12), 0 2px 6px rgba(0,0,0,0.07) !important;
+  display: block !important;
+  background: var(--caregiver-profile-bg) !important;
+  color: var(--caregiver-profile-color) !important;
+  margin: 0 auto 10px auto !important;
+  transition: box-shadow 0.2s, border 0.2s;
+  overflow: hidden;
+}
+
+.caregiver-card .profile-img-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+
+.caregiver-card .profile-img:hover, .caregiver-card img.profile-img:hover {
+  box-shadow: 0 8px 24px rgba(40,167,69,0.18), 0 4px 12px rgba(0,0,0,0.10) !important;
+  border: 3px solid #28a745 !important;
+}
+
+
+.profile-img.d-flex {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  font-size: 2rem;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  border: 3px solid #fff;
+  box-shadow: 0 4px 12px rgba(40,167,69,0.12), 0 2px 6px rgba(0,0,0,0.07);
+  background: linear-gradient(135deg, #f8fafc 60%, #e0f7fa 100%);
+  margin: 0 auto 10px auto;
+  color: #495057;
+}
+
+
+.caregiver-card .me-3 {
+  flex: 0 0 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 18px !important;
+}
+
+
+.verified-badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(40,167,69,0.10);
+  letter-spacing: 0.5px;
+  z-index: 2;
+  border: 2px solid #fff;
+}
+
+
+.caregiver-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--caregiver-card-bg) !important;
+  color: var(--caregiver-card-color) !important;
+  border: 2px solid var(--caregiver-card-border-color, transparent) !important;
+  position: relative;
+  min-height: 340px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding-top: 24px;
+  padding-bottom: 10px;
+}
+
+.caregiver-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 16px 32px rgba(40,167,69,0.10), 0 10px 20px rgba(0,0,0,0.10);
+}
+
+/* Chat button enhancements */
+.caregiver-card .btn-primary.w-100 {
+  background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+  border: none;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(40,167,69,0.10);
+}
+
+[data-bs-theme="dark"] .caregiver-card .btn-primary.w-100 {
+  background: linear-gradient(90deg, #11998e 0%, #38ef7d 100%) !important;
+  color: #181a1b !important;
+  border: none !important;
+}
+
+.caregiver-card .btn-primary.w-100:hover, .caregiver-card .btn-primary.w-100:focus {
+  background: linear-gradient(90deg, #11998e 0%, #38ef7d 100%);
+  box-shadow: 0 8px 24px rgba(40,167,69,0.18);
+}
+
+[data-bs-theme="dark"] .caregiver-card .btn-primary.w-100:hover,
+[data-bs-theme="dark"] .caregiver-card .btn-primary.w-100:focus {
+  background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%) !important;
+  color: #181a1b !important;
+}
+
+/* Card body spacing */
+.caregiver-card .card-body {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+  .caregiver-card {
+    min-height: 260px;
+    padding-top: 14px;
+  }
+  .caregiver-card .profile-img, .profile-img.d-flex {
+    width: 48px !important;
+    height: 48px !important;
+    font-size: 1.3rem;
+  }
+  .verified-badge {
+    top: 8px;
+    right: 8px;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+  }
+}
+

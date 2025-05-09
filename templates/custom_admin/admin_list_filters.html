@@ -1,4 +1,5 @@
 {% extends 'custom_admin/admin_base.html' %}
+{% load static %}
 {% load admin_extras %}
 {% block content %}
 <div class="row">
@@ -46,12 +47,12 @@
             <div class="card-body">
                 <form id="bulkActionForm" method="post" action="{% url 'custom_admin:admin_bulk_delete' app_label model_name %}">
                     {% csrf_token %}
-                    <div class="table-responsive">
+                    <div class="table-responsive" style="overflow-x:auto;">
                         <table class="admin-table admin-table-striped">
                             <thead>
                                 <tr>
                                     <th><input type="checkbox" id="selectAll"></th>
-                                    {% for field in fields %}<th>{{ field|title }}</th>{% endfor %}
+                                    {% for field in fields %}{% if field != 'password' %}<th>{{ field|title }}</th>{% endif %}{% endfor %}
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -59,11 +60,12 @@
                                 {% for obj in objects %}
                                 <tr>
                                     <td><input type="checkbox" name="selected_ids" value="{{ obj.id }}" class="object-checkbox"></td>
-                                    {% for field in fields %}<td>{{ obj|get_field:field }}</td>{% endfor %}
+                                    {% for field in fields %}{% if field != 'password' %}<td>{{ obj|get_field:field }}</td>{% endif %}{% endfor %}
                                     <td>
                                         <div class="btn-group btn-group-sm">
                                             <a href="{% url 'custom_admin:admin_edit' app_label model_name obj.id %}" class="btn btn-warning">Edit</a>
                                             <a href="{% url 'custom_admin:admin_delete' app_label model_name obj.id %}" class="btn btn-danger">Delete</a>
+                                            <a href="{% url 'custom_admin:admin_view' app_label model_name obj.id %}" class="btn btn-info">View</a>
                                         </div>
                                     </td>
                                 </tr>
@@ -81,42 +83,6 @@
     </div>
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const selectAll = document.getElementById('selectAll');
-        const checkboxes = document.querySelectorAll('.object-checkbox');
-        const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
-        const bulkActionForm = document.getElementById('bulkActionForm');
-        
-        // Handle select all checkbox
-        selectAll.addEventListener('change', function() {
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = selectAll.checked;
-            });
-            updateBulkDeleteButton();
-        });
-        
-        // Handle individual checkboxes
-        checkboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                updateBulkDeleteButton();
-                // Update select all checkbox
-                selectAll.checked = [...checkboxes].every(c => c.checked);
-            });
-        });
-        
-        // Update bulk delete button state
-        function updateBulkDeleteButton() {
-            const anyChecked = [...checkboxes].some(c => c.checked);
-            bulkDeleteBtn.disabled = !anyChecked;
-        }
-        
-        // Handle bulk delete button
-        bulkDeleteBtn.addEventListener('click', function() {
-            if (confirm('Are you sure you want to delete the selected items?')) {
-                bulkActionForm.submit();
-            }
-        });
-    });
+<script src="{% static 'js/admin_list_filters.js' %}"></script>
 </script>
 {% endblock %}

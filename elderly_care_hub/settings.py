@@ -39,11 +39,12 @@ INSTALLED_APPS = [
     'core',
     'accounts',
     'jobs',
+    'chat',
     'content',
     'feedback',
-    'eldercare_chat',
     'chatbot',
     'custom_admin',
+    'channels',  # Added for WebSockets
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -51,6 +52,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+ASGI_APPLICATION = 'Elder_Care.asgi.application'
+
+# Channel layers configuration
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -128,6 +139,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 # Media files (User uploaded files)
 MEDIA_URL = '/media/'
@@ -168,3 +180,4 @@ load_dotenv()
 
 # OpenAI API key
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', '')
+

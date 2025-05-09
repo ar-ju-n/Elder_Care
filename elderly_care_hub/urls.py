@@ -15,7 +15,7 @@ urlpatterns = [
     path('djadmin/', admin.site.urls),
     path('accounts/', include('accounts.urls', namespace='accounts')),
     path('jobs/', include('jobs.urls', namespace='jobs')),
-    path('chat/', include('eldercare_chat.urls', namespace='eldercare_chat')),
+    path('chat/', include('chat.urls', namespace='chat')),
     path('content/', include('content.urls', namespace='content')),
     path('feedback/', include('feedback.urls', namespace='feedback')),
     path('chatbot/', include('chatbot.urls', namespace='chatbot')),

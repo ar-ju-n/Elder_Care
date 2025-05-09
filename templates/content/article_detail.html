@@ -1,6 +1,42 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>{{ article.title }}</h2>
-<div>{{ article.body }}</div>
-{% if article.tags.all %}<div>Tags: {% for tag in article.tags.all %}{{ tag.name }} {% endfor %}</div>{% endif %}
+<div class="container py-4 animate-fade-in">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0 mb-4">
+                {% if article.featured_image %}
+                <img src="{{ article.featured_image.url }}" class="card-img-top img-fluid rounded-top" alt="Featured image for {{ article.title }}">
+                {% endif %}
+                <div class="card-body p-4">
+                    <h1 class="card-title display-5 fw-bold mb-3">{{ article.title }}</h1>
+                    <div class="mb-3 text-muted small">
+                        <i class="bi bi-person-circle me-1"></i>
+                        {% if article.published_by %}
+                            {{ article.published_by.get_full_name|default:article.published_by.username }}
+                        {% else %}
+                            Unknown Author
+                        {% endif %}
+                        &nbsp;|&nbsp;
+                        <i class="bi bi-calendar-event me-1"></i> {{ article.published_at|date:'F j, Y' }}
+                    </div>
+                    {% if article.tags.all %}
+                    <div class="mb-3">
+                        {% for tag in article.tags.all %}
+                        <span class="badge bg-primary me-1">#{{ tag.name }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <div class="article-body fs-5 lh-lg mt-3">
+                        {{ article.body|linebreaks }}
+                    </div>
+                </div>
+            </div>
+            <a href="{% url 'content:article_list' %}" class="btn btn-outline-primary"><i class="bi bi-arrow-left"></i> Back to Articles</a>
+        </div>
+    </div>
+</div>
+<style>
+.article-body img { max-width: 100%; height: auto; border-radius: 0.5rem; margin: 1rem 0; }
+.card { background: var(--bs-card-bg, #23272b); color: var(--bs-body-color, #f8f9fa); }
+</style>
 {% endblock %}

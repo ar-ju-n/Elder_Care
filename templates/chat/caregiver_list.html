@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/chat_caregiver_list.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h4 class="mb-4 text-primary">Verified Caregivers</h4>
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-success alert-dismissible fade show">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+      
+      {% if caregivers %}
+        <div class="row g-4">
+          {% for caregiver in caregivers %}
+            <div class="col-md-6 col-lg-4 d-flex">
+              <div class="card caregiver-card shadow-sm h-100 w-100">
+                <div class="verified-badge">
+                  <i class="bi bi-check-circle-fill me-1"></i> Verified
+                </div>
+                <div class="card-body d-flex flex-column">
+                  <div class="d-flex align-items-center mb-3">
+                    <div class="me-3 profile-img-wrapper">
+                      {% if caregiver.obj.profile_picture %}
+                        <img src="{{ caregiver.obj.profile_picture.url }}" alt="{{ caregiver.obj.username }}" class="profile-img">
+                      {% else %}
+                        <div class="profile-img d-flex align-items-center justify-content-center bg-secondary text-white fs-1">
+                          {{ caregiver.obj.get_full_name|first|default:caregiver.obj.username|first }}
+                        </div>
+                      {% endif %}
+                    </div>
+                    <div>
+                      <h5 class="card-title mb-1">{{ caregiver.obj.get_full_name|default:caregiver.obj.username }}</h5>
+                      <p class="text-muted mb-0">
+                        <small>Caregiver</small>
+                      </p>
+                    </div>
+                  </div>
+                  {% if caregiver.obj.bio %}
+                    <p class="card-text mb-3">{{ caregiver.obj.bio|truncatechars:100 }}</p>
+                  {% else %}
+                    <p class="card-text text-muted mb-3">No bio provided</p>
+                  {% endif %}
+                  <div class="mt-auto">
+                    {% if caregiver.status == 'accepted' %}
+                      <a href="{% url 'chat:chat_room' caregiver.chat_room_id %}" class="btn btn-success w-100">
+                        <i class="bi bi-chat-fill me-1"></i> Open Chat
+                      </a>
+                    {% else %}
+                      <a href="{% url 'chat:send_request' caregiver.obj.id %}" class="btn btn-primary w-100">
+                        <i class="bi bi-chat-dots me-1"></i> Send Chat Request
+                      </a>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="alert alert-info">
+          <i class="bi bi-info-circle me-2"></i>
+          No verified caregivers available at the moment.
+        </div>
+      {% endif %}
+    </div>
+  </div>
+  
+  <div class="text-center mt-4">
+    <a href="{% url 'chat:request_list' %}" class="btn btn-outline-primary">
+      <i class="bi bi-arrow-left me-2"></i>Back to Chat Requests
+    </a>
+  </div>
+</div>
+{% endblock %}
+

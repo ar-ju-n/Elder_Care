@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 <div class="container py-4">
@@ -26,120 +27,6 @@
     </div>
 </div>
 
-<style>
-    .message {
-        margin-bottom: 10px;
-        padding: 10px;
-        border-radius: 10px;
-        max-width: 80%;
-        color: #212529;
-    }
-    .user-message {
-        background-color: #0d6efd;
-        color: white;
-        margin-left: auto;
-    }
-    .bot-message {
-        background-color: #e9ecef;
-        margin-right: auto;
-    }
-    .message-content {
-        word-wrap: break-word;
-    }
-    
-    /* Fix for dark mode */
-    [data-bs-theme="dark"] .message {
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    [data-bs-theme="dark"] .user-message {
-        background-color: #0d6efd;
-        color: white;
-    }
-    [data-bs-theme="dark"] .bot-message {
-        background-color: #343a40;
-        color: white;
-    }
-    [data-bs-theme="dark"] #user-input {
-        background-color: #2c3034;
-        color: white;
-        border-color: #495057;
-    }
-    [data-bs-theme="dark"] #chat-messages {
-        background-color: #212529;
-    }
-</style>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const chatForm = document.getElementById('chat-form');
-        const userInput = document.getElementById('user-input');
-        const chatMessages = document.getElementById('chat-messages');
-
-        // Add initial message with better visibility
-        const initialMessage = chatMessages.querySelector('.bot-message');
-        if (initialMessage) {
-            initialMessage.style.display = 'block';
-            initialMessage.style.backgroundColor = document.documentElement.getAttribute('data-bs-theme') === 'dark' ? '#343a40' : '#e9ecef';
-            initialMessage.style.color = document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'white' : '#212529';
-        }
-
-        chatForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const message = userInput.value.trim();
-            if (!message) return;
-            
-            // Add user message to chat
-            addMessage(message, 'user');
-            userInput.value = '';
-            
-            // Send message to API
-            fetch('{% url "chatbot:chatbot_api" %}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
-                body: 'message=' + encodeURIComponent(message)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    addMessage('Error: ' + data.error, 'bot');
-                } else {
-                    addMessage(data.response, 'bot');
-                }
-            })
-            .catch(error => {
-                addMessage('Sorry, there was an error processing your request.', 'bot');
-                console.error('Error:', error);
-            });
-        });
-        
-        function addMessage(content, sender) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${sender}-message`;
-            
-            const contentDiv = document.createElement('div');
-            contentDiv.className = 'message-content';
-            contentDiv.textContent = content;
-            
-            messageDiv.appendChild(contentDiv);
-            chatMessages.appendChild(messageDiv);
-            
-            // Apply proper styling based on theme
-            const isDarkTheme = document.documentElement.getAttribute('data-bs-theme') === 'dark';
-            if (sender === 'user') {
-                messageDiv.style.backgroundColor = '#0d6efd';
-                messageDiv.style.color = 'white';
-            } else {
-                messageDiv.style.backgroundColor = isDarkTheme ? '#343a40' : '#e9ecef';
-                messageDiv.style.color = isDarkTheme ? 'white' : '#212529';
-            }
-            
-            // Scroll to bottom
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-    });
-</script>
+<link rel="stylesheet" href="{% static 'css/chatbot.css' %}">
+<script src="{% static 'js/chatbot.js' %}"></script>
 {% endblock %}

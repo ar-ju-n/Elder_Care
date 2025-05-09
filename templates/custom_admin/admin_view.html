@@ -1,0 +1,34 @@
+{% extends 'custom_admin/admin_base.html' %}
+{% load static %}
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">{{ model_name }} Details</h4>
+            <a href="{{ list_url }}" class="btn btn-outline-light btn-sm">Back to List</a>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <tbody>
+                    {% for field, value in fields.items %}
+                    <tr>
+                        <th>{{ field|title }}</th>
+                        <td>{{ value }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% if can_verify %}
+            <form method="post" action="">
+                {% csrf_token %}
+                {% if not is_verified %}
+                <button type="submit" name="verify" value="1" class="btn btn-success">Verify Caregiver</button>
+                {% else %}
+                <button type="button" class="btn btn-secondary" disabled>Already Verified</button>
+                {% endif %}
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

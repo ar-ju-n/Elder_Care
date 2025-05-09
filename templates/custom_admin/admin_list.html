@@ -1,4 +1,5 @@
 {% extends 'custom_admin/admin_base.html' %}
+{% load static %}
 {% load admin_extras %}
 {% block content %}
 <h2>{{ model_name }} List</h2>
@@ -6,17 +7,18 @@
 <table class="table table-striped">
     <thead>
         <tr>
-            {% for field in fields %}<th>{{ field }}</th>{% endfor %}
+            {% for field in fields %}{% if field != 'password' %}<th>{{ field|title }}</th>{% endif %}{% endfor %}
             <th>Actions</th>
         </tr>
     </thead>
     <tbody>
         {% for obj in objects %}
         <tr>
-            {% for field in fields %}<td>{{ obj|get_field:field }}</td>{% endfor %}
+            {% for field in fields %}{% if field != 'password' %}<td>{{ obj|get_field:field }}</td>{% endif %}{% endfor %}
             <td>
                 <a href="{% url 'custom_admin:admin_edit' app_label model_name obj.id %}" class="btn btn-sm btn-warning">Edit</a>
                 <a href="{% url 'custom_admin:admin_delete' app_label model_name obj.id %}" class="btn btn-sm btn-danger">Delete</a>
+                <a href="{% url 'custom_admin:admin_view' app_label model_name obj.id %}" class="btn btn-sm btn-info">View</a>
             </td>
         </tr>
         {% endfor %}

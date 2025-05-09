@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
+{% block extra_css %}<link rel="stylesheet" href="/static/css/profile.css">{% endblock %}
+
 <!-- Profile Hero Image -->
 <div class="text-center mb-4">
   <img src="https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&w=1200&q=80" alt="Profile Elderly" class="img-fluid rounded shadow" style="max-height: 320px; object-fit: cover; width: 100%;">
@@ -99,5 +102,5 @@
     </div>
   </div>
 </div>
+<script src="{% static 'js/accounts_profile.js' %}"></script>
 {% endblock %}
-

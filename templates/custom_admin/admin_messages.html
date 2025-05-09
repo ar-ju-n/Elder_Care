@@ -1,3 +1,4 @@
+{% load static %}
 {% if messages %}
 <div class="messages">
     {% for message in messages %}
@@ -7,4 +8,5 @@
     </div>
     {% endfor %}
 </div>
+<script src="{% static 'js/admin_messages.js' %}"></script>
 {% endif %}
