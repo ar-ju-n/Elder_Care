@@ -115,6 +115,27 @@
           </button>
         </div>
       </form>
+
+      {% if verification_form %}
+      <hr class="my-4">
+      <h5 class="fw-bold">Caregiver Verification</h5>
+      {% if verification_status %}
+        {% if verification_status.reviewed %}
+          {% if verification_status.approved %}
+            <div class="alert alert-success">Your verification has been <strong>approved</strong>.</div>
+          {% else %}
+            <div class="alert alert-danger">Your verification has been <strong>declined</strong>.<br>{{ verification_status.admin_comment }}</div>
+          {% endif %}
+        {% else %}
+          <div class="alert alert-info">Your verification is <strong>pending review</strong> by admin.</div>
+        {% endif %}
+      {% endif %}
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ verification_form.as_p }}
+        <button type="submit" class="btn btn-primary mt-2">Update Verification Info</button>
+      </form>
+      {% endif %}
       <hr>
       <form method="post" action="{% url 'accounts:delete_account' %}" onsubmit="return confirm('Are you sure you want to delete your account? Your account will be permanently deleted after 3 days.');">
         {% csrf_token %}

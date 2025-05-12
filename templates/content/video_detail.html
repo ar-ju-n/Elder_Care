@@ -6,25 +6,29 @@
   <div class="container py-4 animate__animated animate__fadeIn">
     <div class="row justify-content-center">
       <div class="col-lg-9 col-xl-8">
-        <div class="card shadow-lg border-0 mb-4 animate__animated animate__fadeInUp video-card" style="border-radius: 1.5rem;">
+        <div class="card shadow-lg border-0 mb-4 animate__animated animate__fadeInUp video-card card-custom">
           <div class="card-body p-5">
+            {% if video.file %}
+              <video class="w-100 mb-3" controls>
+                <source src="{{ video.file.url }}">
+                Your browser does not support the video tag.
+              </video>
+            {% elif 'youtube.com' in video.url or 'youtu.be' in video.url %}
+              <div class="ratio ratio-16x9 mb-3">
+                <iframe src="{{ video.url|youtube_embed }}" title="YouTube video player" allowfullscreen class="rounded shadow"></iframe>
+              </div>
+            {% elif 'vimeo.com' in video.url %}
+              <div class="ratio ratio-16x9 mb-3">
+                <iframe src="https://player.vimeo.com/video/{{ video.url|cut:'https://vimeo.com/' }}" title="Vimeo video player" allowfullscreen class="rounded shadow"></iframe>
+              </div>
+            {% elif video.url %}
+              <video class="w-100 mb-3" controls>
+                <source src="{{ video.url }}">
+                Your browser does not support the video tag.
+              </video>
+            {% endif %}
             <h1 class="card-title display-5 fw-bold mb-3 video-title animate__animated animate__fadeInDown">{{ video.title }}</h1>
             <div class="mb-3">
-              {% if 'youtube.com' in video.url or 'youtu.be' in video.url %}
-                <div class="ratio ratio-16x9 mb-3">
-                  <iframe src="https://www.youtube.com/embed/{% if 'youtube.com' in video.url %}{{ video.url|cut:'https://www.youtube.com/watch?v=' }}{% else %}{{ video.url|cut:'https://youtu.be/' }}{% endif %}" title="YouTube video player" allowfullscreen class="rounded shadow"></iframe>
-                </div>
-              {% elif 'vimeo.com' in video.url %}
-                <div class="ratio ratio-16x9 mb-3">
-                  <iframe src="https://player.vimeo.com/video/{{ video.url|cut:'https://vimeo.com/' }}" title="Vimeo video player" allowfullscreen class="rounded shadow"></iframe>
-                </div>
-              {% else %}
-                <div class="alert alert-info rounded-pill px-4 animate__animated animate__fadeInUp animate__delay-1s">
-                  <i class="bi bi-info-circle me-2"></i>
-                  <a href="{{ video.url }}" target="_blank">Watch Video</a>
-                </div>
-              {% endif %}
-            </div>
             {% if video.tags.all %}
             <div class="mb-3">
               {% for tag in video.tags.all %}

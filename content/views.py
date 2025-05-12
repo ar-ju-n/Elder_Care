@@ -15,9 +15,10 @@ class ArticleForm(forms.ModelForm):
         fields = ['title', 'body', 'tags']
 
 class VideoForm(forms.ModelForm):
+    file = forms.FileField()
     class Meta:
         model = Video
-        fields = ['title', 'url', 'tags']
+        fields = ['title', 'url', 'file', 'tags']
 
 def article_list(request):
     articles = Article.objects.all().order_by('-published_at')
@@ -44,7 +45,7 @@ def publish_article_view(request):
 @user_passes_test(lambda u: u.is_admin_role())
 def publish_video_view(request):
     if request.method == 'POST':
-        form = VideoForm(request.POST)
+        form = VideoForm(request.POST, request.FILES)
         if form.is_valid():
             video = publish_video(**form.cleaned_data, published_by=request.user)
             messages.success(request, 'Video published.')

@@ -1,70 +1,91 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block content %}
-{% block extra_css %}<link rel="stylesheet" href="/static/css/about.css">{% endblock %}
-
-<!-- About Hero Image -->
-<div class="text-center mb-4">
-  <img src="https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=1200&q=80" alt="About Elderly Care" class="img-fluid rounded shadow" style="max-height: 320px; object-fit: cover; width: 100%;">
-</div>
-
-<div class="section">
-  <div class="row justify-content-center">
-    <div class="col-md-10">
-      <div class="card shadow-sm mt-4 animate__animated animate__fadeIn">
-        <div class="card-body p-4">
-          <div class="row">
-            <div class="col-md-4 mb-3">
-              <img src="/static/images/nepal_mountains.jpg" alt="Nepal Mountains" class="img-fluid rounded shadow img-feature">
-            </div>
-            <div class="col-md-8">
-              <h2 class="mb-3 page-header">About Us</h2>
-              <p class="lead">
-                <b>Elderly Care & Mindful Support Hub</b> is dedicated to supporting the wellbeing of elderly individuals and their families in Nepal.
-              </p>
-              <p>
-                Our platform connects families, caregivers, and elderly users, providing job opportunities, secure communication, wellness resources, and mental health support.
-              </p>
-              <p>
-                We believe in dignity, compassion, and holistic care for our elders. Our team is based in Pokhara, Nepal, and is committed to making a positive difference in our community.
-              </p>
-            </div>
-          </div>
-          <div class="section-alt mt-4 slide-up">
-            <h4 class="mb-4">Key Features:</h4>
-            <div class="row mt-3">
-              <div class="col-md-6">
-                <ul class="feature-list">
-                  <li>
-                    <img src="/static/images/job_icon.jpg" alt="Job Board" class="feature-icon me-3">
-                    <div>Role-based job board for caregivers and families</div>
-                  </li>
-                  <li>
-                    <img src="/static/images/chat_icon.jpg" alt="Secure Chat" class="feature-icon me-3">
-                    <div>Secure chat and messaging system</div>
-                  </li>
-                </ul>
-              </div>
-              <div class="col-md-6">
-                <ul class="feature-list">
-                  <li>
-                    <img src="/static/images/wellness_icon.jpg" alt="Wellness" class="feature-icon me-3">
-                    <div>Wellness articles and educational videos</div>
-                  </li>
-                  <li>
-                    <img src="/static/images/mental_health_icon.jpg" alt="Mental Health" class="feature-icon me-3">
-                    <div>Mental health support and resources</div>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<script src="{% static 'js/about.js' %}"></script>
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/about_dynamic.css' %}">
 {% endblock %}
+{% block content %}
+<!-- Hero Section -->
+<section class="about-hero text-center py-5 bg-light">
+    <h1 class="display-4">About Elderly Care & Mindful Support Hub</h1>
+    <p class="lead">Empowering Nepal's elderly community with compassion, dignity, and support.</p>
+</section>
 
+<!-- Mission and Vision -->
+<section class="container my-5">
+    <div class="row">
+        <div class="col-md-6">
+            <h2>Our Mission</h2>
+            <p>To provide quality care, resources, and a vibrant community for elderly individuals in Nepal, ensuring they live with dignity and joy.</p>
+        </div>
+        <div class="col-md-6">
+            <h2>Our Vision</h2>
+            <p>To create a society where all seniors are respected, empowered, and able to lead fulfilling lives.</p>
+        </div>
+    </div>
+</section>
 
+<!-- Team Section -->
+<section class="bg-white py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Meet Our Leadership</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-3 text-center mb-4">
+                <img src="{% static 'images/team1.jpg' %}" alt="Founder" class="rounded-circle mb-2" width="100" height="100">
+                <h5>Arjun Thapa</h5>
+                <small>Founder & Director</small>
+            </div>
+            <div class="col-md-3 text-center mb-4">
+                <img src="{% static 'images/team2.jpg' %}" alt="Operations Lead" class="rounded-circle mb-2" width="100" height="100">
+                <h5>Rita Shrestha</h5>
+                <small>Operations Lead</small>
+            </div>
+            <div class="col-md-3 text-center mb-4">
+                <img src="{% static 'images/team3.jpg' %}" alt="Community Manager" class="rounded-circle mb-2" width="100" height="100">
+                <h5>Suman Lama</h5>
+                <small>Community Manager</small>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Timeline/Milestones -->
+<section class="container my-5">
+    <h2 class="text-center mb-4">Our Journey</h2>
+    <ul class="timeline list-unstyled">
+        <li><strong>2018:</strong> Elderly Care & Mindful Support Hub founded in Kathmandu.</li>
+        <li><strong>2019:</strong> Launched first wellness and caregiver training programs.</li>
+        <li><strong>2021:</strong> Expanded to serve over 1,000 seniors across Nepal.</li>
+        <li><strong>2023:</strong> Introduced digital resource center and online community events.</li>
+    </ul>
+</section>
+
+<!-- Testimonials -->
+<section class="bg-light py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">What People Say</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                <blockquote class="blockquote">
+                    <p class="mb-0">“The support and care my mother received changed her life. Thank you!”</p>
+                    <footer class="blockquote-footer">Sunita K., Kathmandu</footer>
+                </blockquote>
+            </div>
+            <div class="col-md-4">
+                <blockquote class="blockquote">
+                    <p class="mb-0">“A wonderful community for seniors and their families.”</p>
+                    <footer class="blockquote-footer">Rajesh D., Pokhara</footer>
+                </blockquote>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="text-center py-5">
+    <div class="container">
+        <h2>Want to Support Our Mission?</h2>
+        <p>Join us as a volunteer, donor, or partner and help make a difference in the lives of Nepal’s seniors.</p>
+        <a href="/contact" class="btn btn-primary btn-lg">Get Involved</a>
+    </div>
+</section>
+{% endblock %}

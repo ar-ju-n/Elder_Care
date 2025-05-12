@@ -1,50 +1,93 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load content_extras %}
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/article_list_dynamic.css' %}">
+{% endblock %}
 {% block content %}
-<link rel="stylesheet" href="{% static 'css/article_list.css' %}">
-<div class="section article-list-section">
-  <div class="container py-4">
-    <div class="row mb-5">
-      <div class="col-12 text-center">
-        <h1 class="display-4 fw-bold mb-3 animate__animated animate__fadeInDown article-title">Wellness Articles</h1>
-        <p class="lead mb-5 text-secondary animate__animated animate__fadeInUp">Explore our curated collection of wellness articles focused on elderly care and mindfulness in Nepal.</p>
-      </div>
-    </div>
-    <div class="row g-4">
-      {% for article in articles %}
-        <div class="col-md-4 mb-4 animate__animated animate__fadeInUp" data-animation-delay="{{ forloop.counter|multiply:0.08 }}s">
-          <div class="card h-100 shadow-lg content-card border-0 card-article-list">
-            <div class="card-icon text-center mt-4">
-              <i class="bi bi-journal-medical icon-article-list"></i>
+<section class="article-list-section py-5">
+    <div class="container">
+        <h1 class="mb-4">Articles</h1>
+        <!-- Featured Article -->
+        {% if articles and articles|length > 0 %}
+            <div class="featured-article card mb-5 p-4 shadow-sm bg-light">
+    {% if articles.0.video_url %}
+        {% if 'youtube.com' in articles.0.video_url or 'youtu.be' in articles.0.video_url %}
+            <div class="ratio ratio-16x9 mb-3">
+                <iframe src="{{ articles.0.video_url|youtube_embed }}" frameborder="0" allowfullscreen></iframe>
             </div>
-            <div class="card-body">
-              <h5 class="card-title fw-bold mb-2 article-card-title">{{ article.title }}</h5>
-              <div class="content-meta small mb-3 text-muted">
-                <i class="bi bi-calendar3 me-1"></i> {{ article.published_at|date:"F j, Y" }}
-                {% if article.tags.all %}
-                  <span class="ms-2">
-                    {% for tag in article.tags.all %}
-                      <span class="badge bg-secondary me-1">{{ tag.name }}</span>
-                    {% endfor %}
-                  </span>
-                {% endif %}
-              </div>
-              <p class="card-text mb-3">{{ article.body|truncatewords:20 }}</p>
-              <a href="{% url 'content:article_detail' article.pk %}" class="btn btn-primary w-100">
-                <i class="bi bi-book me-2"></i>Read Article
-              </a>
-            </div>
-          </div>
-        </div>
-      {% empty %}
-        <div class="col-12">
-          <div class="alert alert-info text-center animate__animated animate__fadeInUp">
-            <i class="bi bi-info-circle-fill me-2"></i>No articles available at the moment.
-          </div>
-        </div>
-      {% endfor %}
+        {% else %}
+            <video class="w-100 mb-3" controls>
+                <source src="{{ articles.0.video_url }}">
+                Your browser does not support the video tag.
+            </video>
+        {% endif %}
+    {% endif %}
+    <h2 class="h4">Featured: {{ articles.0.title }}</h2>
+    <div class="mb-2 text-muted small">
+        <i class="bi bi-calendar3 me-1"></i> {{ articles.0.published_at|date:"F j, Y" }}
+        {% if articles.0.author %} | <i class="bi bi-person"></i> {{ articles.0.author }}{% endif %}
     </div>
-  </div>
+    <p>{{ articles.0.body|truncatewords:40 }}</p>
+    <a href="{% url 'content:article_detail' articles.0.pk %}" class="btn btn-outline-primary btn-sm">Read Full Article</a>
 </div>
+        {% endif %}
+        <!-- Filter/Tags -->
+        <div class="mb-3">
+            <span class="me-2">Filter by tag:</span>
+            {% if articles %}
+                {% for article in articles %}
+                    {% for tag in article.tags.all %}
+                        <span class="badge bg-secondary me-1">{{ tag.name }}</span>
+                    {% endfor %}
+                {% endfor %}
+            {% else %}
+                <span class="text-muted">No tags available.</span>
+            {% endif %}
+        </div>
+        <!-- Article Cards -->
+        <div class="row g-4">
+            {% for article in articles %}
+                {% if not forloop.first %}
+                <div class="col-md-4">
+                    <div class="card h-100 shadow border-0">
+                        <div class="card-body">
+                            {% if article.video_url %}
+    {% if 'youtube.com' in article.video_url or 'youtu.be' in article.video_url %}
+        <div class="ratio ratio-16x9 mb-2">
+            <iframe src="{{ article.video_url|youtube_embed }}" frameborder="0" allowfullscreen></iframe>
+        </div>
+    {% else %}
+        <video class="w-100 mb-2" controls>
+            <source src="{{ article.video_url }}">
+            Your browser does not support the video tag.
+        </video>
+    {% endif %}
+{% endif %}
+<h5 class="card-title">{{ article.title }}</h5>
+                            <div class="mb-2 small text-muted">
+                                <i class="bi bi-calendar3 me-1"></i> {{ article.published_at|date:"F j, Y" }}
+                                {% if article.author %} | <i class="bi bi-person"></i> {{ article.author }}{% endif %}
+                            </div>
+                            <p class="card-text">{{ article.body|truncatewords:20 }}</p>
+                            <div class="mb-2">
+                                {% for tag in article.tags.all %}
+                                    <span class="badge bg-secondary me-1">{{ tag.name }}</span>
+                                {% endfor %}
+                            </div>
+                            <a href="{% url 'content:article_detail' article.pk %}" class="btn btn-primary btn-sm">Read More</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-info text-center">
+                        <i class="bi bi-info-circle-fill me-2"></i>No articles available at the moment.
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
 {% endblock %}

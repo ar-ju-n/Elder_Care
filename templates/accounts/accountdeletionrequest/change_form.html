@@ -1,0 +1,20 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls static %}
+
+{% block object-tools-items %}
+    {% if show_approve_decline %}
+        <li>
+            <a class="button btn-success" href="{{ original.id }}/approve/">Approve & Delete</a>
+        </li>
+        <li>
+            <a class="button btn-danger" href="{{ original.id }}/decline/">Decline</a>
+        </li>
+    {% endif %}
+    {{ block.super }}
+{% endblock %}
+
+{% block submit_buttons_bottom %}
+    <div class="submit-row">
+        <a href="../../" class="button btn-secondary">Back to List</a>
+    </div>
+{% endblock %}

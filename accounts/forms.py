@@ -66,6 +66,18 @@ class UserProfileForm(forms.ModelForm):
             'email_notifications': forms.CheckboxInput(attrs={'class': 'form-check-input'})
         }
 
+class CaregiverVerificationForm(forms.ModelForm):
+    class Meta:
+        from .models import CaregiverVerification
+        model = CaregiverVerification
+        fields = ['government_id_number', 'address', 'certification_type', 'document']
+        widgets = {
+            'government_id_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Government ID Number'}),
+            'address': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Address'}),
+            'certification_type': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Certification Type (optional)'}),
+            'document': forms.FileInput(attrs={'class': 'form-control'}),
+        }
+
 class UserSettingsForm(forms.ModelForm):
     class Meta:
         model = User

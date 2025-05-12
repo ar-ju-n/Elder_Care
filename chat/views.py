@@ -51,8 +51,8 @@ def caregiver_list(request):
         cooldown_seconds = 0
         if last_request:
             elapsed = (timezone.now() - last_request.created_at).total_seconds()
-            if elapsed < 600:
-                cooldown_seconds = int(600 - elapsed)
+            if elapsed < 86400:
+                cooldown_seconds = int(86400 - elapsed)
         if chat_request and chat_request.status == 'accepted':
             status = 'accepted'
             chat_room_id = chat_request.id
@@ -80,7 +80,7 @@ def send_request(request, caregiver_id):
     from django.utils import timezone
     from datetime import timedelta
     last_request = ChatRequest.objects.filter(elder=request.user, caregiver=caregiver).order_by('-created_at').first()
-    if last_request and (timezone.now() - last_request.created_at) < timedelta(minutes=10):
+    if last_request and (timezone.now() - last_request.created_at) < timedelta(days=1):
         messages.error(request, 'You must wait 10 minutes before sending another request to this caregiver.')
         return redirect('chat:caregiver_list')
     # Create new request

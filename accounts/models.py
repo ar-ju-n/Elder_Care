@@ -67,6 +67,21 @@ class User(AbstractUser):
     is_pending_deletion = models.BooleanField(default=False)
     scheduled_deletion_at = models.DateTimeField(null=True, blank=True)
 
+class CaregiverVerification(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='caregiver_verification')
+    government_id_number = models.CharField(max_length=100, blank=True)
+    address = models.CharField(max_length=255, blank=True)
+    certification_type = models.CharField(max_length=100, blank=True)
+    document = models.FileField(upload_to='caregiver_documents/', blank=True, null=True)
+    submitted_at = models.DateTimeField(auto_now_add=True)
+    reviewed = models.BooleanField(default=False)
+    approved = models.BooleanField(default=False)
+    reviewed_at = models.DateTimeField(blank=True, null=True)
+    admin_comment = models.TextField(blank=True)
+
+    def __str__(self):
+        return f"Verification for {self.user.username} (Approved: {self.approved})"
+
 class AccountDeletionRequest(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     requested_at = models.DateTimeField(auto_now_add=True)

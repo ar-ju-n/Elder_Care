@@ -1,11 +1,14 @@
 {% extends 'base.html' %}
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/publish_section.css' %}">
+    <link rel="stylesheet" href="{% static 'css/publish_article.css' %}">
+    <link rel="stylesheet" href="{% static 'css/admin_custom.css' %}">
+{% endblock %}
 {% block content %}
-<link rel="stylesheet" href="{% static 'css/publish_section.css' %}">
-<link rel="stylesheet" href="{% static 'css/publish_article.css' %}">
-<div class="section publish-article-section rounded-4">
+<div class="admin-form-section py-5">
   <div class="row justify-content-center">
     <div class="col-md-8 col-lg-7">
-      <div class="card shadow-lg mt-4 border-0 animate__animated animate__fadeInUp publish-card">
+      <div class="card shadow-lg mt-4 border-0 animate__animated animate__fadeInUp publish-card card-custom">
         <div class="card-body p-5">
           <h2 class="mb-4 fw-bold text-center text-primary animate__animated animate__fadeInDown"><i class="bi bi-journal-plus me-2"></i>Publish Article</h2>
           <form method="post" class="contact-form">

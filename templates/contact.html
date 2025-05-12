@@ -1,77 +1,67 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block content %}
-{% block extra_css %}<link rel="stylesheet" href="/static/css/contact.css">{% endblock %}
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/contact_dynamic.css' %}">
 
-<!-- Contact Hero Image -->
-<div class="text-center mb-4">
-  <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=1200&q=80" alt="Contact Support" class="img-fluid rounded shadow" style="max-height: 320px; object-fit: cover; width: 100%;">
-</div>
-
-<div class="section">
-  <div class="row justify-content-center">
-    <div class="col-md-10">
-      <div class="card shadow-sm mt-4 animate__animated animate__fadeIn">
-        <div class="card-body p-4">
-          <div class="row">
-            <div class="col-md-5 mb-4">
-              <img src="/static/images/pokhara_nepal.jpg" alt="Pokhara, Nepal" class="img-fluid rounded shadow img-feature mb-4">
-              <div class="section-alt p-3">
-                <h5 class="mb-3 page-header">Our Location</h5>
-                <p>
-                  <i class="bi bi-geo-alt-fill me-2 text-primary"></i>
-                  <b>Address:</b><br>
-                  <span class="ms-4">Lakeside, Pokhara, Nepal</span>
-                </p>
-                <p>
-                  <i class="bi bi-envelope-fill me-2 text-primary"></i>
-                  <b>Email:</b><br>
-                  <span class="ms-4"><a href="mailto:info@elderlycarehub.com">info@elderlycarehub.com</a></span>
-                </p>
-                <p>
-                  <i class="bi bi-telephone-fill me-2 text-primary"></i>
-                  <b>Phone:</b><br>
-                  <span class="ms-4">+977-61-000000</span>
-                </p>
-              </div>
-            </div>
-            <div class="col-md-7">
-              <h2 class="mb-4 page-header">Contact Us</h2>
-              {% if success %}
-                <div class="alert alert-success">
-                  <i class="bi bi-check-circle-fill me-2"></i>
-                  Thank you for contacting us! Your message has been received.
-                </div>
-              {% endif %}
-              <form method="post" class="contact-form">{% csrf_token %}
-                <div class="mb-3">
-                  <label for="name" class="form-label">Your Name</label>
-                  <input type="text" class="form-control" id="name" name="name" required>
-                </div>
-                <div class="mb-3">
-                  <label for="email" class="form-label">Email Address</label>
-                  <input type="email" class="form-control" id="email" name="email" required>
-                </div>
-                <div class="mb-3">
-                  <label for="subject" class="form-label">Subject</label>
-                  <input type="text" class="form-control" id="subject" name="subject" required>
-                </div>
-                <div class="mb-3">
-                  <label for="message" class="form-label">Message</label>
-                  <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary">
-                  <i class="bi bi-send-fill me-2"></i>Send Message
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<script src="{% static 'js/contact.js' %}"></script>
 {% endblock %}
-
-
+{% block content %}
+<section class="contact-section py-5">
+    <div class="container">
+        <h1 class="mb-4">Contact Us</h1>
+        <div class="row">
+            <div class="col-md-6">
+                <p>We would love to hear from you! Please fill out the form below and our team will respond as soon as possible.</p>
+                {% if success %}
+                    <div class="alert alert-success">Thank you for contacting us! We will get back to you soon.</div>
+                {% endif %}
+                <form method="post" class="contact-form">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="subject" class="form-label">Subject</label>
+                        <input type="text" class="form-control" id="subject" name="subject">
+                    </div>
+                    <div class="mb-3">
+                        <label for="message" class="form-label">Message</label>
+                        <textarea class="form-control" id="message" name="message" rows="4" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Send Message</button>
+                </form>
+            </div>
+            <div class="col-md-6">
+                <div class="contact-info bg-light p-4 rounded mb-4">
+                    <h2>Our Office</h2>
+                    <p>Kathmandu, Nepal<br>Email: info@eldercarehub.com<br>Phone: +1 (555) 123-4567</p>
+                    <h3>Office Hours</h3>
+                    <p>Monday–Friday: 9:00 AM – 5:00 PM<br>Saturday–Sunday: Closed</p>
+                    <h3>Follow Us</h3>
+                    <p>
+                        <a href="#" class="me-2"><i class="bi bi-facebook"></i> Facebook</a>
+                        <a href="#" class="me-2"><i class="bi bi-twitter"></i> Twitter</a>
+                        <a href="#"><i class="bi bi-instagram"></i> Instagram</a>
+                    </p>
+                </div>
+                <div class="mb-4">
+                    <h3>Find Us</h3>
+                    <iframe src="https://maps.google.com/maps?q=Kathmandu,Nepal&amp;z=14&amp;output=embed" width="100%" height="200" frameborder="0" style="border:0" allowfullscreen></iframe>
+                </div>
+                <div class="faq">
+                    <h3>Frequently Asked Questions</h3>
+                    <ul>
+                        <li><strong>How soon will I get a reply?</strong> We usually respond within 1–2 business days.</li>
+                        <li><strong>Can I visit your office?</strong> Yes, please call ahead to schedule a visit.</li>
+                        <li><strong>Do you provide emergency services?</strong> We do not provide emergency medical services. For emergencies, contact local authorities.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -8,6 +8,7 @@ urlpatterns = [
     path('admin/logout/', views.admin_logout, name='admin_logout'),
     path('admin/dashboard/', views.admin_dashboard, name='admin_dashboard'),  # dashboard after login
     path('admin/activity/', views.admin_dashboard, name='recent_activity'),  # recent activity page
+    path('admin/logs/export/', views.export_logs, name='export_logs'),
     path('admin/<str:app_label>/<str:model_name>/', views.admin_list, name='admin_list'),
     path('admin/<str:app_label>/<str:model_name>/add/', views.admin_add, name='admin_add'),
     path('admin/<str:app_label>/<str:model_name>/<int:pk>/edit/', views.admin_edit, name='admin_edit'),

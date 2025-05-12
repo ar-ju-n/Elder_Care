@@ -11,8 +11,80 @@ from .forms import get_model_form
 from accounts.models import AccountDeletionRequest
 from accounts.forms import CustomAuthenticationForm
 
+import csv
+from django.http import HttpResponse
+from chatbot.models import ChatbotLog
+from feedback.models import Feedback, Rating
+from accounts.models import AccountDeletionRequest
+
 def is_staff(user):
     return user.is_staff or user.is_superuser
+
+@login_required
+@user_passes_test(is_staff)
+def export_logs(request):
+    """
+    Export logs as CSV for admin download. Supports multiple log types.
+    Use ?type=chatbot|feedback|rating|account_deletion in the query string.
+    """
+    log_type = request.GET.get('type', 'chatbot')
+    response = HttpResponse(content_type='text/csv')
+
+    if log_type == 'feedback':
+        response['Content-Disposition'] = 'attachment; filename="feedback_logs.csv"'
+        writer = csv.writer(response)
+        writer.writerow(['ID', 'Username', 'Message', 'Created At', 'Is Moderated'])
+        for fb in Feedback.objects.select_related('user').all():
+            writer.writerow([
+                fb.id,
+                fb.user.username if fb.user else '',
+                fb.message,
+                fb.created_at.strftime('%Y-%m-%d %H:%M'),
+                fb.is_moderated
+            ])
+    elif log_type == 'rating':
+        response['Content-Disposition'] = 'attachment; filename="rating_logs.csv"'
+        writer = csv.writer(response)
+        writer.writerow(['ID', 'Caregiver', 'Reviewer', 'Stars', 'Review Text', 'Is Anonymous', 'Is Hidden', 'Created At', 'Admin Response'])
+        for r in Rating.objects.select_related('caregiver', 'reviewer').all():
+            writer.writerow([
+                r.id,
+                r.caregiver.username if r.caregiver else '',
+                r.reviewer.username if r.reviewer else '',
+                r.stars,
+                r.review_text,
+                r.is_anonymous,
+                r.is_hidden,
+                r.created_at.strftime('%Y-%m-%d %H:%M'),
+                r.admin_response
+            ])
+    elif log_type == 'account_deletion':
+        response['Content-Disposition'] = 'attachment; filename="account_deletion_logs.csv"'
+        writer = csv.writer(response)
+        writer.writerow(['ID', 'Username', 'Requested At', 'Approved', 'Processed At'])
+        for req in AccountDeletionRequest.objects.select_related('user').all():
+            writer.writerow([
+                req.id,
+                req.user.username if req.user else '',
+                req.requested_at.strftime('%Y-%m-%d %H:%M'),
+                req.approved,
+                req.processed_at.strftime('%Y-%m-%d %H:%M') if req.processed_at else ''
+            ])
+    else:
+        # Default to chatbot logs
+        response['Content-Disposition'] = 'attachment; filename="chatbot_logs.csv"'
+        writer = csv.writer(response)
+        writer.writerow(['ID', 'Username', 'Timestamp', 'User Message', 'Bot Response', 'Reviewed By Admin'])
+        for log in ChatbotLog.objects.select_related('user').all():
+            writer.writerow([
+                log.id,
+                log.user.username if log.user else '',
+                log.timestamp.strftime('%Y-%m-%d %H:%M'),
+                log.user_message,
+                log.bot_response,
+                log.reviewed_by_admin,
+            ])
+    return response
 
 
 class AdminLoginForm(CustomAuthenticationForm):

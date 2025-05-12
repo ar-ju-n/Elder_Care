@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+{% load static %}
+{% load content_extras %}
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/article_section.css' %}">
 <link rel="stylesheet" href="{% static 'css/article_detail.css' %}">
@@ -7,8 +9,20 @@
     <div class="row justify-content-center">
       <div class="col-lg-9 col-xl-8">
         <div class="card article-card shadow-lg border-0 mb-4 animate__animated animate__fadeInUp">
-          {% if article.featured_image %}
-          <img src="{{ article.featured_image.url }}" class="card-img-top img-fluid rounded-top" alt="Featured image for {{ article.title }}">
+          {% if article.video_url %}
+            {% if 'youtube.com' in article.video_url or 'youtu.be' in article.video_url %}
+              <div class="ratio ratio-16x9 mb-3">
+                <iframe src="{{ article.video_url|youtube_embed }}" frameborder="0" allowfullscreen></iframe>
+              </div>
+            {% else %}
+              <video class="w-100 mb-3" controls>
+                <source src="{{ article.video_url }}">
+                Your browser does not support the video tag.
+              </video>
+            {% endif %}
+          {% endif %}
+          {% if article.image %}
+          <img src="{{ article.image.url }}" class="card-img-top img-fluid rounded-top" alt="Image for {{ article.title }}">
           {% endif %}
           <div class="card-body p-5">
             <h1 class="card-title display-5 fw-bold mb-3 text-title animate__animated animate__fadeInDown">{{ article.title }}</h1>

@@ -36,57 +36,93 @@ def logout_view(request):
     logout(request)
     return render(request, 'accounts/logout.html')
 
+from .forms import CaregiverVerificationForm
+from .models import CaregiverVerification
+
 def register_view(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-            
             # Ensure no one can register as admin through form manipulation
             if user.role == 'admin':
                 user.role = 'elderly'  # Default to elderly if someone tries to hack the form
-                
             user.save()
-            
+            # If caregiver, create blank verification record
+            if user.role == 'caregiver':
+                CaregiverVerification.objects.get_or_create(user=user)
             # Log the user in
             login(request, user)
-            
             # Redirect to profile completion
             return redirect('accounts:profile')
     else:
         form = CustomUserCreationForm()
-    
     return render(request, 'accounts/register.html', {'form': form})
 
 @login_required
 def profile_view(request):
     """View for user profile"""
-    if request.method == 'POST':
-        form = UserProfileForm(request.POST, request.FILES, instance=request.user)
-        if form.is_valid():
-            user = form.save()
-            # Add debugging information
-            if 'profile_picture' in request.FILES:
-                print(f"Profile picture uploaded: {user.profile_picture.name}")
-                print(f"Profile picture URL: {user.profile_picture.url}")
-                print(f"Profile picture path: {user.profile_picture.path}")
-            
-            messages.success(request, 'Your profile has been updated successfully.')
-            return redirect('accounts:profile')
+    user = request.user
+    caregiver_verification = None
+    verification_form = None
+    verification_status = None
+    CaregiverVerificationModel = None
+    try:
+        from .models import CaregiverVerification
+        CaregiverVerificationModel = CaregiverVerification
+    except ImportError:
+        pass
+    if user.is_caregiver() and CaregiverVerificationModel:
+        caregiver_verification, _ = CaregiverVerificationModel.objects.get_or_create(user=user)
+        if request.method == 'POST':
+            form = UserProfileForm(request.POST, request.FILES, instance=user)
+            verification_form = CaregiverVerificationForm(request.POST, request.FILES, instance=caregiver_verification)
+            valid_profile = form.is_valid()
+            valid_verification = verification_form.is_valid()
+            if valid_profile and valid_verification:
+                form.save()
+                verification_form.save()
+                messages.success(request, 'Your profile and verification info have been updated.')
+                return redirect('accounts:profile')
+            else:
+                if not valid_profile:
+                    print(f"Profile form errors: {form.errors}")
+                if not valid_verification:
+                    print(f"Verification form errors: {verification_form.errors}")
         else:
-            # Print form errors for debugging
-            print(f"Form errors: {form.errors}")
+            form = UserProfileForm(instance=user)
+            verification_form = CaregiverVerificationForm(instance=caregiver_verification)
+        verification_status = {
+            'reviewed': caregiver_verification.reviewed,
+            'approved': caregiver_verification.approved,
+            'admin_comment': caregiver_verification.admin_comment,
+        }
     else:
-        form = UserProfileForm(instance=request.user)
-    
-    # Add debugging for existing profile picture
-    if request.user.profile_picture:
-        print(f"Existing profile picture: {request.user.profile_picture.name}")
-        print(f"Existing profile picture URL: {request.user.profile_picture.url}")
-    
-    pending_deletion = request.user.is_pending_deletion
-    scheduled_deletion_at = request.user.scheduled_deletion_at
-    return render(request, 'accounts/profile.html', {'form': form, 'pending_deletion': pending_deletion, 'scheduled_deletion_at': scheduled_deletion_at})
+        if request.method == 'POST':
+            form = UserProfileForm(request.POST, request.FILES, instance=user)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Your profile has been updated successfully.')
+                return redirect('accounts:profile')
+            else:
+                print(f"Form errors: {form.errors}")
+        else:
+            form = UserProfileForm(instance=user)
+    if user.profile_picture:
+        print(f"Existing profile picture: {user.profile_picture.name}")
+        print(f"Existing profile picture URL: {user.profile_picture.url}")
+    pending_deletion = user.is_pending_deletion
+    scheduled_deletion_at = user.scheduled_deletion_at
+    context = {
+        'form': form,
+        'pending_deletion': pending_deletion,
+        'scheduled_deletion_at': scheduled_deletion_at
+    }
+    if user.is_caregiver() and CaregiverVerificationModel:
+        context['verification_form'] = verification_form
+        context['verification_status'] = verification_status
+    return render(request, 'accounts/profile.html', context)
+
 
 @login_required
 def settings_view(request):

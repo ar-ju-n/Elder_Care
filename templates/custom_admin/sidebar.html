@@ -37,6 +37,18 @@
                 <span>Recent Activity</span>
             </a>
         </li>
+        <li class="nav-item dropdown animate-slide-in-right delay-5">
+            <a class="nav-link dropdown-toggle d-flex align-items-center text-primary" href="#" id="downloadLogsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-download me-2"></i>
+                <span>Download Logs (CSV)</span>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="downloadLogsDropdown">
+                <li><a class="dropdown-item" href="{% url 'custom_admin:export_logs' %}?type=chatbot">Chatbot Logs</a></li>
+                <li><a class="dropdown-item" href="{% url 'custom_admin:export_logs' %}?type=feedback">Feedback Logs</a></li>
+                <li><a class="dropdown-item" href="{% url 'custom_admin:export_logs' %}?type=rating">Rating Logs</a></li>
+                <li><a class="dropdown-item" href="{% url 'custom_admin:export_logs' %}?type=account_deletion">Account Deletion Logs</a></li>
+            </ul>
+        </li>
         <li class="nav-item animate-slide-in-right delay-5">
             <a class="nav-link d-flex align-items-center text-danger" href="{% url 'custom_admin:admin_logout' %}">
                 <i class="bi bi-box-arrow-right me-2"></i>
