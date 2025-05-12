@@ -1,0 +1,56 @@
+/* Theme-aware article section styles for dark/light mode */
+.section.article-section {
+  background: var(--bs-card-bg, #23272b);
+  border-radius: 1.5rem;
+  font-family: 'Inter', sans-serif;
+  color: var(--bs-body-color, #f8f9fa);
+}
+.section.article-section .text-title {
+  color: var(--bs-heading-color, #fff);
+  font-weight: 700;
+}
+.section.article-section .lead,
+.section.article-section .text-description {
+  color: var(--bs-body-color, #f8f9fa);
+}
+.section.article-section .card {
+  background: var(--bs-body-bg, #181a1b);
+  color: var(--bs-body-color, #f8f9fa);
+  border-radius: 1.5rem;
+}
+.section.article-section .rounded-4 {
+  border-radius: 1.5rem !important;
+}
+.section.article-section .card-title {
+  color: var(--bs-heading-color, #fff);
+  font-weight: 700;
+}
+.section.article-section .btn-primary {
+  border-radius: 2rem;
+  font-weight: 600;
+}
+.section.article-section .alert-info {
+  border-radius: 2rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+/* Animation delay classes for cards */
+.card-delay-1 { animation-delay: 0.1s; }
+.card-delay-2 { animation-delay: 0.2s; }
+.card-delay-3 { animation-delay: 0.3s; }
+.card-delay-4 { animation-delay: 0.4s; }
+.card-delay-5 { animation-delay: 0.5s; }
+.card-delay-6 { animation-delay: 0.6s; }
+.card-delay-7 { animation-delay: 0.7s; }
+.card-delay-8 { animation-delay: 0.8s; }
+.card-delay-9 { animation-delay: 0.9s; }
+.card-delay-10 { animation-delay: 1.0s; }
+
+.section.article-section .card-text small, .section.article-section .card-text.text-muted {
+  color: #bfc3c7;
+}
+.section.article-section .badge {
+  font-size: 1rem;
+  padding: 0.5em 1em;
+  border-radius: 1em;
+}

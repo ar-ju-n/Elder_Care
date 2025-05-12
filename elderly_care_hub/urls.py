@@ -6,12 +6,17 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import TemplateView
+from elderly_care_hub.views import contact_view, landing
+
+from custom_admin.views import admin_login
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name='landing.html'), name='landing'),
+    path('admin', admin_login, name='custom_admin_login_noslash'),  # /admin (no slash)
+    path('admin/', admin_login, name='custom_admin_login'),         # /admin/ (slash)
+    path('admin/', include('custom_admin.urls', namespace='custom_admin')),  # /admin/... for all other admin URLs
+    path('', landing, name='landing'),
     path('about/', TemplateView.as_view(template_name='about.html'), name='about'),
-    path('contact/', TemplateView.as_view(template_name='contact.html'), name='contact'),
-    path('custom_admin/', include('custom_admin.urls', namespace='custom_admin')),
+    path('contact/', contact_view, name='contact'),
     path('djadmin/', admin.site.urls),
     path('accounts/', include('accounts.urls', namespace='accounts')),
     path('jobs/', include('jobs.urls', namespace='jobs')),

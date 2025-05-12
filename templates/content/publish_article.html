@@ -1,8 +1,23 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Publish Article</h2>
-<form method="post">{% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Publish</button>
-</form>
+<link rel="stylesheet" href="{% static 'css/publish_section.css' %}">
+<link rel="stylesheet" href="{% static 'css/publish_article.css' %}">
+<div class="section publish-article-section rounded-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-7">
+      <div class="card shadow-lg mt-4 border-0 animate__animated animate__fadeInUp publish-card">
+        <div class="card-body p-5">
+          <h2 class="mb-4 fw-bold text-center text-primary animate__animated animate__fadeInDown"><i class="bi bi-journal-plus me-2"></i>Publish Article</h2>
+          <form method="post" class="contact-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="d-grid gap-2 mt-4">
+              <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 fw-bold animate__animated animate__pulse animate__infinite"><i class="bi bi-upload me-2"></i>Publish</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

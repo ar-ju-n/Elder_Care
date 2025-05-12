@@ -5,6 +5,9 @@ from django.contrib import messages
 from django.contrib.auth.views import LoginView
 from .forms import UserProfileForm, UserSettingsForm, CustomAuthenticationForm, CustomUserCreationForm
 from .services import login_user
+from .models import AccountDeletionRequest
+from django.utils import timezone
+from datetime import timedelta
 
 class CustomLoginView(LoginView):
     form_class = CustomAuthenticationForm
@@ -81,7 +84,9 @@ def profile_view(request):
         print(f"Existing profile picture: {request.user.profile_picture.name}")
         print(f"Existing profile picture URL: {request.user.profile_picture.url}")
     
-    return render(request, 'accounts/profile.html', {'form': form})
+    pending_deletion = request.user.is_pending_deletion
+    scheduled_deletion_at = request.user.scheduled_deletion_at
+    return render(request, 'accounts/profile.html', {'form': form, 'pending_deletion': pending_deletion, 'scheduled_deletion_at': scheduled_deletion_at})
 
 @login_required
 def settings_view(request):
@@ -109,3 +114,39 @@ def auth_status(request):
         'session_data': dict(request.session),
     }
     return render(request, 'accounts/auth_status.html', context)
+
+@login_required
+def request_account_deletion(request):
+    if request.method == "POST":
+        # Prevent duplicate requests
+        if not AccountDeletionRequest.objects.filter(user=request.user, approved=False).exists():
+            AccountDeletionRequest.objects.create(user=request.user)
+        messages.info(request, "Your account deletion request has been submitted and is pending admin approval.")
+        return redirect('accounts:profile')
+    return redirect('accounts:profile')
+
+@login_required
+def delete_account(request):
+    if request.method == "POST":
+        user = request.user
+        user.is_active = False
+        user.is_pending_deletion = True
+        user.scheduled_deletion_at = timezone.now() + timedelta(days=3)
+        user.save()
+        logout(request)
+        messages.success(request, "Your account is scheduled for deletion in 3 days. If you change your mind, contact support before then.")
+        return redirect('landing')
+    return render(request, "accounts/confirm_delete_account.html")
+
+@login_required
+def cancel_account_deletion(request):
+    if request.method == "POST":
+        user = request.user
+        if user.is_pending_deletion:
+            user.is_pending_deletion = False
+            user.scheduled_deletion_at = None
+            user.is_active = True
+            user.save()
+            messages.success(request, "Your account deletion has been cancelled.")
+        return redirect('accounts:profile')
+    return redirect('accounts:profile')

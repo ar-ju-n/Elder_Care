@@ -1,0 +1,224 @@
+/* Accessibility: High-contrast mode and larger font utilities */
+
+/* Accessibility: High-contrast mode and larger font utilities */
+
+html.high-contrast,
+body.high-contrast,
+html.high-contrast *,
+body.high-contrast * {
+    background: #000 !important;
+    color: #fff !important;
+    border-color: #ffd700 !important;
+}
+
+html.high-contrast ::before,
+html.high-contrast ::after,
+body.high-contrast ::before,
+body.high-contrast ::after {
+    background: #000 !important;
+    color: #fff !important;
+    border-color: #ffd700 !important;
+}
+body.high-contrast {
+    --bs-body-bg: #000 !important;
+    --bs-bg: #000 !important;
+    --bs-card-bg: #000 !important;
+    --bs-secondary-bg: #000 !important;
+    --bs-tertiary-bg: #000 !important;
+    --bs-border-color: #ffd700 !important;
+}
+body.high-contrast .section-title,
+body.high-contrast .border-top,
+body.high-contrast .border-bottom,
+body.high-contrast .bg-dark,
+body.high-contrast .bg-gray,
+body.high-contrast .bg-grey,
+body.high-contrast .strip,
+body.high-contrast .divider,
+body.high-contrast .container,
+body.high-contrast [class*="container"],
+body.high-contrast [style*="background"],
+body.high-contrast [style*="background-color"],
+body.high-contrast .container.position-relative.z-3,
+body.high-contrast h3.text-center.mb-4.fw-bold {
+    background: #000 !important;
+    color: #ffd700 !important;
+    border-color: #ffd700 !important;
+}
+body.high-contrast a,
+body.high-contrast .nav-link,
+body.high-contrast .navbar-brand,
+body.high-contrast .card,
+body.high-contrast .container,
+body.high-contrast .main,
+body.high-contrast .content,
+body.high-contrast .form-control,
+body.high-contrast .form-label,
+body.high-contrast .form-check-label {
+    color: #ffd700 !important;
+}
+body.high-contrast input,
+body.high-contrast textarea,
+body.high-contrast select {
+    background: #000 !important;
+    color: #fff !important;
+    border: 1px solid #ffd700 !important;
+    box-shadow: none !important;
+}
+body.high-contrast input[type="email"] {
+    background: #000 !important;
+    color: #fff !important;
+    border: 1px solid #ffd700 !important;
+    box-shadow: 0 0 0 1000px #000 inset !important;
+    -webkit-box-shadow: 0 0 0 1000px #000 inset !important;
+    -webkit-text-fill-color: #fff !important;
+    caret-color: #ffd700 !important;
+}
+body.high-contrast input[type="email"]::placeholder {
+    color: #ffd700 !important;
+    opacity: 1 !important;
+}
+body.high-contrast input:-webkit-autofill,
+body.high-contrast input:-webkit-autofill:focus,
+body.high-contrast input:-webkit-autofill:hover,
+body.high-contrast input:-webkit-autofill:active {
+    background: #000 !important;
+    -webkit-box-shadow: 0 0 0 1000px #000 inset !important;
+    box-shadow: 0 0 0 1000px #000 inset !important;
+    -webkit-text-fill-color: #fff !important;
+    color: #fff !important;
+    border: 1px solid #ffd700 !important;
+    caret-color: #ffd700 !important;
+    transition: background-color 9999s ease-in-out 0s !important;
+}
+body.high-contrast input[type="email"]::-webkit-input-placeholder {
+    color: #ffd700 !important;
+}
+body.high-contrast input[type="email"]::-ms-input-placeholder {
+    color: #ffd700 !important;
+}
+body.high-contrast input:-internal-autofill-selected {
+    background: #000 !important;
+    color: #fff !important;
+    border: 1px solid #ffd700 !important;
+}
+body.high-contrast input[type="email"]::-webkit-contacts-auto-fill-button,
+body.high-contrast input[type="email"]::-webkit-credentials-auto-fill-button {
+    visibility: hidden !important;
+    display: none !important;
+    pointer-events: none !important;
+}
+
+body.high-contrast .toggle-password,
+body.high-contrast .toggle-password i {
+    background: #000 !important;
+    color: #ffd700 !important;
+    border: 1px solid #ffd700 !important;
+}
+
+body.high-contrast input::placeholder,
+body.high-contrast textarea::placeholder {
+    color: #ffd700 !important;
+    opacity: 1 !important;
+}
+/* Autofill suppression for high-contrast email fields */
+body.high-contrast input[type="email"]::-webkit-input-placeholder { color: #ffd700 !important; }
+body.high-contrast input[type="email"]::-webkit-autofill,
+body.high-contrast input[type="email"]:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #000 inset !important;
+    box-shadow: 0 0 0 1000px #000 inset !important;
+    -webkit-text-fill-color: #fff !important;
+    color: #fff !important;
+    border: 1px solid #ffd700 !important;
+    background-image: none !important;
+}
+body.high-contrast input[type="email"]::-ms-input-placeholder { color: #ffd700 !important; }
+body.high-contrast input[type="email"]::placeholder { color: #ffd700 !important; }
+
+html body.font-size-default, html body.font-size-default * {
+    font-size: 1rem !important;
+}
+html body.font-size-large, html body.font-size-large * {
+    font-size: 1.5rem !important;
+}
+html body.font-size-xlarge, html body.font-size-xlarge * {
+    font-size: 2rem !important;
+}
+
+.navbar .nav-link, .navbar .nav-link:visited {
+    color: #222 !important;
+    background: transparent !important;
+}
+.navbar .nav-link:hover, .navbar .nav-link:focus {
+    color: #005fcc !important;
+    background: #e6f0fa !important;
+}
+body.high-contrast .navbar .nav-link {
+    color: #ffd700 !important;
+    background: #000 !important;
+}
+
+.focus-outline {
+    outline: 3px solid #005fcc !important;
+    outline-offset: 2px;
+}
+
+.skip-link {
+    position: absolute;
+    left: -999px;
+    top: auto;
+    background: #005fcc;
+    color: #fff;
+    padding: 8px;
+    z-index: 1000;
+    border-radius: 4px;
+}
+.skip-link:focus {
+    left: 10px;
+    top: 10px;
+}
+
+
+html body.font-size-default, html body.font-size-default * {
+    font-size: 1rem !important;
+}
+html body.font-size-large, html body.font-size-large * {
+    font-size: 1.5rem !important;
+}
+html body.font-size-xlarge, html body.font-size-xlarge * {
+    font-size: 2rem !important;
+}
+
+.navbar .nav-link, .navbar .nav-link:visited {
+    color: #222 !important;
+    background: transparent !important;
+}
+.navbar .nav-link:hover, .navbar .nav-link:focus {
+    color: #005fcc !important;
+    background: #e6f0fa !important;
+}
+body.high-contrast .navbar .nav-link {
+    color: #ffd700 !important;
+    background: #000 !important;
+}
+
+.focus-outline {
+    outline: 3px solid #005fcc !important;
+    outline-offset: 2px;
+}
+
+.skip-link {
+    position: absolute;
+    left: -999px;
+    top: auto;
+    background: #005fcc;
+    color: #fff;
+    padding: 8px;
+    z-index: 1000;
+    border-radius: 4px;
+}
+.skip-link:focus {
+    left: 10px;
+    top: 10px;
+}
+

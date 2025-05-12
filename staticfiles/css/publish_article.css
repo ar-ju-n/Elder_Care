@@ -1,0 +1,7 @@
+/* Publish Article Section Styles */
+.section.publish-article-section {
+  font-family: 'Inter', sans-serif;
+}
+.publish-article-section .publish-card {
+  border-radius: 1.5rem;
+}

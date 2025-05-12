@@ -4,7 +4,8 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', include('custom_admin.urls', namespace='custom_admin')),
+    path('djadmin/', admin.site.urls),  # Use /djadmin/ for Django admin
     # Your other URL patterns
 ]
 

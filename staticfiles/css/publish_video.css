@@ -1,0 +1,7 @@
+/* Publish Video Section Styles */
+.section.publish-video-section {
+  font-family: 'Inter', sans-serif;
+}
+.publish-video-section .publish-card {
+  border-radius: 1.5rem;
+}

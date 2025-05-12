@@ -1,29 +1,32 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container py-4">
-  <!-- Job Details Card -->
-  <div class="card shadow-sm mb-4">
-    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-      <h3 class="card-title mb-0">{{ job.title }}</h3>
-      <span class="badge bg-light text-dark">Posted: {{ job.created_at|date:"M d, Y" }}</span>
-    </div>
-    <div class="card-body">
-      <div class="row">
-        <div class="col-md-8">
-          <h5 class="text-primary mb-3">Job Description</h5>
-          <p class="card-text">{{ job.description }}</p>
-        </div>
-        <div class="col-md-4">
-          <div class="bg-light p-3 rounded">
-            <h5 class="text-primary mb-3">Job Details</h5>
-            <p><i class="bi bi-calendar-check me-2"></i><b>Schedule:</b> {{ job.schedule }}</p>
-            <p><i class="bi bi-geo-alt me-2"></i><b>Location:</b> {{ job.location }}</p>
-            <p><i class="bi bi-cash-coin me-2"></i><b>Pay:</b> ${{ job.pay }}</p>
-            <p><i class="bi bi-person me-2"></i><b>Posted by:</b> {{ job.posted_by.get_full_name }}</p>
+<div class="job-detail-section py-5">
+  <div class="container">
+    <div class="row justify-content-center mb-4">
+      <div class="col-lg-10">
+        <div class="card shadow-lg border-0 animate__animated animate__fadeInUp">
+          <div class="card-header bg-primary text-white d-flex flex-column flex-md-row justify-content-between align-items-md-center animate__animated animate__fadeInDown">
+            <h2 class="mb-2 mb-md-0 fw-bold">{{ job.title }}</h2>
+            <span class="badge bg-light text-dark">Posted: {{ job.created_at|date:"M d, Y" }}</span>
           </div>
-        </div>
-      </div>
-      
+          <div class="card-body p-4">
+            <div class="row">
+              <div class="col-md-8 mb-4 mb-md-0">
+                <h5 class="text-primary mb-3 fw-bold">Job Description</h5>
+                <p class="card-text">{{ job.description }}</p>
+              </div>
+              <div class="col-md-4">
+                <div class="bg-light p-3 rounded-3 mb-3">
+                  <h5 class="text-primary mb-3 fw-bold">Job Details</h5>
+                  <p class="mb-2"><i class="bi bi-calendar-check me-2"></i><b>Schedule:</b> {{ job.schedule }}</p>
+                  <p class="mb-2"><i class="bi bi-geo-alt me-2"></i><b>Location:</b> {{ job.location }}</p>
+                  <p class="mb-2"><i class="bi bi-cash-coin me-2"></i><b>Pay:</b> ${{ job.pay }}</p>
+                  <p class="mb-0"><i class="bi bi-person me-2"></i><b>Posted by:</b> {{ job.posted_by.get_full_name }}</p>
+                </div>
+              </div>
+            </div>
+            <div class="mt-4">
+
       <div class="mt-4">
         {% if already_applied %}
           <div class="alert alert-info">
@@ -122,14 +125,14 @@
                     <a href="#" class="btn btn-sm btn-success" onclick="document.getElementById('accept-form-{{ application.id }}').submit();">
                       <i class="bi bi-check-circle"></i> Accept
                     </a>
-                    <form id="accept-form-{{ application.id }}" method="post" action="{% url 'jobs:update_application_status' application.id %}" style="display: none;">
+                    <form id="accept-form-{{ application.id }}" method="post" action="{% url 'jobs:update_application_status' application.id %}" class="d-none">
                       {% csrf_token %}
                       <input type="hidden" name="status" value="accepted">
                     </form>
                     <a href="#" class="btn btn-sm btn-danger" onclick="document.getElementById('reject-form-{{ application.id }}').submit();">
                       <i class="bi bi-x-circle"></i> Reject
                     </a>
-                    <form id="reject-form-{{ application.id }}" method="post" action="{% url 'jobs:update_application_status' application.id %}" style="display: none;">
+                    <form id="reject-form-{{ application.id }}" method="post" action="{% url 'jobs:update_application_status' application.id %}" class="d-none">
                       {% csrf_token %}
                       <input type="hidden" name="status" value="rejected">
                     </form>

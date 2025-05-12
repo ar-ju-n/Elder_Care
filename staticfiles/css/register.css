@@ -1,8 +1,28 @@
 /* Register Page Custom Styles */
-.register-hero-img {
-  max-height: 320px;
-  object-fit: cover;
-  width: 100%;
-  border-radius: 12px;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+
+body.register-bg {
+  background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80') no-repeat center center fixed;
+  background-size: cover;
+  min-height: 100vh;
+}
+
+body.login-bg {
+  background: url('https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=1200&q=80') no-repeat center center fixed;
+  background-size: cover;
+  min-height: 100vh;
+}
+
+.registration-card {
+  background: rgba(255,255,255,0.80) !important;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.18);
+  border-radius: 22px;
+  border: 1.5px solid rgba(255,255,255,0.35);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+@media (max-width: 767px) {
+  .registration-card {
+    padding: 0.5rem !important;
+  }
 }

@@ -15,7 +15,7 @@ class ChatRequest(models.Model):
     responded_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        unique_together = ('elder', 'caregiver')
+        pass
 
     def __str__(self):
         return f"{self.elder} → {self.caregiver} ({self.status})"
@@ -30,6 +30,7 @@ class ChatMessage(models.Model):
     message = models.TextField(blank=True)
     attachment = models.FileField(upload_to=chat_attachment_path, blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
     
     @property
     def attachment_name(self):

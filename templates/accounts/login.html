@@ -1,61 +1,67 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load widget_tweaks %}
+{% block body_class %}login-bg{% endblock %}
 {% block content %}
 {% block extra_css %}<link rel="stylesheet" href="/static/css/login.css">{% endblock %}
 
-<!-- Login Hero Image -->
-<div class="text-center mb-4">
-  <img src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=1200&q=80" alt="Login Elderly" class="img-fluid rounded shadow" style="max-height: 320px; object-fit: cover; width: 100%;">
-</div>
+{# Set background image via body class, remove inline hero image #}
 
 <div class="section">
   <div class="row justify-content-center">
-    <div class="col-md-6">
-      <div class="card shadow-sm mt-4 animate__animated animate__fadeIn">
-        <div class="card-body p-4">
-          <h2 class="mb-4 page-header text-center">Login</h2>
-          
+    <div class="col-md-7 col-lg-6">
+      <div class="card shadow-lg mt-4 border-0 animate__animated animate__fadeInUp">
+        <div class="card-body p-5">
+          <h2 class="mb-4 fw-bold text-center text-primary animate__animated animate__fadeInDown">Welcome Back</h2>
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags }} animate__animated animate__shakeX rounded-pill px-4">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
           {% if form.errors %}
-            <div class="alert alert-danger">
+            <div class="alert alert-danger animate__animated animate__shakeX rounded-pill px-4">
               <i class="bi bi-exclamation-triangle-fill me-2"></i>
               Your username and password didn't match. Please try again.
             </div>
           {% endif %}
-          
+          {% if is_admin_login %}
+            <div class="alert alert-info text-center mb-4">
+              <i class="bi bi-shield-lock-fill me-2"></i>Admin Login
+            </div>
+          {% endif %}
           <form method="post" class="contact-form">
             {% csrf_token %}
-            
-            <div class="mb-3">
-              <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
-              <div class="input-group">
-                <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                {{ form.username }}
+            <div class="mb-4">
+              <label for="{{ form.username.id_for_label }}" class="form-label fw-semibold">Username</label>
+              <div class="input-group rounded-pill shadow-sm">
+                <span class="input-group-text bg-white border-0"><i class="bi bi-person-fill"></i></span>
+                {{ form.username|add_class:'form-control rounded-pill border-0 px-4 py-2' }}
               </div>
               {% if form.username.errors %}
                 <div class="text-danger small mt-1">{{ form.username.errors }}</div>
               {% endif %}
             </div>
-            
             <div class="mb-4">
-              <label for="{{ form.password.id_for_label }}" class="form-label">Password</label>
-              <div class="input-group">
-                <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
-                {{ form.password }}
+              <label for="{{ form.password.id_for_label }}" class="form-label fw-semibold">Password</label>
+              <div class="input-group rounded-pill shadow-sm">
+                <span class="input-group-text bg-white border-0"><i class="bi bi-lock-fill"></i></span>
+                {{ form.password|add_class:'form-control rounded-pill border-0 px-4 py-2' }}
               </div>
               {% if form.password.errors %}
                 <div class="text-danger small mt-1">{{ form.password.errors }}</div>
               {% endif %}
             </div>
-            
-            <div class="d-grid gap-2">
-              <button type="submit" class="btn btn-primary">
+            <div class="d-grid gap-2 mb-3">
+              <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 fw-bold animate__animated animate__pulse animate__infinite">
                 <i class="bi bi-box-arrow-in-right me-2"></i>Login
               </button>
             </div>
-            
             <div class="mt-3 text-center">
-              <p>Don't have an account? <a href="{% url 'accounts:register' %}">Register here</a></p>
-              <p><a href="{% url 'accounts:password_reset' %}">Forgot your password?</a></p>
+              <p class="mb-1">Don't have an account? <a href="{% url 'accounts:register' %}" class="fw-semibold">Register here</a></p>
+              <p><a href="{% url 'accounts:password_reset' %}" class="fw-semibold">Forgot your password?</a></p>
             </div>
           </form>
         </div>
@@ -64,4 +70,14 @@
   </div>
 </div>
 <script src="{% static 'js/accounts_login.js' %}"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+      document.querySelectorAll('.alert').forEach(function(alert) {
+        alert.classList.add('animate__fadeOut');
+        setTimeout(function() { alert.style.display = 'none'; }, 500);
+      });
+    }, 2000);
+  });
+</script>
 {% endblock %}

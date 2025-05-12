@@ -1,6 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .models import User
+from django.contrib.auth import authenticate
+from django.core.exceptions import ValidationError
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(
@@ -87,6 +89,13 @@ class CustomAuthenticationForm(AuthenticationForm):
             'placeholder': 'Password'
         })
     )
+
+    def confirm_login_allowed(self, user):
+        if user.is_staff or user.is_superuser:
+            raise ValidationError(
+                "Admin users cannot log in here.",
+                code='invalid_login',
+            )
 
 
 

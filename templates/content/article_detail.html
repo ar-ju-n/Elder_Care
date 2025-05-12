@@ -1,42 +1,45 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container py-4 animate-fade-in">
+<link rel="stylesheet" href="{% static 'css/article_section.css' %}">
+<link rel="stylesheet" href="{% static 'css/article_detail.css' %}">
+<div class="section article-detail-section rounded-4">
+  <div class="container py-4 animate__animated animate__fadeIn">
     <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card shadow-lg border-0 mb-4">
-                {% if article.featured_image %}
-                <img src="{{ article.featured_image.url }}" class="card-img-top img-fluid rounded-top" alt="Featured image for {{ article.title }}">
-                {% endif %}
-                <div class="card-body p-4">
-                    <h1 class="card-title display-5 fw-bold mb-3">{{ article.title }}</h1>
-                    <div class="mb-3 text-muted small">
-                        <i class="bi bi-person-circle me-1"></i>
-                        {% if article.published_by %}
-                            {{ article.published_by.get_full_name|default:article.published_by.username }}
-                        {% else %}
-                            Unknown Author
-                        {% endif %}
-                        &nbsp;|&nbsp;
-                        <i class="bi bi-calendar-event me-1"></i> {{ article.published_at|date:'F j, Y' }}
-                    </div>
-                    {% if article.tags.all %}
-                    <div class="mb-3">
-                        {% for tag in article.tags.all %}
-                        <span class="badge bg-primary me-1">#{{ tag.name }}</span>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-                    <div class="article-body fs-5 lh-lg mt-3">
-                        {{ article.body|linebreaks }}
-                    </div>
-                </div>
+      <div class="col-lg-9 col-xl-8">
+        <div class="card article-card shadow-lg border-0 mb-4 animate__animated animate__fadeInUp">
+          {% if article.featured_image %}
+          <img src="{{ article.featured_image.url }}" class="card-img-top img-fluid rounded-top" alt="Featured image for {{ article.title }}">
+          {% endif %}
+          <div class="card-body p-5">
+            <h1 class="card-title display-5 fw-bold mb-3 text-title animate__animated animate__fadeInDown">{{ article.title }}</h1>
+            <div class="mb-3 text-muted small">
+              <i class="bi bi-person-circle me-1"></i>
+              {% if article.published_by %}
+                {{ article.published_by.get_full_name|default:article.published_by.username }}
+              {% else %}
+                Unknown Author
+              {% endif %}
+              &nbsp;|&nbsp;
+              <i class="bi bi-calendar-event me-1"></i> {{ article.published_at|date:'F j, Y' }}
             </div>
-            <a href="{% url 'content:article_list' %}" class="btn btn-outline-primary"><i class="bi bi-arrow-left"></i> Back to Articles</a>
+            {% if article.tags.all %}
+            <div class="mb-3">
+              {% for tag in article.tags.all %}
+              <span class="badge me-1">#{{ tag.name }}</span>
+              {% endfor %}
+            </div>
+            {% endif %}
+            <div class="article-body mt-3">
+              {{ article.body|linebreaks }}
+            </div>
+          </div>
         </div>
+        <a href="{% url 'content:article_list' %}" class="btn btn-outline-primary rounded-pill px-4 py-2 fw-bold animate__animated animate__fadeInUp animate__delay-1s">
+          <i class="bi bi-arrow-left"></i> Back to Articles
+        </a>
+      </div>
     </div>
+  </div>
 </div>
-<style>
-.article-body img { max-width: 100%; height: auto; border-radius: 0.5rem; margin: 1rem 0; }
-.card { background: var(--bs-card-bg, #23272b); color: var(--bs-body-color, #f8f9fa); }
-</style>
+
 {% endblock %}

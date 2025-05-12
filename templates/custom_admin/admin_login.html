@@ -1,35 +1,33 @@
-{% extends 'base.html' %}
-{% load static %}
+{% extends 'custom_admin/admin_base.html' %}
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card mt-5">
-            <div class="card-header bg-primary text-white">
-                <h4 class="mb-0">Custom Admin Login</h4>
-            </div>
-            <div class="card-body">
-                {% if form.errors %}
-                <div class="alert alert-danger">
-                    Your username and password didn't match. Please try again.
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Admin Login</h4>
                 </div>
-                {% endif %}
-                <form method="post" action="{% url 'custom_admin:admin_login' %}">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label for="id_username" class="form-label">Username</label>
-                        <input type="text" name="username" id="id_username" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="id_password" class="form-label">Password</label>
-                        <input type="password" name="password" id="id_password" class="form-control" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Login</button>
-                    <input type="hidden" name="next" value="{{ next }}">
-                </form>
+                <div class="card-body">
+                    {% if form.errors %}
+                        <div class="alert alert-danger">
+                            Invalid admin credentials. Please try again.
+                        </div>
+                    {% endif %}
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="id_username" class="form-label">Username</label>
+                            {{ form.username }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_password" class="form-label">Password</label>
+                            {{ form.password }}
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Login as Admin</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
-<script src="{% static 'js/admin_login.js' %}"></script>
-<link rel="stylesheet" href="{% static 'css/admin_login.css' %}">
 {% endblock %}

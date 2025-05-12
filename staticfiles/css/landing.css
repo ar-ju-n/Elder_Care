@@ -1,0 +1,46 @@
+/* Elder Care Landing Page Styles */
+.hero-section {
+  background: linear-gradient(120deg, #4a6da7 0%, #8b5cf6 100%);
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+}
+.hero-bg-img {
+  pointer-events: none;
+  opacity: 0.20;
+}
+.hero-overlay {
+  background: linear-gradient(135deg, rgba(74,109,167,0.7) 0%, rgba(139,92,246,0.7) 100%);
+}
+.hero-container {
+  color: #fff;
+}
+.hero-title {
+  text-shadow: 0 4px 24px rgba(0,0,0,0.7),0 1px 0 #333;
+  letter-spacing: -2px;
+  font-family: 'Inter', sans-serif;
+}
+.hero-lead {
+  text-shadow: 0 2px 12px rgba(0,0,0,0.5);
+  font-size: 1.5rem;
+}
+.hero-svg {
+  width: 100%;
+  height: 80px;
+  display: block;
+  line-height: 0;
+}
+.card-landing {
+  background: var(--card-bg);
+  color: var(--card-text);
+}
+.card-landing .icon-landing {
+  font-size: 3rem;
+  color: #0d6efd;
+}
+.card-how {
+  background: var(--how-bg);
+  color: var(--card-text);
+}
+.font-inter {
+  font-family: 'Inter', sans-serif;
+}

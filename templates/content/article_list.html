@@ -1,35 +1,37 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load content_extras %}
 {% block content %}
-<div class="section">
-  <div class="container">
-    <div class="row mb-4">
+<link rel="stylesheet" href="{% static 'css/article_list.css' %}">
+<div class="section article-list-section">
+  <div class="container py-4">
+    <div class="row mb-5">
       <div class="col-12 text-center">
-        <h2 class="mb-3 page-header">Wellness Articles</h2>
-        <img src="/static/images/nepal_wellness.jpg" alt="Wellness in Nepal" class="img-fluid rounded shadow mb-4 img-hero">
-        <p class="lead mb-5">Explore our collection of wellness articles focused on elderly care and mindfulness practices in Nepal.</p>
+        <h1 class="display-4 fw-bold mb-3 animate__animated animate__fadeInDown article-title">Wellness Articles</h1>
+        <p class="lead mb-5 text-secondary animate__animated animate__fadeInUp">Explore our curated collection of wellness articles focused on elderly care and mindfulness in Nepal.</p>
       </div>
     </div>
-    
     <div class="row g-4">
       {% for article in articles %}
-        <div class="col-md-4 mb-4 slide-up" style="animation-delay: {{ forloop.counter|multiply:0.1 }}s">
-          <div class="card h-100 shadow-sm content-card">
-            <img src="/static/images/article_{{ forloop.counter|modulo:5 }}.jpg" class="card-img-top" alt="{{ article.title }}">
+        <div class="col-md-4 mb-4 animate__animated animate__fadeInUp" data-animation-delay="{{ forloop.counter|multiply:0.08 }}s">
+          <div class="card h-100 shadow-lg content-card border-0 card-article-list">
+            <div class="card-icon text-center mt-4">
+              <i class="bi bi-journal-medical icon-article-list"></i>
+            </div>
             <div class="card-body">
-              <h5 class="card-title">{{ article.title }}</h5>
-              <div class="content-meta">
-                <i class="bi bi-calendar3 me-2"></i>Published: {{ article.published_at|date:"F j, Y" }}
+              <h5 class="card-title fw-bold mb-2 article-card-title">{{ article.title }}</h5>
+              <div class="content-meta small mb-3 text-muted">
+                <i class="bi bi-calendar3 me-1"></i> {{ article.published_at|date:"F j, Y" }}
                 {% if article.tags.all %}
-                  <div class="mt-2">
+                  <span class="ms-2">
                     {% for tag in article.tags.all %}
                       <span class="badge bg-secondary me-1">{{ tag.name }}</span>
                     {% endfor %}
-                  </div>
+                  </span>
                 {% endif %}
               </div>
-              <p class="card-text">{{ article.body|truncatewords:20 }}</p>
-              <a href="{% url 'content:article_detail' article.pk %}" class="btn btn-primary mt-auto">
+              <p class="card-text mb-3">{{ article.body|truncatewords:20 }}</p>
+              <a href="{% url 'content:article_detail' article.pk %}" class="btn btn-primary w-100">
                 <i class="bi bi-book me-2"></i>Read Article
               </a>
             </div>
@@ -37,7 +39,7 @@
         </div>
       {% empty %}
         <div class="col-12">
-          <div class="alert alert-info">
+          <div class="alert alert-info text-center animate__animated animate__fadeInUp">
             <i class="bi bi-info-circle-fill me-2"></i>No articles available at the moment.
           </div>
         </div>
@@ -46,8 +48,3 @@
   </div>
 </div>
 {% endblock %}
-
-
-
-
-

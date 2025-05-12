@@ -15,7 +15,12 @@ document.addEventListener('DOMContentLoaded', function() {
         updateClock();
         setInterval(updateClock, 1000);
     }
-    
+
+    // Apply animation-delay from data-animation-delay
+    document.querySelectorAll('[data-animation-delay]').forEach(function(el) {
+        el.style.animationDelay = el.getAttribute('data-animation-delay');
+    });
+
     // Remove all spinners that might be showing
     const spinners = document.querySelectorAll('.spinner-border, .spinner-grow, [data-app-spinner="true"], .loading-spinner, .spinner-container, #global-spinner-container');
     spinners.forEach(spinner => {

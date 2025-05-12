@@ -1,3 +1,58 @@
+/* Theme-aware Custom Admin CSS */
+:root {
+  --sidebar-bg: #343a40;
+  --sidebar-color: #fff;
+  --sidebar-hover-bg: #0d6efd;
+  --sidebar-active-bg: #0d6efd;
+  --card-bg: #fff;
+  --card-header-bg: #f8f9fa;
+  --card-header-color: #212529;
+  --content-bg: #f9fafb;
+  --content-color: #212529;
+  --table-header-bg: #f8f9fa;
+  --table-header-color: #212529;
+  --table-row-bg: #fff;
+  --table-row-hover-bg: #f1f3f5;
+  --form-bg: #fff;
+  --form-color: #212529;
+}
+
+[data-bs-theme="dark"] {
+  --sidebar-bg: #181a1b;
+  --sidebar-color: #f1f1f1;
+  --sidebar-hover-bg: #23272b;
+  --sidebar-active-bg: #23272b;
+  --card-bg: #23272b;
+  --card-header-bg: #23272b;
+  --card-header-color: #f1f1f1;
+  --content-bg: #181a1b;
+  --content-color: #f1f1f1;
+  --table-header-bg: #23272b;
+  --table-header-color: #f1f1f1;
+  --table-row-bg: #23272b;
+  --table-row-hover-bg: #2c3034;
+  --form-bg: #23272b;
+  --form-color: #f1f1f1;
+}
+
+[data-bs-theme="high-contrast"] {
+  --sidebar-bg: #000;
+  --sidebar-color: #fff;
+  --sidebar-hover-bg: #ff0;
+  --sidebar-active-bg: #ff0;
+  --card-bg: #000;
+  --card-header-bg: #000;
+  --card-header-color: #fff;
+  --content-bg: #000;
+  --content-color: #fff;
+  --table-header-bg: #000;
+  --table-header-color: #fff;
+  --table-row-bg: #000;
+  --table-row-hover-bg: #222;
+  --form-bg: #000;
+  --form-color: #fff;
+}
+
 /* Custom Admin CSS */
 
 /* Wrapper */
@@ -13,6 +68,8 @@
   max-width: 250px;
   min-height: 100vh;
   transition: all 0.3s;
+  background: var(--sidebar-bg) !important;
+  color: var(--sidebar-color) !important;
 }
 
 #sidebar.active {
@@ -21,12 +78,13 @@
 
 #sidebar .sidebar-header {
   padding: 20px;
-  background: #343a40;
+  background: var(--sidebar-bg) !important;
+  color: var(--sidebar-color) !important;
 }
 
 #sidebar ul.components {
   padding: 20px 0;
-  border-bottom: 1px solid #47748b;
+  border-bottom: 1px solid var(--sidebar-hover-bg);
 }
 
 #sidebar ul p {
@@ -38,25 +96,25 @@
   padding: 10px;
   font-size: 1.1em;
   display: block;
-  color: #fff;
+  color: var(--sidebar-color) !important;
   text-decoration: none;
 }
 
 #sidebar ul li a:hover {
-  color: #fff;
-  background: #0d6efd;
+  background: var(--sidebar-hover-bg) !important;
+  color: var(--sidebar-color) !important;
 }
 
-#sidebar ul li.active > a,
+#sidebar ul li.active>a,
 a[aria-expanded="true"] {
-  color: #fff;
-  background: #0d6efd;
+  background: var(--sidebar-active-bg) !important;
+  color: var(--sidebar-color) !important;
 }
 
 #sidebar ul ul a {
   font-size: 0.9em !important;
   padding-left: 30px !important;
-  background: #4b545c;
+  background: var(--sidebar-hover-bg) !important;
 }
 
 /* CTAs */
@@ -88,6 +146,8 @@ a.logout {
   padding: 0;
   min-height: 100vh;
   transition: all 0.3s;
+  background: var(--content-bg) !important;
+  color: var(--content-color) !important;
 }
 
 /* Navbar */
@@ -104,10 +164,13 @@ a.logout {
 /* Cards */
 .card {
   margin-bottom: 1.5rem;
+  background: var(--card-bg) !important;
+  color: var(--content-color) !important;
 }
 
 .card-header {
-  background-color: #f8f9fa;
+  background: var(--card-header-bg) !important;
+  color: var(--card-header-color) !important;
   border-bottom: 1px solid rgba(0, 0, 0, 0.125);
 }
 
@@ -135,6 +198,7 @@ a.logout {
 /* Tables */
 .table-responsive {
   overflow-x: auto;
+  background: var(--card-bg) !important;
 }
 
 /* Forms */
@@ -147,11 +211,58 @@ a.logout {
   #sidebar {
     margin-left: -250px;
   }
+
   #sidebar.active {
     margin-left: 0;
   }
+
   #content {
     width: 100%;
   }
 }
 
+.admin-table-header,
+.admin-table thead,
+.admin-table thead th,
+.table thead th {
+  background: var(--table-header-bg) !important;
+  color: var(--table-header-color) !important;
+}
+
+.admin-table tbody td,
+.table tbody td {
+  background: var(--table-row-bg) !important;
+  color: var(--content-color) !important;
+}
+
+.admin-table tbody tr:hover,
+.table tbody tr:hover {
+  background: var(--table-row-hover-bg) !important;
+}
+
+.form-control,
+.form-select {
+  background: var(--form-bg) !important;
+  color: var(--form-color) !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+  background: var(--form-bg) !important;
+  color: var(--form-color) !important;
+}
+
+.admin-list-filters-section {
+  background: var(--content-bg) !important;
+  color: var(--content-color) !important;
+}
+
+[data-bs-theme="dark"] .admin-list-filters-section {
+  background: var(--content-bg) !important;
+  color: var(--content-color) !important;
+}
+
+[data-bs-theme="high-contrast"] .admin-list-filters-section {
+  background: var(--content-bg) !important;
+  color: var(--content-color) !important;
+}

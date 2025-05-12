@@ -1,11 +1,44 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<div class="container py-4">
-  <div class="row justify-content-center">
-    <div class="col-md-8">
-      <div class="chat-container">
-        <div class="chat-header">
+<div class="chat-room-section py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-9">
+        <div class="chat-container shadow-lg border-0 animate__animated animate__fadeInUp">
+          <div class="chat-header px-4 py-3 border-bottom animate__animated animate__fadeInDown">
+            <div class="d-flex align-items-center">
+              <div class="avatar">
+                {% if user == chat_request.elder %}
+                  {% if chat_request.caregiver.profile_picture %}
+                    <img src="{{ chat_request.caregiver.profile_picture.url }}" alt="{{ chat_request.caregiver.get_full_name }}" class="avatar-img">
+                  {% else %}
+                    {{ chat_request.caregiver.get_full_name|first }}
+                  {% endif %}
+                {% else %}
+                  {% if chat_request.elder.profile_picture %}
+                    <img src="{{ chat_request.elder.profile_picture.url }}" alt="{{ chat_request.elder.get_full_name }}" class="avatar-img">
+                  {% else %}
+                    {{ chat_request.elder.get_full_name|first }}
+                  {% endif %}
+                {% endif %}
+              </div>
+              <div class="ms-3">
+                <h4 class="mb-0 fw-bold letter-spacing-tight">
+                  {% if user == chat_request.elder %}
+                    {{ chat_request.caregiver.get_full_name }}
+                    <span class="badge bg-info ms-2">Caregiver</span>
+                  {% else %}
+                    {{ chat_request.elder.get_full_name }}
+                    <span class="badge bg-warning ms-2">Elder</span>
+                  {% endif %}
+                </h4>
+              </div>
+            </div>
+            <a href="{% url 'chat:request_list' %}" class="btn btn-sm btn-light ms-3 mt-3 mt-md-0 animate__animated animate__fadeInUp">
+              <i class="bi bi-arrow-left"></i> Back
+            </a>
+          </div>
           <div class="d-flex align-items-center">
             <div class="avatar">
               {% if user == chat_request.elder %}
@@ -83,7 +116,7 @@
             </div>
           {% endif %}
           <!-- Typing indicator -->
-          <div id="typing-indicator" class="message-row" style="display: none;">
+          <div id="typing-indicator" class="message-row d-none">
             <div class="avatar">
               {% if user == chat_request.elder %}
                 {% if chat_request.caregiver.profile_picture %}
@@ -117,12 +150,12 @@
               <label for="file-input" class="btn btn-outline-primary" title="Attach file">
                 <i class="bi bi-paperclip"></i>
               </label>
-              <input type="file" id="file-input" name="attachment" style="display: none;">
+              <input type="file" id="file-input" name="attachment" class="d-none">
               <button type="submit" class="btn btn-primary">
                 <i class="bi bi-send-fill"></i>
               </button>
             </div>
-            <div id="file-preview" class="mt-2" style="display: none;">
+            <div id="file-preview" class="mt-2 d-none">
               <div class="d-flex align-items-center">
                 <span class="file-name"></span>
                 <button type="button" class="btn btn-sm btn-link text-danger" id="remove-file">

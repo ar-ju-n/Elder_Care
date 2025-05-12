@@ -1,0 +1,7 @@
+/* Article Detail Section Styles */
+.article-detail-section {
+  font-family: 'Inter', sans-serif;
+}
+.article-detail-section .article-card {
+  border-radius: 1.5rem;
+}

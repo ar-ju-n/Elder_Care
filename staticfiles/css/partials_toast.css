@@ -1,0 +1,6 @@
+/* Styles extracted from partials/toast.html inline styles */
+
+.toast-container {
+    z-index: 1080;
+    min-width: 300px;
+}

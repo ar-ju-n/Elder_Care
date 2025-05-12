@@ -1,133 +1,70 @@
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="light">
 <head>
+    {% load static %}
+    <!-- Add this early in the head, before other scripts -->
+    <script src="{% static 'js/early-contrast.js' %}"></script>
+    
+    <!-- Accessibility: Skip to content link and ARIA landmarks -->
+    <link rel="stylesheet" href="{% static 'css/accessibility.css' %}">
     <meta charset="UTF-8">
     <title>Elderly Care & Mindful Support Hub</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/main.css' %}">
-    <link rel="stylesheet" href="{% static 'css/chat_modern.css' %}">
+    
+    <!-- Theme CSS -->
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dark-mode.css' %}">
+    
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Animate.css for effects -->
+    
+    <!-- Other CSS -->
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/chat_modern.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <!-- Dark Mode CSS -->
-    <link rel="stylesheet" href="{% static 'css/dark-mode.css' %}">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
+
+    
     {% include "partials/css_variables.html" %}
     {% block extra_css %}{% endblock %}
-
-</head>
-<body>
-    {% include "partials/navbar.html" %}
-
-
-    {% block content %}{% endblock %}
-
-    {% include "partials/footer.html" %}
-
-    <!-- Bootstrap JS Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Custom JavaScript -->
-    <script src="{% static 'js/main.js' %}"></script>
-    {% block extra_js %}{% endblock %}
     
-    <!-- Theme Toggle Script -->
+    <!-- Theme initialization script -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const themeToggle = document.getElementById('theme-toggle');
-            const htmlElement = document.documentElement;
-            const darkIcon = document.querySelector('.theme-icon-dark');
-            const lightIcon = document.querySelector('.theme-icon-light');
-            
-            // Function to set theme
-            function setTheme(theme) {
-                htmlElement.setAttribute('data-bs-theme', theme);
-                localStorage.setItem('theme', theme);
-                
-                // Update button icons
-                if (theme === 'dark') {
-                    darkIcon.style.display = 'none';
-                    lightIcon.style.display = 'inline-block';
-                } else {
-                    darkIcon.style.display = 'inline-block';
-                    lightIcon.style.display = 'none';
-                }
-                
-                // Ensure navbar is always visible regardless of theme
-                const navbar = document.querySelector('.navbar');
-                if (navbar) {
-                    navbar.classList.add('navbar-dark');
-                    navbar.classList.remove('navbar-light');
-                }
-            }
-            
-            // Check for saved theme preference or use user's system preference
+        // Initialize theme before page load to prevent flash
+        (function() {
             const savedTheme = localStorage.getItem('theme');
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            
-            if (savedTheme) {
-                setTheme(savedTheme);
-            } else if (prefersDark) {
-                setTheme('dark');
-            } else {
-                setTheme('light');
-            }
-            
-            // Toggle theme when button is clicked
-            if (themeToggle) {
-                themeToggle.addEventListener('click', function() {
-                    const currentTheme = htmlElement.getAttribute('data-bs-theme');
-                    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-                    setTheme(newTheme);
-                });
-            }
-        });
+            const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-bs-theme', theme);
+        })();
     </script>
+</head>
+<body role="document">
+    <!-- Skip to main content for screen readers/keyboard users -->
+    <a href="#main-content" class="skip-link" id="skip-link">Skip to main content</a>
+    <script src="{% static 'js/skip_link.js' %}"></script>
+    <div class="d-flex justify-content-end p-2" aria-label="Accessibility options" role="region">
+        <button id="increase-font" class="btn btn-outline-secondary btn-sm me-1" aria-label="Increase text size">A+</button>
+        <button id="decrease-font" class="btn btn-outline-secondary btn-sm me-1" aria-label="Decrease text size">A-</button>
+        <button id="toggle-contrast" class="btn btn-outline-warning btn-sm" aria-label="Toggle high contrast mode">High Contrast</button>
+    </div>
     
-    <!-- Real-time clock functionality -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            function updateClock() {
-                const clockElement = document.getElementById('current-time');
-                if (!clockElement) return;
-                
-                const now = new Date();
-                const userTimezone = clockElement.dataset.timezone;
-                
-                // Format hours, minutes, seconds with leading zeros
-                const hours = String(now.getHours()).padStart(2, '0');
-                const minutes = String(now.getMinutes()).padStart(2, '0');
-                const seconds = String(now.getSeconds()).padStart(2, '0');
-                
-                if (userTimezone) {
-                    // Use user's timezone preference if available
-                    try {
-                        const tzOptions = {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            second: '2-digit',
-                            hour12: false,
-                            timeZone: userTimezone
-                        };
-                        clockElement.textContent = now.toLocaleTimeString(undefined, tzOptions);
-                    } catch(e) {
-                        // Fallback if timezone is invalid
-                        clockElement.textContent = hours + ':' + minutes + ':' + seconds;
-                    }
-                } else {
-                    // No user timezone preference, use local time
-                    clockElement.textContent = hours + ':' + minutes + ':' + seconds;
-                }
-            }
-            
-            // Update clock immediately and then every second
-            updateClock();
-            setInterval(updateClock, 1000);
-        });
-    </script>
+    {% include "partials/navbar.html" %}
+    
+    <main id="main-content" class="container py-4" role="main">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    
+    <!-- Custom JavaScript -->
+    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/accessibility.js' %}"></script>
+    <script src="{% static 'js/theme_toggle.js' %}"></script>
+    <script src="{% static 'js/clock.js' %}"></script>
     
     <script>
         window.CURRENT_USER_ID = "{{ user.id|default:'null' }}";
@@ -140,10 +77,18 @@
     
     <script src="{% static 'js/notification_system.js' %}"></script>
     <script src="{% static 'js/notification_ws.js' %}"></script>
+    
     <!-- Notification Toast Container -->
     {% include "partials/toast.html" %}
-
+    
     {% include "partials/user_vars.html" %}
     <script src="{% static 'js/notifications.js' %}"></script>
-    </body>
+    <script src="{% static 'js/password_toggle.js' %}"></script>
+    
+    {% block extra_js %}{% endblock %}
+    
+    {% include "partials/footer.html" %}
+</body>
 </html>
+
+

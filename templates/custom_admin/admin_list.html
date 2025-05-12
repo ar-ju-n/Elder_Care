@@ -2,26 +2,32 @@
 {% load static %}
 {% load admin_extras %}
 {% block content %}
-<h2>{{ model_name }} List</h2>
-<a href="{{ add_url }}" class="btn btn-primary mb-3">Add New</a>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            {% for field in fields %}{% if field != 'password' %}<th>{{ field|title }}</th>{% endif %}{% endfor %}
+<div class="admin-list-section py-5" style="background: rgba(245,248,255,0.92); border-radius: 1rem; font-family: 'Inter', sans-serif;">
+  <div class="container">
+    <h1 class="fw-bold mb-4 animate__animated animate__fadeInDown">{{ model_name }} List</h1>
+    <a href="{{ add_url }}" class="btn btn-primary mb-4 px-4 py-2 animate__animated animate__pulse animate__infinite" style="border-radius: 2rem; font-weight: 600; font-size: 1.1rem;">Add New</a>
+    <div class="table-responsive animate__animated animate__fadeInUp">
+      <table class="table table-hover shadow-lg border-0" style="border-radius: 1.25rem; overflow: hidden; background: #fff;">
+        <thead class="bg-primary text-white" style="border-radius: 1.25rem 1.25rem 0 0;">
+          <tr>
+            {% for field in fields %}{% if field != 'password' %}<th class="fw-semibold">{{ field|title }}</th>{% endif %}{% endfor %}
             <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for obj in objects %}
-        <tr>
-            {% for field in fields %}{% if field != 'password' %}<td>{{ obj|get_field:field }}</td>{% endif %}{% endfor %}
-            <td>
-                <a href="{% url 'custom_admin:admin_edit' app_label model_name obj.id %}" class="btn btn-sm btn-warning">Edit</a>
-                <a href="{% url 'custom_admin:admin_delete' app_label model_name obj.id %}" class="btn btn-sm btn-danger">Delete</a>
-                <a href="{% url 'custom_admin:admin_view' app_label model_name obj.id %}" class="btn btn-sm btn-info">View</a>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+          </tr>
+        </thead>
+        <tbody>
+          {% for obj in objects %}
+            <tr style="vertical-align: middle;">
+              {% for field in fields %}{% if field != 'password' %}<td>{{ obj|get_field:field }}</td>{% endif %}{% endfor %}
+              <td>
+                <a href="{% url 'custom_admin:admin_edit' app_label model_name obj.id %}" class="btn btn-sm btn-warning rounded-pill me-1 mb-1">Edit</a>
+                <a href="{% url 'custom_admin:admin_delete' app_label model_name obj.id %}" class="btn btn-sm btn-danger rounded-pill me-1 mb-1">Delete</a>
+                <a href="{% url 'custom_admin:admin_view' app_label model_name obj.id %}" class="btn btn-sm btn-info rounded-pill mb-1">View</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 {% endblock %}

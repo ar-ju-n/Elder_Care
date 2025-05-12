@@ -10,7 +10,7 @@ def get_app_models_data():
     """
     app_list = []
     for app_config in apps.get_app_configs():
-        if app_config.name.startswith('django.') or app_config.name == 'custom_admin':
+        if app_config.name.startswith('django.'):
             continue
             
         app_dict = {

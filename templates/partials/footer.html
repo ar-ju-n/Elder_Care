@@ -1,4 +1,4 @@
-<footer class="bg-light text-dark mt-5 py-4">
+<footer class="bg-body-tertiary text-body mt-5 py-4">
     <div class="container">
         <div class="row">
             <div class="col-md-4">
@@ -8,12 +8,12 @@
             <div class="col-md-4">
                 <h5>Quick Links</h5>
                 <ul class="list-unstyled">
-                    <li><a href="{% url 'landing' %}" class="text-dark">Home</a></li>
+                    <li><a href="{% url 'landing' %}" class="text-body">Home</a></li>
                     {% if user.is_authenticated %}
-                        <li><a href="{% url 'accounts:profile' %}" class="text-dark">My Profile</a></li>
+                        <li><a href="{% url 'accounts:profile' %}" class="text-body">My Profile</a></li>
                     {% else %}
-                        <li><a href="{% url 'accounts:login' %}" class="text-dark">Login</a></li>
-                        <li><a href="{% url 'accounts:register' %}" class="text-dark">Register</a></li>
+                        <li><a href="{% url 'accounts:login' %}" class="text-body">Login</a></li>
+                        <li><a href="{% url 'accounts:register' %}" class="text-body">Register</a></li>
                     {% endif %}
                 </ul>
             </div>
@@ -21,7 +21,7 @@
                 <h5>Contact Us</h5>
                 <address class="mb-0">
                     <i class="bi bi-geo-alt-fill"></i> Kathmandu, Nepal<br>
-                    <i class="bi bi-envelope-fill"></i> <a href="mailto:info@elderlycarehub.com" class="text-dark">info@elderlycarehub.com</a><br>
+                    <i class="bi bi-envelope-fill"></i> <a href="mailto:info@elderlycarehub.com" class="text-body">info@elderlycarehub.com</a><br>
                     <i class="bi bi-telephone-fill"></i> +1 (555) 123-4567
                 </address>
             </div>

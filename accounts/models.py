@@ -63,3 +63,15 @@ class User(AbstractUser):
 
     def __str__(self):
         return f"{self.username} ({self.get_role_display()})"
+
+    is_pending_deletion = models.BooleanField(default=False)
+    scheduled_deletion_at = models.DateTimeField(null=True, blank=True)
+
+class AccountDeletionRequest(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    requested_at = models.DateTimeField(auto_now_add=True)
+    approved = models.BooleanField(default=False)
+    processed_at = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"Deletion request for {self.user.username}"

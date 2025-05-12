@@ -1,34 +1,41 @@
 {% extends 'custom_admin/admin_base.html' %}
 {% load static %}
 {% block content %}
-<div class="container mt-4">
-    <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h4 class="mb-0">{{ model_name }} Details</h4>
-            <a href="{{ list_url }}" class="btn btn-outline-light btn-sm">Back to List</a>
-        </div>
-        <div class="card-body">
-            <table class="table table-bordered">
-                <tbody>
-                    {% for field, value in fields.items %}
-                    <tr>
-                        <th>{{ field|title }}</th>
-                        <td>{{ value }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
+<link rel="stylesheet" href="{% static 'css/admin.css' %}">
+<div class="admin-detail-section py-5 admin-bg admin-rounded admin-font">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-7">
+        <div class="card shadow-lg border-0 animate__animated animate__fadeInUp admin-card-rounded">
+          <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center animate__animated animate__fadeInDown admin-card-header-rounded">
+            <h2 class="mb-0 fw-bold">{{ model_name }} Details</h2>
+            <a href="{{ list_url }}" class="btn btn-outline-light btn-sm rounded-pill animate__animated animate__fadeIn">Back to List</a>
+          </div>
+          <div class="card-body p-4">
+            <table class="table table-borderless mb-4 admin-table-rounded admin-table-bg">
+              <tbody>
+                {% for field, value in fields.items %}
+                  <tr class="admin-table-row">
+                    <th class="fw-semibold text-secondary admin-th-bg" style="width: 35%;">{{ field|title }}</th>
+                    <td>{{ value }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
             </table>
             {% if can_verify %}
-            <form method="post" action="">
+              <form method="post" action="">
                 {% csrf_token %}
                 {% if not is_verified %}
-                <button type="submit" name="verify" value="1" class="btn btn-success">Verify Caregiver</button>
+                  <button type="submit" name="verify" value="1" class="btn btn-success px-4 py-2 rounded-pill animate__animated animate__pulse animate__infinite">Verify Caregiver</button>
                 {% else %}
-                <button type="button" class="btn btn-secondary" disabled>Already Verified</button>
+                  <button type="button" class="btn btn-secondary px-4 py-2 rounded-pill" disabled>Already Verified</button>
                 {% endif %}
-            </form>
+              </form>
             {% endif %}
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 </div>
 {% endblock %}

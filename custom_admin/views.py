@@ -8,18 +8,35 @@ from django.contrib import messages
 
 from .utils import get_app_models_data, get_model_filters, filter_queryset
 from .forms import get_model_form
+from accounts.models import AccountDeletionRequest
+from accounts.forms import CustomAuthenticationForm
 
 def is_staff(user):
     return user.is_staff or user.is_superuser
 
 
+class AdminLoginForm(CustomAuthenticationForm):
+    def confirm_login_allowed(self, user):
+        # Only allow users with role == 'admin' (not just is_staff/superuser)
+        if not hasattr(user, 'role') or not (hasattr(user, 'is_admin_role') and user.is_admin_role()):
+            from django.core.exceptions import ValidationError
+            raise ValidationError(
+                "Only admin credentials are allowed on this page.",
+                code='invalid_login',
+            )
+
 class AdminLoginView(LoginView):
+    form_class = AdminLoginForm
     template_name = 'custom_admin/admin_login.html'
     redirect_authenticated_user = True
-    
+
     def get_success_url(self):
         return reverse_lazy('custom_admin:admin_dashboard')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_admin_login'] = True
+        return context
 
 admin_login = AdminLoginView.as_view()
 
@@ -39,45 +56,110 @@ def admin_logout(request):
 def admin_dashboard(request):
     app_list = get_app_models_data()
     
-    # Get statistics for the dashboard
+    # Add item counts for badges
+    for app in app_list:
+        for model in app['models']:
+            model_class = apps.get_model(app['label'], model['name'])
+            model['count'] = model_class.objects.count()
+    
+    # Existing context setup
     user_count = 0
     job_count = 0
     feedback_count = 0
     recent_activities = []
     
-    # Try to get User model count
+    # Determine if we're on the activity page
+    is_activity_page = request.resolver_match.url_name == 'recent_activity'
+
+    # Recent users
     try:
         User = apps.get_model('accounts', 'User')
         user_count = User.objects.count()
-    except LookupError:
+        recent_users = User.objects.order_by('-date_joined')[:5]
+        for u in recent_users:
+            recent_activities.append(f'User registered: {u.username} ({u.get_role_display()}) on {u.date_joined.strftime("%Y-%m-%d %H:%M")}')
+    except Exception:
         pass
-    
-    # Try to get Job model count
+
+    # Recent jobs
     try:
         Job = apps.get_model('jobs', 'Job')
         job_count = Job.objects.count()
-    except LookupError:
+        recent_jobs = Job.objects.order_by('-created_at')[:5]
+        for j in recent_jobs:
+            recent_activities.append(f'Job posted: {j.title} by {getattr(j.posted_by, "username", "Unknown")} on {j.created_at.strftime("%Y-%m-%d %H:%M")}')
+    except Exception:
         pass
-    
-    # Try to get Feedback model count
+
+    # Recent feedback
     try:
         Feedback = apps.get_model('feedback', 'Feedback')
         feedback_count = Feedback.objects.count()
-        
-        # Get recent feedback for activity
         recent_feedbacks = Feedback.objects.order_by('-created_at')[:5]
-        for feedback in recent_feedbacks:
-            recent_activities.append(f'New feedback from {feedback.user} on {feedback.created_at.strftime("%Y-%m-%d")}')
-    except (LookupError, AttributeError):
+        for f in recent_feedbacks:
+            recent_activities.append(f'Feedback from {getattr(f.user, "username", "Unknown")} on {f.created_at.strftime("%Y-%m-%d %H:%M")}')
+    except Exception:
         pass
+
+    # Recent contact messages
+    try:
+        ContactMessage = apps.get_model('custom_admin', 'ContactMessage')
+        recent_msgs = ContactMessage.objects.order_by('-created_at')[:5]
+        for m in recent_msgs:
+            recent_activities.append(f'Contact message from {m.name} on {m.created_at.strftime("%Y-%m-%d %H:%M")}')
+    except Exception:
+        pass
+
+    # Sort all activities by date (extract date from string if possible)
+    import re
+    from datetime import datetime
+    def extract_date(s):
+        match = re.search(r'on (\d{4}-\d{2}-\d{2} \d{2}:\d{2})', s)
+        if match:
+            try:
+                return datetime.strptime(match.group(1), "%Y-%m-%d %H:%M")
+            except Exception:
+                pass
+        return datetime.min
+    recent_activities.sort(key=extract_date, reverse=True)
+    recent_activities = recent_activities[:8]  # Show top 8 most recent
+
             
-    return render(request, 'custom_admin/admin_index.html', {
+    # Notification badge counts
+    try:
+        ContactMessage = apps.get_model('custom_admin', 'ContactMessage')
+        unread_contact_count = ContactMessage.objects.filter(is_read=False).count()
+    except LookupError:
+        unread_contact_count = 0
+    try:
+        Feedback = apps.get_model('feedback', 'Feedback')
+        unmoderated_feedback_count = Feedback.objects.filter(is_moderated=False).count()
+    except LookupError:
+        unmoderated_feedback_count = 0
+
+    # Add pending account deletion requests
+    try:
+        pending_deletion_count = AccountDeletionRequest.objects.filter(approved=False).count()
+        pending_deletions = AccountDeletionRequest.objects.filter(approved=False).select_related('user')[:5]
+    except Exception:
+        pending_deletion_count = 0
+        pending_deletions = []
+
+    context = {
         'apps': app_list,
         'user_count': user_count,
         'job_count': job_count,
         'feedback_count': feedback_count,
-        'recent_activities': recent_activities
-    })
+        'recent_activities': recent_activities,
+        'unread_contact_count': unread_contact_count,
+        'unmoderated_feedback_count': unmoderated_feedback_count,
+        'pending_deletion_count': pending_deletion_count,
+        'pending_deletions': pending_deletions,
+    }
+    
+    # Use different template based on URL pattern
+    template = 'custom_admin/recent_activity.html' if is_activity_page else 'custom_admin/admin_index.html'
+    return render(request, template, context)
 
 
 @login_required
@@ -101,6 +183,18 @@ def admin_list(request, app_label, model_name):
     # Get search query for template context
     search_query = request.GET.get('search', '')
     
+    # Notification badge counts
+    try:
+        ContactMessage = apps.get_model('custom_admin', 'ContactMessage')
+        unread_contact_count = ContactMessage.objects.filter(is_read=False).count()
+    except LookupError:
+        unread_contact_count = 0
+    try:
+        Feedback = apps.get_model('feedback', 'Feedback')
+        unmoderated_feedback_count = Feedback.objects.filter(is_moderated=False).count()
+    except LookupError:
+        unmoderated_feedback_count = 0
+
     return render(request, 'custom_admin/admin_list_filters.html', {
         'objects': objects,
         'fields': fields,
@@ -110,7 +204,9 @@ def admin_list(request, app_label, model_name):
         'add_url': reverse('custom_admin:admin_add', args=[app_label, model_name]),
         'filters': filters,
         'search_query': search_query,
-        'apps': apps_data  # Add apps data for sidebar
+        'apps': apps_data,  # Add apps data for sidebar
+        'unread_contact_count': unread_contact_count,
+        'unmoderated_feedback_count': unmoderated_feedback_count
     })
 
 @login_required
@@ -214,6 +310,14 @@ def admin_view(request, app_label, model_name, pk):
     apps_data = get_app_models_data()
     model = apps.get_model(app_label, model_name)
     obj = get_object_or_404(model, pk=pk)
+
+    # Auto-mark as read/moderated if ContactMessage or Feedback
+    if app_label == 'custom_admin' and model_name == 'ContactMessage' and not obj.is_read:
+        obj.is_read = True
+        obj.save(update_fields=['is_read'])
+    if app_label == 'feedback' and model_name == 'Feedback' and hasattr(obj, 'is_moderated') and not obj.is_moderated:
+        obj.is_moderated = True
+        obj.save(update_fields=['is_moderated'])
     # Collect fields except password
     fields = {}
     for field in model._meta.fields:

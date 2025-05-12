@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="50" viewBox="0 0 200 50">
+  <style>
+    .text { font-family: Arial, sans-serif; font-weight: bold; }
+    .primary { fill: #ffffff; }
+    .accent { fill: #8be9fd; }
+  </style>
+  <g>
+    <path class="accent" d="M20,10 C14.5,10 10,14.5 10,20 C10,25.5 14.5,30 20,30 C25.5,30 30,25.5 30,20 C30,14.5 25.5,10 20,10 Z M20,28 C15.6,28 12,24.4 12,20 C12,15.6 15.6,12 20,12 C24.4,12 28,15.6 28,20 C28,24.4 24.4,28 20,28 Z"/>
+    <path class="accent" d="M20,15 C17.8,15 16,16.8 16,19 C16,20.7 17.1,22.1 18.6,22.7 L18.6,35 C18.6,35.8 19.2,36.4 20,36.4 C20.8,36.4 21.4,35.8 21.4,35 L21.4,22.7 C22.9,22.1 24,20.7 24,19 C24,16.8 22.2,15 20,15 Z"/>
+    <path class="primary" d="M20,17 C18.9,17 18,17.9 18,19 C18,20.1 18.9,21 20,21 C21.1,21 22,20.1 22,19 C22,17.9 21.1,17 20,17 Z"/>
+    <text x="40" y="30" class="text primary" font-size="20">Elder Care</text>
+    <text x="40" y="45" class="text accent" font-size="12">ADMIN PORTAL</text>
+  </g>
+</svg>

@@ -9,6 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from django.urls import reverse
 
 @login_required
 def accepted_elder_list(request):
@@ -41,8 +42,17 @@ def caregiver_list(request):
         return redirect('landing')
     caregivers = User.objects.filter(role=User.CAREGIVER, is_verified=True)
     caregiver_data = []
+    from django.utils import timezone
+    from datetime import timedelta
     for caregiver in caregivers:
         chat_request = ChatRequest.objects.filter(elder=request.user, caregiver=caregiver).first()
+        # Cooldown logic
+        last_request = ChatRequest.objects.filter(elder=request.user, caregiver=caregiver).order_by('-created_at').first()
+        cooldown_seconds = 0
+        if last_request:
+            elapsed = (timezone.now() - last_request.created_at).total_seconds()
+            if elapsed < 600:
+                cooldown_seconds = int(600 - elapsed)
         if chat_request and chat_request.status == 'accepted':
             status = 'accepted'
             chat_room_id = chat_request.id
@@ -56,6 +66,7 @@ def caregiver_list(request):
             'obj': caregiver,
             'status': status,
             'chat_room_id': chat_room_id,
+            'cooldown_seconds': cooldown_seconds,
         })
     return render(request, 'chat/caregiver_list.html', {'caregivers': caregiver_data})
 
@@ -65,24 +76,26 @@ def send_request(request, caregiver_id):
         messages.error(request, 'Only elders can send chat requests.')
         return redirect('landing')
     caregiver = get_object_or_404(User, id=caregiver_id, role=User.CAREGIVER, is_verified=True)
-    chat_request, created = ChatRequest.objects.get_or_create(elder=request.user, caregiver=caregiver)
-    
-    if created:
-        messages.success(request, 'Chat request sent!')
-        
-        # Send notification to caregiver
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            f'notifications_{caregiver.id}',
-            {
-                'type': 'notification_message',
-                'event': 'new_chat_request',
-                'sender_name': request.user.get_full_name() or request.user.username,
-            }
-        )
-    else:
-        messages.info(request, 'You have already sent a request to this caregiver.')
-        
+    # Check for last request time
+    from django.utils import timezone
+    from datetime import timedelta
+    last_request = ChatRequest.objects.filter(elder=request.user, caregiver=caregiver).order_by('-created_at').first()
+    if last_request and (timezone.now() - last_request.created_at) < timedelta(minutes=10):
+        messages.error(request, 'You must wait 10 minutes before sending another request to this caregiver.')
+        return redirect('chat:caregiver_list')
+    # Create new request
+    chat_request = ChatRequest.objects.create(elder=request.user, caregiver=caregiver)
+    messages.success(request, 'Chat request sent!')
+    # Send notification to caregiver
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        f'notifications_{caregiver.id}',
+        {
+            'type': 'notification_message',
+            'event': 'new_chat_request',
+            'sender_name': request.user.get_full_name() or request.user.username,
+        }
+    )
     return redirect('chat:caregiver_list')
 
 @login_required

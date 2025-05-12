@@ -1,0 +1,11 @@
+/* Video Detail Section Styles */
+.section.video-detail-section {
+  font-family: 'Inter', sans-serif;
+}
+.video-detail-section .video-card {
+  border-radius: 1.5rem;
+}
+.video-detail-section .video-title {
+  font-weight: 700;
+  color: var(--bs-heading-color, #fff);
+}

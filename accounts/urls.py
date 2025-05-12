@@ -11,6 +11,9 @@ urlpatterns = [
     path('status/', views.auth_status, name='auth_status'),
     path('profile/', views.profile_view, name='profile'),
     path('settings/', views.settings_view, name='settings'),
+    path('request-account-deletion/', views.request_account_deletion, name='request_account_deletion'),
+    path('delete-account/', views.delete_account, name='delete_account'),
+    path('cancel-account-deletion/', views.cancel_account_deletion, name='cancel_account_deletion'),
     
     # Password change URLs for regular users
     path('password_change/', auth_views.PasswordChangeView.as_view(

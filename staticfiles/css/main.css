@@ -27,3 +27,124 @@
         margin-bottom: 0.5rem;
     }
 }
+
+/* Remove all loading screen styles */
+
+/* High Contrast Mode for Forms, Cards, and Buttons */
+[data-bs-theme="high-contrast"] .card,
+[data-bs-theme="high-contrast"] .form-control,
+[data-bs-theme="high-contrast"] .form-select,
+[data-bs-theme="high-contrast"] .input-group-text {
+  background: #000 !important;
+  color: #fff !important;
+  border-color: #ff0 !important;
+  box-shadow: none !important;
+}
+[data-bs-theme="high-contrast"] .card-header,
+[data-bs-theme="high-contrast"] .card-body {
+  background: #000 !important;
+  color: #fff !important;
+}
+[data-bs-theme="high-contrast"] .btn,
+[data-bs-theme="high-contrast"] .btn-primary {
+  background: #ff0 !important;
+  color: #000 !important;
+  border-color: #ff0 !important;
+  font-weight: bold;
+}
+[data-bs-theme="high-contrast"] .btn:focus,
+[data-bs-theme="high-contrast"] .btn-primary:focus {
+  outline: 2px solid #fff !important;
+  outline-offset: 2px;
+}
+[data-bs-theme="high-contrast"] .form-label,
+[data-bs-theme="high-contrast"] label {
+  color: #fff !important;
+  font-weight: bold;
+}
+[data-bs-theme="high-contrast"] .input-group-text {
+  background: #000 !important;
+  color: #ff0 !important;
+  border-color: #ff0 !important;
+}
+[data-bs-theme="high-contrast"] ::placeholder {
+  color: #ff0 !important;
+  opacity: 1;
+}
+
+/* Dark Mode Improvements for Forms */
+[data-bs-theme="dark"] .card,
+[data-bs-theme="dark"] .form-control,
+[data-bs-theme="dark"] .form-select,
+[data-bs-theme="dark"] .input-group-text {
+  background: #23272b !important;
+  color: #f1f1f1 !important;
+  border-color: #444 !important;
+}
+[data-bs-theme="dark"] .card-header,
+[data-bs-theme="dark"] .card-body {
+  background: #23272b !important;
+  color: #f1f1f1 !important;
+}
+[data-bs-theme="dark"] .btn,
+[data-bs-theme="dark"] .btn-primary {
+  background: #6366f1 !important;
+  color: #fff !important;
+  border-color: #6366f1 !important;
+}
+[data-bs-theme="dark"] .btn:focus,
+[data-bs-theme="dark"] .btn-primary:focus {
+  outline: 2px solid #fff !important;
+  outline-offset: 2px;
+}
+[data-bs-theme="dark"] .form-label,
+[data-bs-theme="dark"] label {
+  color: #f1f1f1 !important;
+}
+[data-bs-theme="dark"] .input-group-text {
+  background: #23272b !important;
+  color: #6366f1 !important;
+  border-color: #6366f1 !important;
+}
+[data-bs-theme="dark"] ::placeholder {
+  color: #b3b3b3 !important;
+  opacity: 1;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: none;
+  transition: background 0.3s;
+}
+[data-bs-theme="dark"] body::before {
+  background: rgba(20, 20, 30, 0.7);
+}
+[data-bs-theme="high-contrast"] body::before {
+  background: #000 !important;
+  opacity: 0.95;
+}
+
+/* Ensure main content is above overlay */
+.card, .container, .main-content, .section {
+  position: relative;
+  z-index: 1;
+}
+
+[data-bs-theme="dark"] .card,
+[data-bs-theme="high-contrast"] .card {
+  background: #23272b !important;
+  color: #f1f1f1 !important;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.7) !important;
+  backdrop-filter: none !important;
+  opacity: 1 !important;
+}
+[data-bs-theme="high-contrast"] .card {
+  background: #000 !important;
+  color: #ff0 !important;
+  border: 2px solid #ff0 !important;
+}
+
