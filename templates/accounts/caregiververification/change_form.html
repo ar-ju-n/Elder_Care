@@ -15,6 +15,7 @@
 
 {% block submit_buttons_bottom %}
     <div class="submit-row">
+        <a href="{% url 'accounts:profile' user.username|slugify_dir %}" class="btn btn-secondary">View Profile</a>
         <a href="../../" class="button btn-secondary">Back to List</a>
     </div>
 {% endblock %}

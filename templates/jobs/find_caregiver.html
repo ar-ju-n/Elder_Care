@@ -61,7 +61,8 @@
               <p class="card-text mb-3">{{ job.description }}</p>
               <div class="d-flex justify-content-between align-items-center mt-auto">
                 <small class="text-muted">Location: {{ job.location }}</small>
-                <a href="{% url 'jobs:job_detail' job.id %}" class="btn btn-primary w-100 ms-3">View Profile</a>
+                {% load slugify_extras %}
+<a href="{% url 'jobs:job_detail' job.id|slugify_dir %}" class="btn btn-primary w-100 ms-3">View Profile</a>
               </div>
             </div>
           </div>

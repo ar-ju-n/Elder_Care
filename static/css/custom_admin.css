@@ -55,6 +55,63 @@
 
 /* Custom Admin CSS */
 
+/* Dropdown menu enhancements for custom admin sidebar */
+.custom-admin-sidebar .dropdown-menu {
+  z-index: 1050;
+  position: absolute;
+  left: 0 !important;
+  right: auto !important;
+  bottom: 100%; /* Drop upward */
+  top: auto;
+  min-width: 100% !important;
+  margin-bottom: 8px;
+  margin-top: 0;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  background: #23272b !important;
+  color: #f1f1f1 !important;
+  border: 1px solid #444;
+  border-radius: 0 0 8px 8px;
+}
+
+.custom-admin-sidebar .dropdown-toggle,
+.custom-admin-sidebar .dropdown-toggle:focus {
+  color: #fff !important;
+  background: #0d6efd !important;
+  border: none !important;
+}
+
+
+.custom-admin-sidebar .dropdown-item {
+  color: #f1f1f1 !important;
+  background: transparent;
+  font-size: 1em;
+}
+
+.custom-admin-sidebar .dropdown-item:hover,
+.custom-admin-sidebar .dropdown-item:focus,
+.custom-admin-sidebar .dropdown-item.active {
+  background-color: #0d6efd !important;
+  color: #fff !important;
+  font-weight: 500;
+}
+
+.custom-admin-sidebar .dropdown-menu .dropdown-item {
+  padding: 10px 16px;
+  line-height: 1.5;
+  font-size: 1em;
+  color: var(--sidebar-color, #fff);
+  background: transparent;
+  border: none;
+  text-align: left;
+}
+.custom-admin-sidebar .dropdown-item:hover,
+.custom-admin-sidebar .dropdown-item:focus,
+.custom-admin-sidebar .dropdown-item.active {
+  background-color: #2a2d34;
+  color: #fff;
+  font-weight: 500;
+}
+
 /* Wrapper */
 .wrapper {
   display: flex;
@@ -70,6 +127,13 @@
   transition: all 0.3s;
   background: var(--sidebar-bg) !important;
   color: var(--sidebar-color) !important;
+  overflow-x: visible !important;
+  overflow-y: auto;
+}
+
+.custom-admin-sidebar {
+  overflow-x: visible !important;
+  overflow-y: auto;
 }
 
 #sidebar.active {

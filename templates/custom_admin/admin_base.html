@@ -20,6 +20,8 @@
     <link rel="stylesheet" href="{% static 'css/admin-tables.css' %}">
     <!-- Custom Admin Sidebar CSS -->
     <link rel="stylesheet" href="{% static 'custom_admin/css/sidebar.css' %}">
+    <!-- Responsive Footer CSS -->
+    <link rel="stylesheet" href="{% static 'css/footer-responsive.css' %}">
     
     <!-- Theme initialization script -->
     <script>
@@ -32,7 +34,7 @@
         })();
     </script>
 </head>
-<body class="admin-base">
+<body class="admin-base d-flex flex-column min-vh-100">
     {# --- Dynamic Navbar: adapts to user and theme --- #}
     <header class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top shadow animate__animated animate__fadeInDown">
         <div class="container-fluid">
@@ -82,12 +84,16 @@
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <div class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+            <div class="col-12 col-md-3 col-lg-2 d-md-block bg-light sidebar offcanvas-md offcanvas-start" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel" style="max-height: 100vh; overflow-y: auto;">
+    <div class="offcanvas-header d-md-none">
+        <h5 class="offcanvas-title" id="sidebarMenuLabel">Admin Actions</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
                 {% include 'custom_admin/sidebar.html' %}
             </div>
             
             <!-- Main content -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 animate__animated animate__fadeIn admin-main-content">
+            <main class="col-12 col-md-9 ms-sm-auto col-lg-10 px-md-4 animate__animated animate__fadeIn admin-main-content">
                 {% include 'custom_admin/admin_messages.html' %}
                 {% block content %}{% endblock %}
             </main>
@@ -102,9 +108,9 @@
     <script src="{% static 'js/theme_toggle.js' %}"></script>
     <script src="{% static 'js/animations.js' %}"></script>
     <script src="{% static 'js/admin_focus.js' %}"></script>
-    {% include "partials/footer.html" %}
     <!-- Sidebar Dropdown JS -->
     <script src="{% static 'custom_admin/js/sidebar.js' %}"></script>
+    {% include "partials/footer.html" %}
 </body>
 </html>
 

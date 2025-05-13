@@ -1,7 +1,10 @@
 {% extends 'base.html' %}
+{% load slugify_extras %}
 {% block content %}
 <h2>Submit Feedback</h2>
+{% load slugify_extras %}
 <form method="post">{% csrf_token %}
+  <input type="hidden" name="user" value="{{ user.username|slugify_dir }}">
   {{ form.as_p }}
   <button type="submit">Submit</button>
 </form>

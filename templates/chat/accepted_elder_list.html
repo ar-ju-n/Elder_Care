@@ -23,7 +23,7 @@
                     {% if item.unread_count and item.unread_count > 0 %}
                         <span class="badge bg-danger me-2">{{ item.unread_count }} new</span>
                     {% endif %}
-                    <a href="{% url 'chat:chat_room' item.request.id %}" class="btn btn-primary btn-sm">
+                    <a href="{% url 'chat:chat_room' item.request.id|slugify_dir %}" class="btn btn-primary btn-sm">
                         <i class="bi bi-chat-dots me-1"></i>Open Chat
                     </a>
                 </div>

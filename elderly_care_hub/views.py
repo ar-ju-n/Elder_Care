@@ -15,7 +15,7 @@ def contact_view(request):
     return render(request, 'contact.html', {'success': success})
 
 
-from custom_admin.models import DynamicPage, ContentBlock, ThemeSetting
+
 
 def landing(request):
     articles = Article.objects.all().order_by('-published_at')[:3]

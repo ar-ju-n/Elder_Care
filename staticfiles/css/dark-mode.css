@@ -1,0 +1,474 @@
+/* Dark Mode Styles */
+
+[data-bs-theme=dark] .navbar .nav-link,
+[data-bs-theme=dark] .navbar .nav-link:visited {
+    color: #fff !important;
+    opacity: 0.7;
+    background: transparent !important;
+}
+
+[data-bs-theme=dark] .navbar .nav-link.active,
+[data-bs-theme=dark] .navbar .nav-link:focus,
+[data-bs-theme=dark] .navbar .nav-link:hover {
+    color: #fff !important;
+    opacity: 1 !important;
+    background: transparent !important;
+}
+
+
+
+[data-bs-theme=dark] {
+    --bs-body-color: #e3e3e3;
+    --bs-body-bg: #212529;
+    --bs-border-color: #495057;
+    --bs-primary: #6366f1;
+    --bs-primary-rgb: 99, 102, 241;
+    --bs-secondary: #6c757d;
+    --bs-secondary-rgb: 108, 117, 125;
+    --bs-success: #198754;
+    --bs-success-rgb: 25, 135, 84;
+    --bs-info: #0dcaf0;
+    --bs-info-rgb: 13, 202, 240;
+    --bs-warning: #ffc107;
+    --bs-warning-rgb: 255, 193, 7;
+    --bs-danger: #dc3545;
+    --bs-danger-rgb: 220, 53, 69;
+    --bs-light: #343a40;
+    --bs-light-rgb: 52, 58, 64;
+    --bs-dark: #212529;
+    --bs-dark-rgb: 33, 37, 41;
+}
+
+[data-bs-theme=dark] .sidebar {
+    background-color: #2c3034 !important;
+    border-right-color: #495057 !important;
+}
+
+[data-bs-theme=dark] .sidebar .nav-link {
+    color: #e3e3e3;
+}
+
+[data-bs-theme=dark] .sidebar .nav-link:hover {
+    background-color: #495057;
+}
+
+[data-bs-theme=dark] .card {
+    background-color: #2c3034;
+    border-color: #495057;
+}
+
+[data-bs-theme=dark] .table {
+    --bs-table-color: #e3e3e3;
+    --bs-table-bg: #2c3034;
+    --bs-table-border-color: #495057;
+}
+
+[data-bs-theme=dark] .table-striped>tbody>tr:nth-of-type(odd)>* {
+    --bs-table-accent-bg: #343a40;
+    color: #e3e3e3;
+}
+
+[data-bs-theme=dark] .table-hover>tbody>tr:hover>* {
+    --bs-table-accent-bg: #495057;
+    color: #e3e3e3;
+}
+
+/* Force dark mode for table headers */
+[data-bs-theme=dark] .table-light,
+[data-bs-theme=dark] .table thead,
+[data-bs-theme=dark] thead.table-light,
+[data-bs-theme=dark] .table> :not(caption)>*>*,
+[data-bs-theme=dark] .table>thead>tr>th {
+    --bs-table-bg: #343a40 !important;
+    --bs-table-color: #e3e3e3 !important;
+    --bs-table-border-color: #495057 !important;
+    background-color: #343a40 !important;
+    color: #e3e3e3 !important;
+}
+
+[data-bs-theme=dark] .table th,
+[data-bs-theme=dark] .table thead th,
+[data-bs-theme=dark] .table> :not(caption)>*>th {
+    background-color: #343a40 !important;
+    color: #e3e3e3 !important;
+    border-color: #495057 !important;
+}
+
+[data-bs-theme=dark] .form-control,
+[data-bs-theme=dark] .form-select {
+    background-color: #2c3034;
+    border-color: #495057;
+    color: #e3e3e3;
+}
+
+[data-bs-theme=dark] .form-control:focus,
+[data-bs-theme=dark] .form-select:focus {
+    background-color: #2c3034;
+    color: #e3e3e3;
+}
+
+/* Button styles */
+[data-bs-theme=dark] .btn-outline-secondary {
+    border-color: #6c757d;
+    color: #e3e3e3;
+}
+
+[data-bs-theme=dark] .btn-outline-secondary:hover {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+/* Badge styles */
+[data-bs-theme=dark] .badge.bg-primary {
+    background-color: #0d6efd !important;
+}
+
+[data-bs-theme=dark] .badge.bg-secondary {
+    background-color: #6c757d !important;
+}
+
+[data-bs-theme=dark] .badge.bg-success {
+    background-color: #198754 !important;
+}
+
+/* Job details styles */
+[data-bs-theme=dark] .bg-light {
+    background-color: #343a40 !important;
+    color: #e3e3e3 !important;
+}
+
+[data-bs-theme=dark] .text-dark {
+    color: #e3e3e3 !important;
+}
+
+[data-bs-theme=dark] .card-header.bg-primary {
+    background-color: #0d6efd !important;
+}
+
+[data-bs-theme=dark] .card-header.bg-secondary {
+    background-color: #6c757d !important;
+}
+
+[data-bs-theme=dark] .text-primary {
+    color: #0d6efd !important;
+}
+
+[data-bs-theme=dark] .badge.bg-light {
+    background-color: #495057 !important;
+    color: #e3e3e3 !important;
+}
+
+[data-bs-theme=dark] .alert-info {
+    background-color: #0d6efd20 !important;
+    border-color: #0d6efd40 !important;
+    color: #e3e3e3 !important;
+}
+
+[data-bs-theme=dark] .list-group-item {
+    background-color: #2c3034 !important;
+    border-color: #495057 !important;
+    color: #e3e3e3 !important;
+}
+
+/* Dropdown styles */
+[data-bs-theme=dark] .dropdown-menu {
+    background-color: #343a40;
+    border-color: #495057;
+}
+
+[data-bs-theme=dark] .dropdown-item {
+    color: #e3e3e3;
+}
+
+[data-bs-theme=dark] .dropdown-item:hover {
+    background-color: #495057;
+    color: #fff;
+}
+
+[data-bs-theme=dark] .dropdown-divider {
+    border-top-color: #495057;
+}
+
+/* Dark mode toggle button styles */
+.theme-toggle-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.theme-icon-light,
+.theme-icon-dark {
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+}
+
+[data-bs-theme=light] .theme-icon-light {
+    display: inline-block;
+}
+
+[data-bs-theme=light] .theme-icon-dark {
+    display: none;
+}
+
+[data-bs-theme=dark] .theme-icon-light {
+    display: none;
+}
+
+[data-bs-theme=dark] .theme-icon-dark {
+    display: inline-block;
+}
+
+/* Base styles */
+[data-bs-theme=dark] body {
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+}
+
+/* Form controls */
+[data-bs-theme=dark] .form-control,
+[data-bs-theme=dark] .form-select,
+[data-bs-theme=dark] .input-group-text {
+    background-color: #2c3034;
+    border-color: #495057;
+    color: #e3e3e3;
+}
+
+[data-bs-theme=dark] .form-control:focus,
+[data-bs-theme=dark] .form-select:focus {
+    background-color: #2c3034;
+    color: #e3e3e3;
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+}
+
+[data-bs-theme=dark] .form-label {
+    color: #e3e3e3;
+}
+
+/* Buttons */
+[data-bs-theme=dark] .btn-outline-secondary {
+    border-color: #6c757d;
+    color: #e3e3e3;
+}
+
+[data-bs-theme=dark] .btn-outline-secondary:hover {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+[data-bs-theme=dark] .btn-primary {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+    color: #fff;
+}
+
+[data-bs-theme=dark] .btn-primary:hover {
+    background-color: #4f46e5;
+    border-color: #4f46e5;
+}
+
+/* Cards */
+[data-bs-theme=dark] .card {
+    background-color: #2c3034;
+    border-color: #495057;
+}
+
+[data-bs-theme=dark] .card-header {
+    background-color: #343a40;
+    border-bottom-color: #495057;
+}
+
+[data-bs-theme=dark] .card-footer {
+    background-color: #343a40;
+    border-top-color: #495057;
+}
+
+/* Tables */
+[data-bs-theme=dark] .table {
+    color: #e3e3e3;
+}
+
+[data-bs-theme=dark] .table-striped>tbody>tr:nth-of-type(odd)>* {
+    --bs-table-accent-bg: #343a40;
+    color: #e3e3e3;
+}
+
+[data-bs-theme=dark] .table-hover>tbody>tr:hover>* {
+    --bs-table-accent-bg: #495057;
+    color: #e3e3e3;
+}
+
+[data-bs-theme=dark] .table thead th {
+    background-color: #343a40;
+    color: #e3e3e3;
+    border-color: #495057;
+}
+
+/* Badges */
+[data-bs-theme=dark] .badge.bg-primary {
+    background-color: var(--bs-primary) !important;
+}
+
+[data-bs-theme=dark] .badge.bg-secondary {
+    background-color: var(--bs-secondary) !important;
+}
+
+[data-bs-theme=dark] .badge.bg-success {
+    background-color: var(--bs-success) !important;
+}
+
+[data-bs-theme=dark] .badge.bg-light {
+    background-color: #495057 !important;
+    color: #e3e3e3 !important;
+}
+
+/* Alerts */
+[data-bs-theme=dark] .alert {
+    background-color: #2c3034;
+    border-color: #495057;
+    color: #e3e3e3;
+}
+
+[data-bs-theme=dark] .alert-info {
+    background-color: rgba(var(--bs-info-rgb), 0.2) !important;
+    border-color: rgba(var(--bs-info-rgb), 0.4) !important;
+    color: #e3e3e3 !important;
+}
+
+/* List groups */
+[data-bs-theme=dark] .list-group-item {
+    background-color: #2c3034;
+    border-color: #495057;
+    color: #e3e3e3;
+}
+
+/* Dropdowns */
+[data-bs-theme=dark] .dropdown-menu {
+    background-color: #343a40;
+    border-color: #495057;
+}
+
+[data-bs-theme=dark] .dropdown-item {
+    color: #e3e3e3;
+}
+
+[data-bs-theme=dark] .dropdown-item:hover {
+    background-color: #495057;
+    color: #fff;
+}
+
+[data-bs-theme=dark] .dropdown-divider {
+    border-top-color: #495057;
+}
+
+/* Navbar */
+[data-bs-theme=dark] .navbar {
+    background: linear-gradient(90deg, #4a6da7 0%, #6a5acd 100%) !important;
+}
+
+[data-bs-theme=dark] .navbar-dark .navbar-nav .nav-link {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+[data-bs-theme=dark] .navbar-dark .navbar-nav .nav-link:hover {
+    color: #ffffff;
+}
+
+/* Theme toggle button */
+.theme-toggle-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: transparent;
+    border: none;
+    color: inherit;
+}
+
+.theme-icon-light,
+.theme-icon-dark {
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+}
+
+[data-bs-theme=light] .theme-icon-light {
+    display: inline-block;
+}
+
+[data-bs-theme=light] .theme-icon-dark {
+    display: none;
+}
+
+[data-bs-theme=dark] .theme-icon-light {
+    display: none;
+}
+
+[data-bs-theme=dark] .theme-icon-dark {
+    display: inline-block;
+}
+
+/* Modal */
+[data-bs-theme=dark] .modal-content {
+    background-color: #2c3034;
+    border-color: #495057;
+}
+
+[data-bs-theme=dark] .modal-header {
+    border-bottom-color: #495057;
+}
+
+[data-bs-theme=dark] .modal-footer {
+    border-top-color: #495057;
+}
+
+/* Pagination */
+[data-bs-theme=dark] .pagination .page-link {
+    background-color: #2c3034;
+    border-color: #495057;
+    color: #e3e3e3;
+}
+
+[data-bs-theme=dark] .pagination .page-link:hover {
+    background-color: #495057;
+    color: #fff;
+}
+
+[data-bs-theme=dark] .pagination .page-item.active .page-link {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+    color: #fff;
+}
+
+/* Tooltips */
+[data-bs-theme=dark] .tooltip {
+    --bs-tooltip-bg: #343a40;
+    --bs-tooltip-color: #e3e3e3;
+}
+
+/* Scrollbar */
+[data-bs-theme=dark] ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+[data-bs-theme=dark] ::-webkit-scrollbar-track {
+    background: #2c3034;
+}
+
+[data-bs-theme=dark] ::-webkit-scrollbar-thumb {
+    background: #495057;
+    border-radius: 5px;
+}
+
+[data-bs-theme=dark] ::-webkit-scrollbar-thumb:hover {
+    background: #6c757d;
+}

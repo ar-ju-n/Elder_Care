@@ -1,35 +1,9 @@
-<footer class="bg-body-tertiary text-body mt-5 py-4">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-4">
-                <h5>About Us</h5>
-                <p>Elderly Care & Mindful Support Hub is dedicated to providing quality care and support for elderly individuals in Nepal.</p>
-            </div>
-            <div class="col-md-4">
-                <h5>Quick Links</h5>
-                <ul class="list-unstyled">
-                    <li><a href="{% url 'landing' %}" class="text-body">Home</a></li>
-                    {% if user.is_authenticated %}
-                        <li><a href="{% url 'accounts:profile' %}" class="text-body">My Profile</a></li>
-                    {% else %}
-                        <li><a href="{% url 'accounts:login' %}" class="text-body">Login</a></li>
-                        <li><a href="{% url 'accounts:register' %}" class="text-body">Register</a></li>
-                    {% endif %}
-                </ul>
-            </div>
-            <div class="col-md-4">
-                <h5>Contact Us</h5>
-                <address class="mb-0">
-                    <i class="bi bi-geo-alt-fill"></i> Kathmandu, Nepal<br>
-                    <i class="bi bi-envelope-fill"></i> <a href="mailto:info@elderlycarehub.com" class="text-body">info@elderlycarehub.com</a><br>
-                    <i class="bi bi-telephone-fill"></i> +1 (555) 123-4567
-                </address>
-            </div>
-        </div>
-        <div class="row mt-3">
-            <div class="col-12 text-center">
-                <p class="mb-0">© 2023 Elderly Care & Mindful Support Hub. All rights reserved.</p>
-            </div>
-        </div>
+<footer class="bg-body text-body py-4" style="position: sticky; bottom: 0; left: 0; width: 100vw; z-index: 10; margin-top: auto;">
+    <div class="container text-left">
+        <strong>Elderly Care & Mindful Support Hub</strong>
+        <p class="mb-0 small">Empowering Nepal's elderly community</p>
     </div>
+    <div class="container text-center">
+    <p class="mb-0 small">&copy; 2025 Elderly Care & Mindful Support Hub. All rights reserved.</p>
+</div>
 </footer>

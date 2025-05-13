@@ -7,6 +7,48 @@ body.admin-base {
     transition: background 0.5s;
 }
 
+/* Prevent Download Logs dropdown from overlapping Logout */
+.sidebar .dropdown {
+    margin-bottom: 1.5rem;
+    z-index: 1050;
+    position: relative;
+}
+.sidebar .dropdown-menu {
+    z-index: 1100;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 4px 16px #0002;
+}
+.sidebar .dropdown-menu .dropdown-divider {
+    margin: 0.25rem 0;
+}
+.sidebar .dropdown-menu .dropdown-item:hover {
+    background: #f0f0f0;
+}
+.sidebar .logout-link {
+    margin-top: 1rem;
+    display: block;
+    border-top: 1px solid #eee;
+    padding-top: 1rem;
+}
+
+/* High Contrast Admin Styles */
+body.high-contrast.admin-base, .high-contrast .admin-base, .high-contrast .sidebar, .high-contrast .dropdown-menu {
+    background: #111 !important;
+    color: #fff !important;
+    border-color: #fff !important;
+}
+.high-contrast .sidebar .dropdown-menu .dropdown-item {
+    color: #ff0 !important;
+    background: #222 !important;
+}
+.high-contrast .sidebar .dropdown-menu .dropdown-item:hover {
+    background: #333 !important;
+    color: #fff !important;
+}
+.high-contrast .sidebar .logout-link {
+    border-top: 1px solid #fff !important;
+}
+
 .navbar-custom {
     transition: background 0.5s;
 }

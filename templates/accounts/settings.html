@@ -52,6 +52,8 @@
               </div>
               
               <div class="mb-3 form-check">
+                {% load slugify_extras %}
+                <input type="hidden" name="username" value="{{ user.username|slugify_dir }}">
                 <input type="checkbox" name="email_notifications" id="id_email_notifications" class="form-check-input" {% if user.email_notifications %}checked{% endif %}>
                 <label class="form-check-label" for="id_email_notifications">
                   Receive email notifications

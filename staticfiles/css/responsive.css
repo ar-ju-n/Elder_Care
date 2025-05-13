@@ -1,0 +1,46 @@
+/* Global responsive fixes for all pages */
+@media (max-width: 576px) {
+  img, video {
+    max-width: 100%;
+    height: auto;
+  }
+  .container, .container-fluid {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  .row {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .btn, .btn-lg, button {
+    width: 100%;
+    font-size: 1rem;
+    padding: 0.8rem 1rem;
+  }
+  table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+  }
+  nav, .navbar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .form-control, input, select, textarea {
+    width: 100% !important;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  h1, .display-1, .display-2, .display-3 {
+    font-size: 2rem;
+  }
+  h2, .display-4, .display-5 {
+    font-size: 1.4rem;
+  }
+  .container, .container-fluid {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}

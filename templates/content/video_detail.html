@@ -32,12 +32,13 @@
             {% if video.tags.all %}
             <div class="mb-3">
               {% for tag in video.tags.all %}
-              <span class="badge bg-secondary me-1">#{{ tag.name }}</span>
+              <span class="badge bg-secondary me-1">#{{ tag.name|slugify_dir }}</span>
               {% endfor %}
             </div>
             {% endif %}
           </div>
         </div>
+        {% load slugify_extras %}
         <a href="{% url 'content:video_list' %}" class="btn btn-outline-primary rounded-pill px-4 py-2 fw-bold animate__animated animate__fadeInUp animate__delay-1s">
           <i class="bi bi-arrow-left"></i> Back to Videos
         </a>

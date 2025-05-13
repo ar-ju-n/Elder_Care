@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block extra_head %}
-    <link rel="stylesheet" href="{% static 'css/contact_dynamic.css' %}">
+    <link rel="stylesheet" href="{% static 'css/contact-responsive.css' %}">
+    <link rel="stylesheet" href="{% static 'css/contact.css' %}">
 
 {% endblock %}
 {% block content %}
@@ -22,7 +23,9 @@
                     </div>
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" required>
+                        <div class="email-wrapper">
+                            <input type="email" autocomplete="new-password" class="form-control" id="email" name="email" required>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="subject" class="form-label">Subject</label>
@@ -34,6 +37,48 @@
                     </div>
                     <button type="submit" class="btn btn-primary">Send Message</button>
                 </form>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  function hideTempMailIcons() {
+    // Target the email wrapper and input
+    const wrapper = document.querySelector('.email-wrapper');
+    if (!wrapper) return;
+
+    // Remove suspicious children inside the wrapper
+    wrapper.querySelectorAll(
+      'img, button, div, span, [data-temp-mail-org], .temp-mail-btn, [class*="temp"], [id*="temp"], [src*="temp-mail"], [src*="tempmail"], [alt*="temp"], [title*="temp"]'
+    ).forEach(el => {
+      if (!el.matches('input[type="email"]')) el.remove();
+    });
+
+    // Remove suspicious siblings after the input
+    const emailInput = wrapper.querySelector('input[type="email"]');
+    if (emailInput) {
+      let sibling = emailInput.nextSibling;
+      while (sibling) {
+        if (sibling.nodeType === 1 && (
+          sibling.matches('img, button, div, span, [data-temp-mail-org], .temp-mail-btn, [class*="temp"], [id*="temp"], [src*="temp-mail"], [src*="tempmail"], [alt*="temp"], [title*="temp"]')
+        )) {
+          let toRemove = sibling;
+          sibling = sibling.nextSibling;
+          toRemove.remove();
+        } else {
+          sibling = sibling.nextSibling;
+        }
+      }
+    }
+  }
+
+  // Run on load and every 500ms for a few seconds (to catch late-injected elements)
+  let tries = 0;
+  const interval = setInterval(() => {
+    hideTempMailIcons();
+    tries++;
+    if (tries > 20) clearInterval(interval); // Stop after 10 seconds
+  }, 500);
+});
+</script>
+
             </div>
             <div class="col-md-6">
                 <div class="contact-info bg-light p-4 rounded mb-4">
@@ -43,14 +88,14 @@
                     <p>Monday–Friday: 9:00 AM – 5:00 PM<br>Saturday–Sunday: Closed</p>
                     <h3>Follow Us</h3>
                     <p>
-                        <a href="#" class="me-2"><i class="bi bi-facebook"></i> Facebook</a>
-                        <a href="#" class="me-2"><i class="bi bi-twitter"></i> Twitter</a>
-                        <a href="#"><i class="bi bi-instagram"></i> Instagram</a>
+                        <a href="http://www.facebook.com" class="me-2"><i class="bi bi-facebook"></i> Facebook</a>
+                        <a href="https://www.twitter.com" class="me-2"><i class="bi bi-twitter"></i> Twitter</a>
+                        <a href="https://www.instagram.com"><i class="bi bi-instagram"></i> Instagram</a>
                     </p>
                 </div>
                 <div class="mb-4">
                     <h3>Find Us</h3>
-                    <iframe src="https://maps.google.com/maps?q=Kathmandu,Nepal&amp;z=14&amp;output=embed" width="100%" height="200" frameborder="0" style="border:0" allowfullscreen></iframe>
+                    <iframe src="https://maps.google.com/maps?q=Ranipauwa,Pokhara,Nepal&amp;z=14&amp;output=embed" width="100%" height="200" frameborder="0" style="border:0" allowfullscreen></iframe>
                 </div>
                 <div class="faq">
                     <h3>Frequently Asked Questions</h3>

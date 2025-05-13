@@ -1,86 +1,1978 @@
 /* Modernized Navbar Styles for Elder Care */
 
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
+
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
 .navbar {
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     position: sticky;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     top: 0;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     z-index: 1030;
-    background: #fff;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
+    background: #030303;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     transition: background 0.3s, box-shadow 0.3s;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
 }
 
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
+
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
 .navbar-brand .bi-heart-pulse-fill {
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     margin-right: 10px;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     color: #198754;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     font-size: 1.7rem;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
 }
 
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
+
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
 .navbar-nav .nav-link {
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     color: #222 !important;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     font-weight: 500;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     padding: 0.6rem 1.1rem;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     border-radius: 0.4rem;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     transition: background 0.2s, color 0.2s;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
 }
 
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
+
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
 .navbar-nav .nav-link:hover,
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
 .navbar-nav .nav-link.active {
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     background: #e9f7ef;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     color: #198754 !important;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
 }
 
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
+
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
 .navbar-toggler {
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     border: none;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     outline: none;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
 }
 
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
+
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
 .navbar-toggler:focus {
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     box-shadow: 0 0 0 2px #19875433;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
 }
 
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
+
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
 #notification-badge {
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     font-size: 0.7rem;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     display: none;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     background: #dc3545;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     color: #fff;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     border-radius: 50%;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     padding: 2px 6px;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     position: absolute;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     top: 0;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     right: 0;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
 }
 
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
+
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
 .dropdown-menu[aria-labelledby="notificationDropdown"] {
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     min-width: 320px;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     max-width: 400px;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
 }
 
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
+
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
 .theme-toggle-btn {
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     width: 38px;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     height: 38px;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     padding: 6px;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     display: flex;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     align-items: center;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     justify-content: center;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     background: #f8f9fa;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     border-radius: 50%;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     border: none;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     transition: background 0.2s;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
 }
 
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
+
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
 .theme-toggle-btn:hover {
-    background: #e9f7ef;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
 }
 
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
+    background: #e9f7ef;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
+
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
 @media (max-width: 991.98px) {
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     .navbar-nav {
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
         background: #fff;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
         border-radius: 0.5rem;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
         box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
         padding: 1rem;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
         margin-top: 0.5rem;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     }
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     .navbar-collapse {
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
         text-align: center;
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
     }
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
+}
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+  .accessibility-bar {
+    background: #181a22 !important;
+    color: #fff !important;
+  }
+}
+
+/* High Contrast mode support */
+.high-contrast .navbar {
+  background: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .accessibility-bar {
+  background: #000 !important;
+  color: #fff !important;
 }

@@ -1,4 +1,13 @@
 /* Dynamic theme styles for about page */
+/* About Page Custom Styles */
+.about-hero-img {
+  max-height: 320px;
+  object-fit: cover;
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+}
+
 :root {
     --primary-color: #007bff;
     --secondary-color: #6c757d;
@@ -141,4 +150,26 @@ body.about-page {
     outline: 3px solid #ff0 !important;
     outline-offset: 2px;
   }
+}
+
+/* Dark mode override for bg-white sections */
+@media (prefers-color-scheme: dark), (forced-colors: active), (prefers-contrast: more) {
+  .bg-white {
+    background-color: #222 !important;
+    color: #fff !important;
+  }
+  .blockquote {
+    color: #fff !important;
+  }
+  .blockquote-footer {
+    color: #e0e0e0 !important;
+  }
+}
+
+/* Improve testimonial visibility in all modes */
+.blockquote {
+  color: #222;
+}
+.blockquote-footer {
+  color: #888;
 }

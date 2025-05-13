@@ -1,10 +1,18 @@
-/* Dynamic theme styles for article list page */
+/* Video List Section Styles */
+
+/* ===== DYNAMIC VIDEO LIST STYLES (from video_list_dynamic.css) ===== */
+/* Dynamic theme styles for video list page */
 :root {
     --primary-color: #007bff;
     --secondary-color: #6c757d;
     --font-family: 'Inter', sans-serif;
-    /* --background-color: #f8f9fa; Set dynamically via inline CSS if needed */
 }
+body.video-list-page {
+    font-family: var(--font-family);
+}
+/* Example dynamic background color classes */
+/* .block-bg-f8f9fa { background-color: #f8f9fa; } */
+/* .block-bg-007bff { background-color: #007bff; } */
 
 /* Dynamic text color classes */
 .block-text-007bff { color: #007bff; }
@@ -104,10 +112,7 @@
 /* Example custom class */
 .custom-shadow { box-shadow: 0 6px 24px #0002; }
 
-body.article-list-page {
-    font-family: var(--font-family);
-}
-/* Add more article-list-specific styles here */
+/* Add more video-list-specific styles here */
 
 /* Accessibility: High Contrast Mode */
 @media (forced-colors: active), (prefers-contrast: more) {

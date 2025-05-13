@@ -2,10 +2,13 @@
 {% load static %}
 {% block extra_head %}
     <link rel="stylesheet" href="{% static 'css/landing.css' %}">
+    <link rel="stylesheet" href="{% static 'css/landing-responsive.css' %}">
+
 {% endblock %}
 {% block content %}
 <!-- Hero Section -->
-<section class="hero-section text-center py-5 bg-light">
+<section class="hero-section text-center py-5">
+    <div class="hero-overlay"></div>
     <div class="container">
         <h1 class="display-3 fw-bold">Welcome to Elderly Care & Mindful Support Hub</h1>
         <p class="lead">Empowering Nepal's elderly community with compassion, dignity, and support.</p>

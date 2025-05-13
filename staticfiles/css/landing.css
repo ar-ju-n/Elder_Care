@@ -1,9 +1,106 @@
+.hero-section {
+    position: relative;
+    color: #fff;
+}
+.hero-section .hero-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 1;
+}
+.hero-section .container {
+    position: relative;
+    z-index: 2;
+}
+
 /* Elder Care Landing Page Styles */
 .hero-section {
-  background: linear-gradient(120deg, #4a6da7 0%, #8b5cf6 100%);
+  background-image: url('/static/images/backgroun.jpg');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
   overflow: hidden;
   font-family: 'Inter', sans-serif;
 }
+
+.cta-section {
+  background: #f5f7fa;
+  color: #181a22;
+}
+
+.hero-section {
+    position: relative;
+    color: #fff;
+}
+.hero-section .hero-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 1;
+}
+.hero-section .container {
+    position: relative;
+    z-index: 2;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #181a22 !important;
+    color: #f3f4f6 !important;
+  }
+  .hero-section {
+    background-image: linear-gradient(rgba(35,41,70,0.85), rgba(26,26,46,0.85)), url('/static/images/backgroun.jpg');
+    background-size: cover;
+    background-position: center;
+    color: #f3f4f6 !important;
+  }
+  .services-section {
+    background: #181a22 !important;
+  }
+  .service-card {
+    background: #232946 !important;
+    color: #f3f4f6 !important;
+    border: 1px solid #232946;
+    box-shadow: 0 2px 8px rgba(20,20,40,0.3);
+  }
+  .service-card h5, .service-card p {
+    color: #f3f4f6 !important;
+  }
+  .cta-section {
+    background: #232946 !important;
+    color: #fff !important;
+  }
+  .recent-articles-section {
+    background: #181a22 !important;
+  }
+  .card, .card-landing {
+    background: #232946 !important;
+    color: #f3f4f6 !important;
+    border: 1px solid #232946;
+    box-shadow: 0 2px 8px rgba(20,20,40,0.3);
+  }
+  .btn-primary, .btn-outline-primary {
+    background: #246bfd !important;
+    color: #fff !important;
+    border-color: #246bfd !important;
+  }
+  .btn-primary:hover, .btn-outline-primary:hover {
+    background: #1740a3 !important;
+    border-color: #1740a3 !important;
+  }
+  .alert-info, .alert-warning {
+    background: #232946 !important;
+    color: #f3f4f6 !important;
+    border-color: #232946 !important;
+  }
+  .service-card i, .card-landing .icon-landing {
+    color: #4a90e2 !important;
+  }
+}
+
 .hero-bg-img {
   pointer-events: none;
   opacity: 0.20;

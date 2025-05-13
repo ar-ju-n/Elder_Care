@@ -194,6 +194,7 @@
               </h5>
             </div>
           </div>
+          <a href="{% url 'chat:chat_room' chat_request.id|slugify_dir %}" class="btn btn-primary">Join Chat</a>
           <a href="{% url 'chat:request_list' %}" class="btn btn-sm btn-light">
             <i class="bi bi-arrow-left"></i> Back
           </a>

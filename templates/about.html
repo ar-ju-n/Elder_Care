@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/about-responsive.css' %}">
     <link rel="stylesheet" href="{% static 'css/about_dynamic.css' %}">
 {% endblock %}
 {% block content %}
@@ -25,24 +26,17 @@
 </section>
 
 <!-- Team Section -->
-<section class="bg-white py-5">
+<section class="py-5">
     <div class="container">
         <h2 class="text-center mb-4">Meet Our Leadership</h2>
         <div class="row justify-content-center">
-            <div class="col-md-3 text-center mb-4">
-                <img src="{% static 'images/team1.jpg' %}" alt="Founder" class="rounded-circle mb-2" width="100" height="100">
+            <div class="col-md-4 text-center mb-4">
+                <!-- Founder SVG (Crown) -->
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="#ffc107" xmlns="http://www.w3.org/2000/svg" class="mb-2">
+                    <path d="M2 7l5 7 5-9 5 9 5-7-5 13H7L2 7z"/>
+                </svg>
                 <h5>Arjun Thapa</h5>
                 <small>Founder & Director</small>
-            </div>
-            <div class="col-md-3 text-center mb-4">
-                <img src="{% static 'images/team2.jpg' %}" alt="Operations Lead" class="rounded-circle mb-2" width="100" height="100">
-                <h5>Rita Shrestha</h5>
-                <small>Operations Lead</small>
-            </div>
-            <div class="col-md-3 text-center mb-4">
-                <img src="{% static 'images/team3.jpg' %}" alt="Community Manager" class="rounded-circle mb-2" width="100" height="100">
-                <h5>Suman Lama</h5>
-                <small>Community Manager</small>
             </div>
         </div>
     </div>
@@ -63,19 +57,20 @@
 <section class="bg-light py-5">
     <div class="container">
         <h2 class="text-center mb-4">What People Say</h2>
-        <div class="row justify-content-center">
-            <div class="col-md-4">
-                <blockquote class="blockquote">
-                    <p class="mb-0">“The support and care my mother received changed her life. Thank you!”</p>
-                    <footer class="blockquote-footer">Sunita K., Kathmandu</footer>
-                </blockquote>
-            </div>
-            <div class="col-md-4">
-                <blockquote class="blockquote">
-                    <p class="mb-0">“A wonderful community for seniors and their families.”</p>
-                    <footer class="blockquote-footer">Rajesh D., Pokhara</footer>
-                </blockquote>
-            </div>
+        <div class="row justify-content-center text-center">
+    <div class="col-md-6 mb-4">
+        <blockquote class="blockquote">
+            <p class="mb-0">“The support and care my mother received changed her life. Thank you!”</p>
+            <footer class="blockquote-footer">Sunita K., Kathmandu</footer>
+        </blockquote>
+    </div>
+    <div class="col-md-6 mb-4">
+        <blockquote class="blockquote">
+            <p class="mb-0">“A wonderful community for seniors and their families.”</p>
+            <footer class="blockquote-footer">Rajesh D., Pokhara</footer>
+        </blockquote>
+    </div>
+</div>
         </div>
     </div>
 </section>

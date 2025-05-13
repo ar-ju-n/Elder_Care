@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load slugify_extras %}
 {% load static %}
 {% load content_extras %}
 {% block extra_head %}
@@ -29,7 +30,7 @@
         {% if articles.0.author %} | <i class="bi bi-person"></i> {{ articles.0.author }}{% endif %}
     </div>
     <p>{{ articles.0.body|truncatewords:40 }}</p>
-    <a href="{% url 'content:article_detail' articles.0.pk %}" class="btn btn-outline-primary btn-sm">Read Full Article</a>
+    <a href="{% url 'content:article_detail' articles.0.pk|slugify_dir %}" class="btn btn-outline-primary btn-sm">Read Full Article</a>
 </div>
         {% endif %}
         <!-- Filter/Tags -->
