@@ -52,6 +52,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'events',
+    'forum',
+    'adminsortable2',
+
 ]
 
 ASGI_APPLICATION = 'Elder_Care.asgi.application'
@@ -86,6 +90,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'forum.context_processors.unread_notifications_count',
+                'accounts.context_processors.emergency_contacts',
             ],
         },
     },
@@ -182,3 +188,4 @@ load_dotenv()
 # OpenAI API key
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', '')
 
+TAILWIND_APP_NAME = 'theme'

@@ -3,5 +3,5 @@
   font-family: 'Inter', sans-serif;
 }
 .article-detail-section .article-card {
-  border-radius: 1.5rem;
+  border-radius: var(--article-detail-card-radius, 1.5rem); /* Uses theme variable, fallback provided */
 }

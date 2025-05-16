@@ -1,0 +1,61 @@
+/* Modern slider feature section styles */
+.feature-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2.5rem;
+  padding: 2.5rem 0;
+  background: #f7faf9;
+}
+
+.feature-image {
+  width: 320px;
+  height: 320px;
+  object-fit: cover;
+  border-radius: 1.5rem;
+  box-shadow: 0 6px 32px rgba(60, 80, 70, 0.10);
+  background: #fff;
+  border: 2px solid #e9f2eb;
+}
+
+.feature-card {
+  background: #fff;
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 24px rgba(44,62,80,0.08);
+  padding: 2.5rem 2rem;
+  min-width: 340px;
+  max-width: 430px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.feature-card h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #232946;
+  margin-bottom: 1rem;
+}
+
+.feature-card p {
+  font-size: 1.08rem;
+  color: #495057;
+  margin-bottom: 0;
+}
+
+@media (max-width: 900px) {
+  .feature-section {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .feature-image {
+    width: 100%;
+    height: 220px;
+    max-width: 430px;
+  }
+  .feature-card {
+    min-width: unset;
+    max-width: 100%;
+    padding: 2rem 1rem;
+  }
+}

@@ -33,5 +33,13 @@ def get_model_form(app_label, model_name, exclude_fields=None):
                     field.widget.attrs['class'] = 'form-control'
                 else:
                     field.widget.attrs['class'] = 'form-check-input'
+                # Render DateTimeField as <input type="datetime-local">
+                if hasattr(field, 'widget') and isinstance(field.widget, forms.DateTimeInput):
+                    field.widget.input_type = 'datetime-local'
+                    # Format initial value for browser compatibility
+                    if self.initial.get(field_name):
+                        dt = self.initial[field_name]
+                        if hasattr(dt, 'strftime'):
+                            self.initial[field_name] = dt.strftime('%Y-%m-%dT%H:%M')
                     
     return DynamicModelForm

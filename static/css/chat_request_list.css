@@ -5,24 +5,196 @@
   overflow: hidden;
 }
 
+/* Modern Chat Request Card Styles */
+.chat-request-modern-card {
+  background: var(--chat-request-bg, #fff); /* Uses theme variable, fallback provided */
+  border: 1.5px solid var(--chat-request-border, #e4e8f0); /* Uses theme variable, fallback provided */
+  transition: box-shadow 0.18s;
+  box-shadow: var(--chat-request-shadow, 0 4px 24px rgba(44, 62, 80, 0.06)); /* Uses theme variable, fallback provided */
+}
+
+.profile-img-modern img {
+  width: 54px;
+  height: 54px;
+  object-fit: cover;
+  border: 2.5px solid var(--chat-request-img-border, #f3f6fa); /* Uses theme variable, fallback provided */
+  box-shadow: var(--chat-request-img-shadow, 0 2px 8px rgba(0,0,0,0.07)); /* Uses theme variable, fallback provided */
+}
+
+.modern-status-chip {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 24px;
+  padding: 0.4rem 1.1rem;
+  letter-spacing: 0.01em;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.modern-status-chip.pending {
+  background: var(--chat-request-pending-bg, #fff4d6); /* Uses theme variable, fallback provided */
+  color: var(--chat-request-pending-color, #e6a100); /* Uses theme variable, fallback provided */
+  border: 1px solid var(--chat-request-pending-border, #ffe0a3); /* Uses theme variable, fallback provided */
+}
+.modern-status-chip.accepted {
+  background: var(--chat-request-accepted-bg, #e7fbe9); /* Uses theme variable, fallback provided */
+  color: var(--chat-request-accepted-color, #1e8e3e); /* Uses theme variable, fallback provided */
+  border: 1px solid var(--chat-request-accepted-border, #b8eec7); /* Uses theme variable, fallback provided */
+}
+.modern-status-chip.rejected {
+  background: var(--chat-request-rejected-bg, #ffeaea); /* Uses theme variable, fallback provided */
+  color: var(--chat-request-rejected-color, #e03a3a); /* Uses theme variable, fallback provided */
+  border: 1px solid var(--chat-request-rejected-border, #ffc0c0); /* Uses theme variable, fallback provided */
+}
+
+
 .chat-request-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 20px rgba(0,0,0,0.1);
 }
+
+/* Modern Chat Request Card Styles */
+.chat-request-modern-card {
+  background: var(--chat-request-bg, #fff); /* Uses theme variable, fallback provided */
+  border: 1.5px solid var(--chat-request-border, #e4e8f0); /* Uses theme variable, fallback provided */
+  transition: box-shadow 0.18s;
+  box-shadow: var(--chat-request-shadow, 0 4px 24px rgba(44, 62, 80, 0.06)); /* Uses theme variable, fallback provided */
+}
+
+.profile-img-modern img {
+  width: 54px;
+  height: 54px;
+  object-fit: cover;
+  border: 2.5px solid var(--chat-request-img-border, #f3f6fa); /* Uses theme variable, fallback provided */
+  box-shadow: var(--chat-request-img-shadow, 0 2px 8px rgba(0,0,0,0.07)); /* Uses theme variable, fallback provided */
+}
+
+.modern-status-chip {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 24px;
+  padding: 0.4rem 1.1rem;
+  letter-spacing: 0.01em;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.modern-status-chip.pending {
+  background: var(--chat-request-pending-bg, #fff4d6); /* Uses theme variable, fallback provided */
+  color: var(--chat-request-pending-color, #e6a100); /* Uses theme variable, fallback provided */
+  border: 1px solid var(--chat-request-pending-border, #ffe0a3); /* Uses theme variable, fallback provided */
+}
+.modern-status-chip.accepted {
+  background: var(--chat-request-accepted-bg, #e7fbe9); /* Uses theme variable, fallback provided */
+  color: var(--chat-request-accepted-color, #1e8e3e); /* Uses theme variable, fallback provided */
+  border: 1px solid var(--chat-request-accepted-border, #b8eec7); /* Uses theme variable, fallback provided */
+}
+.modern-status-chip.rejected {
+  background: var(--chat-request-rejected-bg, #ffeaea); /* Uses theme variable, fallback provided */
+  color: var(--chat-request-rejected-color, #e03a3a); /* Uses theme variable, fallback provided */
+  border: 1px solid var(--chat-request-rejected-border, #ffc0c0); /* Uses theme variable, fallback provided */
+}
+
 
 .profile-img {
   width: 40px;
   height: 40px;
   object-fit: cover;
   border-radius: 50%;
-  border: 3px solid #fff;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  border: 3px solid var(--chat-request-img-border-lg, #fff); /* Uses theme variable, fallback provided */
+  box-shadow: var(--chat-request-img-shadow-lg, 0 3px 10px rgba(0,0,0,0.1)); /* Uses theme variable, fallback provided */
 }
+
+/* Modern Chat Request Card Styles */
+.chat-request-modern-card {
+  background: var(--chat-request-bg, #fff); /* Uses theme variable, fallback provided */
+  border: 1.5px solid var(--chat-request-border, #e4e8f0); /* Uses theme variable, fallback provided */
+  transition: box-shadow 0.18s;
+  box-shadow: var(--chat-request-shadow, 0 4px 24px rgba(44, 62, 80, 0.06)); /* Uses theme variable, fallback provided */
+}
+
+.profile-img-modern img {
+  width: 54px;
+  height: 54px;
+  object-fit: cover;
+  border: 2.5px solid var(--chat-request-img-border, #f3f6fa); /* Uses theme variable, fallback provided */
+  box-shadow: var(--chat-request-img-shadow, 0 2px 8px rgba(0,0,0,0.07)); /* Uses theme variable, fallback provided */
+}
+
+.modern-status-chip {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 24px;
+  padding: 0.4rem 1.1rem;
+  letter-spacing: 0.01em;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.modern-status-chip.pending {
+  background: var(--chat-request-pending-bg, #fff4d6); /* Uses theme variable, fallback provided */
+  color: var(--chat-request-pending-color, #e6a100); /* Uses theme variable, fallback provided */
+  border: 1px solid var(--chat-request-pending-border, #ffe0a3); /* Uses theme variable, fallback provided */
+}
+.modern-status-chip.accepted {
+  background: var(--chat-request-accepted-bg, #e7fbe9); /* Uses theme variable, fallback provided */
+  color: var(--chat-request-accepted-color, #1e8e3e); /* Uses theme variable, fallback provided */
+  border: 1px solid var(--chat-request-accepted-border, #b8eec7); /* Uses theme variable, fallback provided */
+}
+.modern-status-chip.rejected {
+  background: var(--chat-request-rejected-bg, #ffeaea); /* Uses theme variable, fallback provided */
+  color: var(--chat-request-rejected-color, #e03a3a); /* Uses theme variable, fallback provided */
+  border: 1px solid var(--chat-request-rejected-border, #ffc0c0); /* Uses theme variable, fallback provided */
+}
+
 
 .profile-img-lg {
   width: 56px;
   height: 56px;
 }
+
+/* Modern Chat Request Card Styles */
+.chat-request-modern-card {
+  background: var(--chat-request-bg, #fff); /* Uses theme variable, fallback provided */
+  border: 1.5px solid var(--chat-request-border, #e4e8f0); /* Uses theme variable, fallback provided */
+  transition: box-shadow 0.18s;
+  box-shadow: var(--chat-request-shadow, 0 4px 24px rgba(44, 62, 80, 0.06)); /* Uses theme variable, fallback provided */
+}
+
+.profile-img-modern img {
+  width: 54px;
+  height: 54px;
+  object-fit: cover;
+  border: 2.5px solid var(--chat-request-img-border, #f3f6fa); /* Uses theme variable, fallback provided */
+  box-shadow: var(--chat-request-img-shadow, 0 2px 8px rgba(0,0,0,0.07)); /* Uses theme variable, fallback provided */
+}
+
+.modern-status-chip {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 24px;
+  padding: 0.4rem 1.1rem;
+  letter-spacing: 0.01em;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.modern-status-chip.pending {
+  background: var(--chat-request-pending-bg, #fff4d6); /* Uses theme variable, fallback provided */
+  color: var(--chat-request-pending-color, #e6a100); /* Uses theme variable, fallback provided */
+  border: 1px solid var(--chat-request-pending-border, #ffe0a3); /* Uses theme variable, fallback provided */
+}
+.modern-status-chip.accepted {
+  background: var(--chat-request-accepted-bg, #e7fbe9); /* Uses theme variable, fallback provided */
+  color: var(--chat-request-accepted-color, #1e8e3e); /* Uses theme variable, fallback provided */
+  border: 1px solid var(--chat-request-accepted-border, #b8eec7); /* Uses theme variable, fallback provided */
+}
+.modern-status-chip.rejected {
+  background: var(--chat-request-rejected-bg, #ffeaea); /* Uses theme variable, fallback provided */
+  color: var(--chat-request-rejected-color, #e03a3a); /* Uses theme variable, fallback provided */
+  border: 1px solid var(--chat-request-rejected-border, #ffc0c0); /* Uses theme variable, fallback provided */
+}
+
 
 .request-status {
   position: absolute;
@@ -34,13 +206,142 @@
   font-weight: bold;
 }
 
+/* Modern Chat Request Card Styles */
+.chat-request-modern-card {
+  background: var(--chat-request-bg, #fff); /* Uses theme variable, fallback provided */
+  border: 1.5px solid var(--chat-request-border, #e4e8f0); /* Uses theme variable, fallback provided */
+  transition: box-shadow 0.18s;
+  box-shadow: var(--chat-request-shadow, 0 4px 24px rgba(44, 62, 80, 0.06)); /* Uses theme variable, fallback provided */
+}
+
+.profile-img-modern img {
+  width: 54px;
+  height: 54px;
+  object-fit: cover;
+  border: 2.5px solid var(--chat-request-img-border, #f3f6fa); /* Uses theme variable, fallback provided */
+  box-shadow: var(--chat-request-img-shadow, 0 2px 8px rgba(0,0,0,0.07)); /* Uses theme variable, fallback provided */
+}
+
+.modern-status-chip {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 24px;
+  padding: 0.4rem 1.1rem;
+  letter-spacing: 0.01em;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.modern-status-chip.pending {
+  background: var(--chat-request-pending-bg, #fff4d6); /* Uses theme variable, fallback provided */
+  color: var(--chat-request-pending-color, #e6a100); /* Uses theme variable, fallback provided */
+  border: 1px solid var(--chat-request-pending-border, #ffe0a3); /* Uses theme variable, fallback provided */
+}
+.modern-status-chip.accepted {
+  background: var(--chat-request-accepted-bg, #e7fbe9); /* Uses theme variable, fallback provided */
+  color: var(--chat-request-accepted-color, #1e8e3e); /* Uses theme variable, fallback provided */
+  border: 1px solid var(--chat-request-accepted-border, #b8eec7); /* Uses theme variable, fallback provided */
+}
+.modern-status-chip.rejected {
+  background: var(--chat-request-rejected-bg, #ffeaea); /* Uses theme variable, fallback provided */
+  color: var(--chat-request-rejected-color, #e03a3a); /* Uses theme variable, fallback provided */
+  border: 1px solid var(--chat-request-rejected-border, #ffc0c0); /* Uses theme variable, fallback provided */
+}
+
+
 .request-actions {
   display: flex;
   gap: 10px;
 }
 
+/* Modern Chat Request Card Styles */
+.chat-request-modern-card {
+  background: var(--chat-request-bg, #fff); /* Uses theme variable, fallback provided */
+  border: 1.5px solid var(--chat-request-border, #e4e8f0); /* Uses theme variable, fallback provided */
+  transition: box-shadow 0.18s;
+  box-shadow: var(--chat-request-shadow, 0 4px 24px rgba(44, 62, 80, 0.06)); /* Uses theme variable, fallback provided */
+}
+
+.profile-img-modern img {
+  width: 54px;
+  height: 54px;
+  object-fit: cover;
+  border: 2.5px solid var(--chat-request-img-border, #f3f6fa); /* Uses theme variable, fallback provided */
+  box-shadow: var(--chat-request-img-shadow, 0 2px 8px rgba(0,0,0,0.07)); /* Uses theme variable, fallback provided */
+}
+
+.modern-status-chip {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 24px;
+  padding: 0.4rem 1.1rem;
+  letter-spacing: 0.01em;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.modern-status-chip.pending {
+  background: var(--chat-request-pending-bg, #fff4d6); /* Uses theme variable, fallback provided */
+  color: var(--chat-request-pending-color, #e6a100); /* Uses theme variable, fallback provided */
+  border: 1px solid var(--chat-request-pending-border, #ffe0a3); /* Uses theme variable, fallback provided */
+}
+.modern-status-chip.accepted {
+  background: var(--chat-request-accepted-bg, #e7fbe9); /* Uses theme variable, fallback provided */
+  color: var(--chat-request-accepted-color, #1e8e3e); /* Uses theme variable, fallback provided */
+  border: 1px solid var(--chat-request-accepted-border, #b8eec7); /* Uses theme variable, fallback provided */
+}
+.modern-status-chip.rejected {
+  background: var(--chat-request-rejected-bg, #ffeaea); /* Uses theme variable, fallback provided */
+  color: var(--chat-request-rejected-color, #e03a3a); /* Uses theme variable, fallback provided */
+  border: 1px solid var(--chat-request-rejected-border, #ffc0c0); /* Uses theme variable, fallback provided */
+}
+
+
 .empty-state-img {
   max-width: 180px;
   opacity: 0.7;
 }
+
+/* Modern Chat Request Card Styles */
+.chat-request-modern-card {
+  background: var(--chat-request-bg, #fff); /* Uses theme variable, fallback provided */
+  border: 1.5px solid var(--chat-request-border, #e4e8f0); /* Uses theme variable, fallback provided */
+  transition: box-shadow 0.18s;
+  box-shadow: var(--chat-request-shadow, 0 4px 24px rgba(44, 62, 80, 0.06)); /* Uses theme variable, fallback provided */
+}
+
+.profile-img-modern img {
+  width: 54px;
+  height: 54px;
+  object-fit: cover;
+  border: 2.5px solid var(--chat-request-img-border, #f3f6fa); /* Uses theme variable, fallback provided */
+  box-shadow: var(--chat-request-img-shadow, 0 2px 8px rgba(0,0,0,0.07)); /* Uses theme variable, fallback provided */
+}
+
+.modern-status-chip {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 24px;
+  padding: 0.4rem 1.1rem;
+  letter-spacing: 0.01em;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.modern-status-chip.pending {
+  background: var(--chat-request-pending-bg, #fff4d6); /* Uses theme variable, fallback provided */
+  color: var(--chat-request-pending-color, #e6a100); /* Uses theme variable, fallback provided */
+  border: 1px solid var(--chat-request-pending-border, #ffe0a3); /* Uses theme variable, fallback provided */
+}
+.modern-status-chip.accepted {
+  background: var(--chat-request-accepted-bg, #e7fbe9); /* Uses theme variable, fallback provided */
+  color: var(--chat-request-accepted-color, #1e8e3e); /* Uses theme variable, fallback provided */
+  border: 1px solid var(--chat-request-accepted-border, #b8eec7); /* Uses theme variable, fallback provided */
+}
+.modern-status-chip.rejected {
+  background: var(--chat-request-rejected-bg, #ffeaea); /* Uses theme variable, fallback provided */
+  color: var(--chat-request-rejected-color, #e03a3a); /* Uses theme variable, fallback provided */
+  border: 1px solid var(--chat-request-rejected-border, #ffc0c0); /* Uses theme variable, fallback provided */
+}
+
 

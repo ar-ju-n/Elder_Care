@@ -11,6 +11,8 @@ from elderly_care_hub.views import contact_view, landing
 from custom_admin.views import admin_login
 
 urlpatterns = [
+    path('events/', include('events.urls')),
+    path('forum/', include('forum.urls', namespace='forum')),
     path('admin', admin_login, name='custom_admin_login_noslash'),  # /admin (no slash)
     path('admin/', admin_login, name='custom_admin_login'),         # /admin/ (slash)
     path('admin/', include('custom_admin.urls', namespace='custom_admin')),  # /admin/... for all other admin URLs

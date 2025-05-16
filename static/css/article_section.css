@@ -47,7 +47,7 @@
 .card-delay-10 { animation-delay: 1.0s; }
 
 .section.article-section .card-text small, .section.article-section .card-text.text-muted {
-  color: #bfc3c7;
+  color: var(--article-muted, #bfc3c7); /* Uses theme variable, fallback provided */
 }
 .section.article-section .badge {
   font-size: 1rem;

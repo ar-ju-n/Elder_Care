@@ -1,22 +1,133 @@
 <style>
   :root {
+    /* Primary brand color and its variations */
+    --bs-primary: #75A47F;
+    --bs-primary-rgb: 117, 164, 127;
+    --bs-primary-dark: #5a8063;
+    --bs-primary-light: #9dbea5;
+    --bs-primary-lighter: #e9f2eb;
+
+    /* Secondary colors */
+    --bs-secondary: #4a6da7;
+    --bs-secondary-rgb: 74, 109, 167;
+    
+    /* Accent colors */
+    --bs-accent: #F5DAD2;
+    --bs-accent-rgb: 245, 218, 210;
+    
+    /* Success state - using our primary green */
+    --bs-success: #75A47F;
+    --bs-success-rgb: 117, 164, 127;
+    
+    /* Other semantic colors */
+    --bs-info: #4a6da7;
+    --bs-warning: #ffc107;
+    --bs-danger: #dc3545;
+    
+    /* Theme colors for components */
+    --bs-link-color: #5a8063;
+    --bs-link-hover-color: #75A47F;
+    
+    /* Button hover states */
+    --bs-btn-hover-bg: #5a8063;
+    --bs-btn-hover-border-color: #5a8063;
+    
+    /* Form focus states */
+    --bs-focus-ring-color: rgba(117, 164, 127, 0.25);
+
+    /* Theme colors */
+    --bs-body-bg: #ffffff;
+    --bs-body-color: #212529;
+    --bs-border-color: #dee2e6;
+    
+    /* Light mode defaults */
     --chat-bg: #fff;
     --chat-header-bg: #fff;
     --chat-message-sent: linear-gradient(135deg, #a7c7ff 0%, #0984e3 100%);
     --chat-message-received: #f5f8fa;
     --chat-text: #222;
+    
+    /* Hero section */
     --hero-bg: #f6fcff;
-    --hero-text: #222;
-    --hero-overlay: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.9) 100%);
+    --hero-text: #ffffff;
+    --hero-text-shadow: 0 4px 24px rgba(0, 0, 0, 0.7), 0 1px 0 #333;
+    --hero-overlay: rgba(0, 0, 0, 0.65);
+    
+    /* Component colors */
+    --card-bg: #fff;
+    --card-text: #212529;
+    --navbar-bg: linear-gradient(90deg, #4a6da7 0%, #6a5acd 100%);
+    --navbar-text: #fff;
   }
+  
   [data-bs-theme="dark"] {
+    /* Primary brand color and its variations */
+    --bs-primary: #5a8063;
+    --bs-primary-rgb: 90, 128, 99;
+    --bs-primary-dark: #3a5a43;
+    --bs-primary-light: #75A47F;
+    --bs-primary-lighter: #e9f2eb;
+
+    /* Secondary colors */
+    --bs-secondary: #4a6da7;
+    --bs-secondary-rgb: 74, 109, 167;
+    
+    /* Accent colors */
+    --bs-accent: #F5DAD2;
+    --bs-accent-rgb: 245, 218, 210;
+    
+    /* Success state - using our primary green */
+    --bs-success: #75A47F;
+    --bs-success-rgb: 117, 164, 127;
+    
+    /* Other semantic colors */
+    --bs-info: #4a6da7;
+    --bs-warning: #ffc107;
+    --bs-danger: #dc3545;
+    
+    /* Theme colors for components */
+    --bs-link-color: #9dbea5;
+    --bs-link-hover-color: #e9f2eb;
+    
+    /* Button hover states */
+    --bs-btn-hover-bg: #5a8063;
+    --bs-btn-hover-border-color: #5a8063;
+    
+    /* Form focus states */
+    --bs-focus-ring-color: rgba(90, 128, 99, 0.25);
+
+    /* Theme colors */
+    --bs-body-bg: #1a1f24;
+    --bs-body-color: #e9ecef;
+    --bs-border-color: #2d3748;
+    
+    /* Dark mode overrides */
     --chat-bg: #1a1a1a;
     --chat-header-bg: #252525;
     --chat-message-sent: linear-gradient(135deg, #3742fa 0%, #1e3799 100%);
     --chat-message-received: #2f3542;
     --chat-text: #f1f2f6;
+    
+    /* Hero section */
     --hero-bg: #121212;
-    --hero-text: #f1f2f6;
-    --hero-overlay: linear-gradient(135deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.9) 100%);
+    --hero-text: #ffffff;
+    --hero-text-shadow: 0 4px 24px rgba(0, 0, 0, 0.85), 0 1px 0 #000;
+    --hero-overlay: rgba(0, 0, 0, 0.75);
+    --hero-gradient: linear-gradient(rgba(35, 41, 70, 0.85), rgba(26, 26, 46, 0.85));
+    
+    /* Component colors */
+    --card-bg: #232946;
+    --card-text: #f1f2f6;
+    --navbar-bg: linear-gradient(90deg, #4a6da7 0%, #6a5acd 100%);
+    --navbar-text: #fff;
+  }
+
+  /* High contrast theme */
+  [data-bs-theme="high-contrast"] {
+    --bs-primary: #ffffff;
+    --bs-body-bg: #000000;
+    --bs-body-color: #ffffff;
+    --bs-link-color: #ffff00;
+    --bs-link-hover-color: #ffffff;
   }
 </style>

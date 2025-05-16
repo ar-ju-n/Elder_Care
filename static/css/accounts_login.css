@@ -1,7 +1,7 @@
 /* Styles extracted from accounts/login.html inline styles */
 
 .section {
-    background: rgba(245,248,255,0.92);
+    background: var(--login-bg-translucent, rgba(245,248,255,0.92)); /* Uses theme variable, fallback provided */
     border-radius: 1.5rem;
     font-family: 'Inter', sans-serif;
 }

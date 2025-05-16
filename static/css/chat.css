@@ -9,7 +9,7 @@
   flex: 1;
   overflow-y: auto;
   padding: 15px;
-  background-color: #f5f5f5;
+  background-color: var(--chat-bg, #f5f5f5); /* Uses theme variable, fallback provided */
 }
 
 .message {
@@ -38,7 +38,7 @@
 }
 
 .sent .message-content {
-  background-color: #dcf8c6;
+  background-color: var(--chat-bubble-sent, #dcf8c6); /* Uses theme variable, fallback provided */
   border-top-right-radius: 4px;
 }
 
@@ -49,7 +49,7 @@
 
 .message-time {
   font-size: 0.7rem;
-  color: #999;
+  color: var(--chat-meta, #999); /* Uses theme variable, fallback provided */
   margin-top: 2px;
   text-align: right;
 }
@@ -58,7 +58,7 @@
   display: flex;
   padding: 10px;
   background-color: white;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--chat-input-border, #e0e0e0); /* Uses theme variable, fallback provided */
 }
 
 .chat-input {
@@ -66,18 +66,18 @@
   border: none;
   border-radius: 20px;
   padding: 8px 12px;
-  background-color: #f0f0f0;
+  background-color: var(--chat-input-field-bg, #f0f0f0); /* Uses theme variable, fallback provided */
   margin-right: 8px;
 }
 
 .chat-input:focus {
   outline: none;
-  background-color: #e8e8e8;
+  background-color: var(--chat-input-field-focus, #e8e8e8); /* Uses theme variable, fallback provided */
 }
 
 .send-button {
   border: none;
-  background-color: #4CAF50;
+  background-color: var(--chat-send-btn-bg, #4CAF50); /* Uses theme variable, fallback provided */
   color: white;
   border-radius: 50%;
   width: 36px;

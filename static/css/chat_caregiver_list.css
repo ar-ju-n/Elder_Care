@@ -160,6 +160,75 @@
   box-shadow: 0 8px 24px rgba(40,167,69,0.28);
 }
 
+[data-bs-theme="dark"] .caregiver-list-item {
+  background: #23272b !important;
+  color: #f8f9fa !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.22);
+}
+[data-bs-theme="dark"] .caregiver-list-item .profile-img {
+  border: 2px solid #444 !important;
+}
+[data-bs-theme="dark"] .caregiver-list-item .verified-badge {
+  background: #43e97b !important;
+  color: #23272b !important;
+}
+[data-bs-theme="dark"] .caregiver-list-item .btn-success {
+  background: #43e97b !important;
+  color: #23272b !important;
+  border: none !important;
+}
+[data-bs-theme="dark"] .caregiver-list-item .btn-primary {
+  background: #38a1db !important;
+  color: #fff !important;
+  border: none !important;
+}
+[data-bs-theme="dark"] .caregiver-list-item .btn-secondary {
+  background: #444 !important;
+  color: #f8f9fa !important;
+  border: none !important;
+}
+[data-bs-theme="dark"] .caregiver-list-item *,
+[data-bs-theme="dark"] .caregiver-list-item .text-muted,
+[data-bs-theme="dark"] .caregiver-list-item .small {
+  color: #f8f9fa !important;
+}
+[data-bs-theme="dark"] .caregiver-list-item .bg-white {
+  background: #23272b !important;
+}
+
+[data-bs-theme="dark"] .list-group-item {
+  background: #23272b !important;
+  color: #f8f9fa !important;
+  border-color: #23272b !important;
+}
+[data-bs-theme="dark"] .list-group-item .text-secondary,
+[data-bs-theme="dark"] .list-group-item .text-muted,
+[data-bs-theme="dark"] .list-group-item .small {
+  color: #f8f9fa !important;
+}
+[data-bs-theme="dark"] .badge.bg-success,
+[data-bs-theme="dark"] .badge.bg-danger,
+[data-bs-theme="dark"] .badge.bg-primary {
+  filter: none;
+  opacity: 1;
+  color: #23272b !important;
+}
+
+[data-bs-theme="dark"] .chat-request-modern_card,
+[data-bs-theme="dark"] .card.bg-white,
+[data-bs-theme="dark"] .card,
+[data-bs-theme="dark"] .bg-white {
+  background: #23272b !important;
+  color: #f8f9fa !important;
+  border-color: #23272b !important;
+}
+[data-bs-theme="dark"] .chat-request-modern_card *,
+[data-bs-theme="dark"] .card.bg-white *,
+[data-bs-theme="dark"] .card *,
+[data-bs-theme="dark"] .bg-white * {
+  color: #f8f9fa !important;
+}
+
 /* Card body spacing */
 .caregiver-card .card-body {
   padding-top: 0;

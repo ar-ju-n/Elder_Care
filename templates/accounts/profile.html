@@ -2,148 +2,106 @@
 {% load static %}
 
 {% block content %}
-{% block extra_css %}<link rel="stylesheet" href="/static/css/profile.css">{% endblock %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Profile</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 text-center">
+                            {% if user.profile_picture %}
+                                <img src="{{ user.profile_picture.url }}" alt="Profile Picture" class="img-fluid rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover;">
+                            {% else %}
+                                <img src="{% static 'img/default_profile.png' %}" alt="Profile Picture" class="img-fluid rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover;">
+                            {% endif %}
+                        </div>
+                        <div class="col-md-9">
+                            <h5>{{ user.get_full_name|default:user.username }}</h5>
+                            <p class="mb-1"><strong>Username:</strong> {{ user.username }}</p>
+                            <p class="mb-1"><strong>Email:</strong> {{ user.email }}</p>
+                            <!-- BADGES -->
+                            {% if badges %}
+                                <div class="mb-2">
+                                    {% for badge in badges %}
+                                        <span class="badge bg-{{ badge.color }} me-1" title="{{ badge.tooltip }}">
+                                            <i class="bi {{ badge.icon }}"></i> {{ badge.label }}
+                                        </span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
 
-<!-- Profile Hero Image Modernized -->
-<div class="profile-hero position-relative text-center mb-5" style="background: linear-gradient(120deg, #4a6da7 0%, #8b5cf6 100%); min-height: 220px; border-radius: 0 0 2rem 2rem; overflow: hidden; font-family: 'Inter', sans-serif;">
-  <img src="https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&w=1200&q=80" alt="Profile Elderly" class="position-absolute top-0 start-50 translate-middle-x w-100 h-100 object-fit-cover" style="opacity: 0.20; pointer-events:none;">
-  <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(135deg, rgba(74,109,167,0.7) 0%, rgba(139,92,246,0.7) 100%);"></div>
-  <div class="position-relative z-2 py-5 animate__animated animate__fadeInDown">
-    {% load slugify_extras %}
-<img src="{% if user.profile_picture %}{{ user.profile_picture.url }}{% else %}/static/images/default-profile.jpg{% endif %}" alt="{{ user.username|slugify_dir }}" class="rounded-circle shadow-lg border border-4 border-white mb-3" style="width: 150px; height: 150px; object-fit: cover; background: #fff;">
-    <h2 class="fw-bold text-white mb-0" style="text-shadow: 0 2px 12px rgba(0,0,0,0.4);">{{ user.username|slugify_dir }}</h2>
-    <p class="text-white-50 mb-2">{{ user.email }}</p>
-  </div>
-</div>
+                            <!-- Account Deletion Warning -->
+                            {% if pending_deletion %}
+                                <div class="alert alert-danger p-2 mt-2 mb-2">
+                                    <strong>Account scheduled for deletion</strong><br>
+                                    Scheduled deletion at: {{ scheduled_deletion_at }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
 
-<div class="container py-4" style="font-family: 'Inter', sans-serif;  border-radius: 1rem;">
-  <div class="card shadow-lg border-0 animate__animated animate__fadeInUp" style="border-radius: 1.5rem;">
-    <div class="card-header bg-success text-white animate__animated animate__fadeInDown" style="border-radius: 1.5rem 1.5rem 0 0;">
-      <h4 class="mb-0 fw-bold">My Profile</h4>
+                    <!-- Recent Events -->
+                    {% if attending_events %}
+                    <hr>
+                    <h6>Upcoming Events</h6>
+                    <ul class="list-group mb-3">
+                        {% for event in attending_events %}
+                        <li class="list-group-item">{{ event.title }} &mdash; {{ event.start_time }}</li>
+                        {% empty %}
+                        <li class="list-group-item text-muted">No upcoming events.</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+
+                    <!-- Forum Activity -->
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Recent Forum Topics</h6>
+                            <ul class="list-group mb-3">
+                                {% for topic in recent_forum_topics %}
+                                <li class="list-group-item">
+                                    <a href="/forum/topic/{{ topic.id }}/">{{ topic.title }}</a>
+                                    <span class="text-muted small">({{ topic.created_at }})</span>
+                                </li>
+                                {% empty %}
+                                <li class="list-group-item text-muted">No topics.</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Recent Forum Replies</h6>
+                            <ul class="list-group mb-3">
+                                {% for reply in recent_forum_replies %}
+                                <li class="list-group-item">
+                                    <a href="/forum/topic/{{ reply.topic.id }}/#reply-{{ reply.id }}">Reply to: {{ reply.topic.title }}</a>
+                                    <span class="text-muted small">({{ reply.created_at }})</span>
+                                </li>
+                                {% empty %}
+                                <li class="list-group-item text-muted">No replies.</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <h6>Edit Profile</h6>
+                    {% if form %}
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <button type="submit" class="btn btn-success">Update</button>
+                        </form>
+                    {% else %}
+                        <p class="text-muted">Profile editing coming soon...</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="card-body">
-      {% if messages %}
-        {% for message in messages %}
-          <div class="alert alert-success alert-dismissible fade show">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>
-        {% endfor %}
-      {% endif %}
-      
-      {% if pending_deletion %}
-        <div class="alert alert-warning">
-          Your account is scheduled for deletion on <strong>{{ scheduled_deletion_at|date:"Y-m-d H:i" }}</strong>.
-          <form method="post" action="{% url 'accounts:cancel_account_deletion' %}" class="d-inline">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-sm btn-warning ms-2">Cancel Deletion</button>
-          </form>
-        </div>
-      {% endif %}
-      
-      <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        
-        <div class="row">
-          <div class="col-md-3 text-center mb-4">
-            {% if user.profile_picture %}
-              <img src="{{ user.profile_picture.url }}" alt="{{ user.username }}" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
-            {% else %}
-              <img src="/static/images/default-profile.jpg" alt="{{ user.username }}" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
-            {% endif %}
-            
-            <div>
-              <label for="id_profile_picture" class="form-label">Change Picture</label>
-              <input type="file" name="profile_picture" id="id_profile_picture" class="form-control">
-            </div>
-          </div>
-          
-          <div class="col-md-9">
-            <div class="mb-3">
-              <label for="id_username" class="form-label">Username</label>
-              <input type="hidden" name="username" value="{{ user.username|slugify_dir }}" class="form-control">
-            </div>
-            
-            <div class="mb-3">
-              <label for="id_email" class="form-label">Email</label>
-              <input type="email" name="email" id="id_email" value="{{ user.email }}" class="form-control">
-            </div>
-            
-            <div class="mb-3">
-              <label for="id_bio" class="form-label">Bio</label>
-              <textarea name="bio" id="id_bio" class="form-control" rows="4">{{ user.bio }}</textarea>
-            </div>
-          </div>
-        </div>
-        
-        <hr>
-        
-        <h5 class="mb-3">Preferences</h5>
-        
-        <div class="row mb-3">
-          <div class="col-md-6">
-            <label for="id_language_preference" class="form-label">Language</label>
-            <select name="language_preference" id="id_language_preference" class="form-select">
-              <option value="en" {% if user.language_preference == 'en' %}selected{% endif %}>English</option>
-              <option value="ne" {% if user.language_preference == 'ne' %}selected{% endif %}>Nepali</option>
-              <option value="hi" {% if user.language_preference == 'hi' %}selected{% endif %}>Hindi</option>
-            </select>
-          </div>
-          
-          <div class="col-md-6">
-            <label for="id_timezone" class="form-label">Timezone</label>
-            <select name="timezone" id="id_timezone" class="form-select">
-              <option value="UTC" {% if user.timezone == 'UTC' %}selected{% endif %}>UTC</option>
-              <option value="Asia/Kathmandu" {% if user.timezone == 'Asia/Kathmandu' %}selected{% endif %}>Nepal Time</option>
-              <option value="Asia/Kolkata" {% if user.timezone == 'Asia/Kolkata' %}selected{% endif %}>India Time</option>
-              <option value="US/Eastern" {% if user.timezone == 'US/Eastern' %}selected{% endif %}>US Eastern Time</option>
-              <option value="US/Pacific" {% if user.timezone == 'US/Pacific' %}selected{% endif %}>US Pacific Time</option>
-              <option value="Europe/London" {% if user.timezone == 'Europe/London' %}selected{% endif %}>UK Time</option>
-            </select>
-          </div>
-        </div>
-        
-        <div class="mb-3 form-check">
-          <input type="checkbox" name="email_notifications" id="id_email_notifications" class="form-check-input" {% if user.email_notifications %}checked{% endif %}>
-          <label class="form-check-label" for="id_email_notifications">
-            Receive email notifications
-          </label>
-        </div>
-        
-        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-          <button type="submit" class="btn btn-primary">
-            Save Changes
-          </button>
-        </div>
-      </form>
-
-      {% if verification_form %}
-      <hr class="my-4">
-      <h5 class="fw-bold">Caregiver Verification</h5>
-      {% if verification_status %}
-        {% if verification_status.reviewed %}
-          {% if verification_status.approved %}
-            <div class="alert alert-success">Your verification has been <strong>approved</strong>.</div>
-          {% else %}
-            <div class="alert alert-danger">Your verification has been <strong>declined</strong>.<br>{{ verification_status.admin_comment }}</div>
-          {% endif %}
-        {% else %}
-          <div class="alert alert-info">Your verification is <strong>pending review</strong> by admin.</div>
-        {% endif %}
-      {% endif %}
-      <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ verification_form.as_p }}
-        <button type="submit" class="btn btn-primary mt-2">Update Verification Info</button>
-      </form>
-      {% endif %}
-      <hr>
-      <form method="post" action="{% url 'accounts:delete_account' %}" onsubmit="return confirm('Are you sure you want to delete your account? Your account will be permanently deleted after 3 days.');">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-danger w-100 mt-2">Delete My Account</button>
-      </form>
-    </div>
-  </div>
 </div>
-<script src="{% static 'js/accounts_profile.js' %}"></script>
 {% endblock %}

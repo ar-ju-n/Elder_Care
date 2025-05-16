@@ -1,11 +1,8 @@
-.hero-section {
-    position: relative;
-    color: #fff;
-}
+
 .hero-section .hero-overlay {
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0,0,0,0.18);
     z-index: 1;
 }
 .hero-section .container {
@@ -15,29 +12,41 @@
 
 /* Elder Care Landing Page Styles */
 .hero-section {
-  background-image: url('/static/images/backgroun.jpg');
+  background-image: url('/static/images/background.jpg');
   background-size: cover;
   background-position: center;
   position: relative;
   overflow: hidden;
   font-family: 'Inter', sans-serif;
-  overflow: hidden;
-  font-family: 'Inter', sans-serif;
+}
+.hero-section h1, .hero-section .lead {
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.44), 0 1px 0 #000;
+}
+@media (prefers-color-scheme: light) {
+  .hero-section h1, .hero-section .lead {
+    color: #222;
+    text-shadow: 0 2px 8px rgba(255,255,255,0.44), 0 1px 0 #fff;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .hero-section h1, .hero-section .lead {
+    color: #fff;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.44), 0 1px 0 #000;
+  }
 }
 
+
 .cta-section {
-  background: #f5f7fa;
+  background: #1550a8;
   color: #181a22;
 }
 
-.hero-section {
-    position: relative;
-    color: #fff;
-}
+
 .hero-section .hero-overlay {
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0,0,0,0.18);
     z-index: 1;
 }
 .hero-section .container {
@@ -52,9 +61,9 @@
     color: #f3f4f6 !important;
   }
   .hero-section {
-    background-image: linear-gradient(rgba(35,41,70,0.85), rgba(26,26,46,0.85)), url('/static/images/backgroun.jpg');
-    background-size: cover;
-    background-position: center;
+    background-image: linear-gradient(rgba(35,41,70,0.85), rgba(26,26,46,0.85)), url('/static/images/backgroun.jpg') !important;
+    background-size: cover !important;
+    background-position: center !important;
     color: #f3f4f6 !important;
   }
   .services-section {
@@ -98,6 +107,52 @@
   }
   .service-card i, .card-landing .icon-landing {
     color: #4a90e2 !important;
+  }
+}
+
+/* Modern Side-by-side Slider Styles */
+.slider-section {
+  background: #181922;
+  padding-top: 2.5rem;
+  padding-bottom: 2.5rem;
+}
+.slider-row {
+  min-height: 320px;
+}
+.slider-img {
+  max-width: 100%;
+  max-height: 340px;
+  border-radius: 18px;
+  box-shadow: 0 6px 32px rgba(0,0,0,0.12);
+  object-fit: cover;
+}
+.slider-text-wrapper {
+  background: rgba(255,255,255,0.93);
+  border-radius: 14px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.slider-title {
+  color: #2d3a4a;
+}
+.slider-desc {
+  color: #444;
+}
+@media (max-width: 767px) {
+  .slider-row {
+    flex-direction: column !important;
+    min-height: 0;
+  }
+  .slider-img {
+    max-height: 220px;
+    margin-bottom: 1rem;
+  }
+  .slider-text-wrapper {
+    min-height: 0;
+    padding: 1.25rem;
   }
 }
 

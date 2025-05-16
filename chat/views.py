@@ -55,17 +55,18 @@ def caregiver_list(request):
                 cooldown_seconds = int(86400 - elapsed)
         if chat_request and chat_request.status == 'accepted':
             status = 'accepted'
-            chat_room_id = chat_request.id
+            request_id = chat_request.id
+            cooldown_seconds = 0  # No cooldown for accepted
         elif chat_request and chat_request.status == 'pending':
             status = 'pending'
-            chat_room_id = None
+            request_id = None
         else:
             status = 'none'
-            chat_room_id = None
+            request_id = None
         caregiver_data.append({
             'obj': caregiver,
             'status': status,
-            'chat_room_id': chat_room_id,
+            'request_id': request_id,
             'cooldown_seconds': cooldown_seconds,
         })
     return render(request, 'chat/caregiver_list.html', {'caregivers': caregiver_data})

@@ -1,3 +1,12 @@
+
+/* Strong focus style for keyboard navigation */
+:focus-visible {
+  outline: 3px solid var(--primary, #007bff) !important; /* Uses theme variable, fallback provided */
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 3px var(--card-bg, #fff), 0 0 6px var(--primary, #007bff) !important; /* Uses theme variable, fallback provided */
+  z-index: 9999;
+}
+
 /* Skip link accessibility styling */
 .skip-link {
   position: absolute;
@@ -7,8 +16,8 @@
   height: 1px;
   overflow: hidden;
   z-index: 1000;
-  background: #fff;
-  color: #007bff;
+  background: var(--card-bg, #fff); /* Uses theme variable, fallback provided */
+  color: var(--primary, #007bff); /* Uses theme variable, fallback provided */
   padding: 8px 16px;
   border-radius: 4px;
   transition: left 0.2s;
@@ -18,42 +27,42 @@
   top: 10px;
   width: auto;
   height: auto;
-  outline: 2px solid #007bff;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  outline: 2px solid var(--primary, #007bff); /* Uses theme variable, fallback provided */
+  box-shadow: 0 2px 6px var(--shadow-sm, rgba(0,0,0,0.15)); /* Uses theme variable, fallback provided */
 }
 
 /* Accessibility Tab: Dark mode support */
 body.dark-mode .d-flex.justify-content-end.p-2[aria-label="Accessibility options"] {
-  background: #181a22 !important;
-  color: #fff !important;
+  background: var(--dark-bg, #181a22) !important; /* Uses theme variable, fallback provided */
+  color: var(--dark-text, #fff) !important; /* Uses theme variable, fallback provided */
 }
 body.dark-mode .d-flex.justify-content-end.p-2[aria-label="Accessibility options"] button {
-  color: #fff !important;
-  border-color: #fff !important;
-  background: #222 !important;
+  color: var(--dark-text, #fff) !important; /* Uses theme variable, fallback provided */
+  border-color: var(--dark-border, #fff) !important; /* Uses theme variable, fallback provided */
+  background: var(--dark-card-bg, #222) !important; /* Uses theme variable, fallback provided */
 }
 
 /* Accessibility Tab: High Contrast mode support */
 body.high-contrast .d-flex.justify-content-end.p-2[aria-label="Accessibility options"] {
-  background: #000 !important;
+  background: Canvas !important; /* System color for high contrast */
   color: #ffd700 !important;
 }
 body.high-contrast .d-flex.justify-content-end.p-2[aria-label="Accessibility options"] button {
   color: #ffd700 !important;
-  border-color: #ffd700 !important;
-  background: #000 !important;
+  border-color: Highlight !important; /* System color for high contrast */
+  background: Canvas !important; /* System color for high contrast */
 }
 
 /* Autofill override for high contrast mode */
 body.high-contrast input:-webkit-autofill,
 body.high-contrast input:-webkit-autofill:focus,
 body.high-contrast input:-webkit-autofill:hover {
-  -webkit-box-shadow: 0 0 0 1000px #000 inset !important;
-  -webkit-text-fill-color: #ffd700 !important;
+  -webkit-box-shadow: 0 0 0 1000px Canvas inset !important; /* System color for high contrast */
+  -webkit-text-fill-color: Highlight !important; /* System color for high contrast */
   color: #ffd700 !important;
   border: 1px solid #ffd700 !important;
   caret-color: #ffd700 !important;
-  background: #000 !important;
+  background: Canvas !important; /* System color for high contrast */
 }
 
 /* Input, autofill, and placeholder styling for dark mode and high contrast mode */
@@ -72,9 +81,9 @@ body.high-contrast textarea:focus,
 body.high-contrast textarea::placeholder,
 body.high-contrast select {
   background-color: #181a22 !important;
-  color: #fff !important;
-  border: 1px solid #fff !important;
-  caret-color: #fff !important;
+  color: var(--dark-text, #fff) !important; /* Uses theme variable, fallback provided */
+  border: 1px solid var(--dark-border, #fff) !important; /* Uses theme variable, fallback provided */
+  caret-color: var(--dark-text, #fff) !important; /* Uses theme variable, fallback provided */
   opacity: 1 !important;
 }
 body.dark-mode input:-webkit-autofill,
@@ -82,15 +91,15 @@ body.dark-mode input:-webkit-autofill:focus,
 body.dark-mode input:-webkit-autofill:hover {
   -webkit-box-shadow: 0 0 0 1000px #181a22 inset !important;
   box-shadow: 0 0 0 1000px #181a22 inset !important;
-  -webkit-text-fill-color: #fff !important;
-  color: #fff !important;
-  border: 1px solid #fff !important;
-  caret-color: #fff !important;
+  -webkit-text-fill-color: var(--dark-text, #fff) !important; /* Uses theme variable, fallback provided */
+  color: var(--dark-text, #fff) !important; /* Uses theme variable, fallback provided */
+  border: 1px solid var(--dark-border, #fff) !important; /* Uses theme variable, fallback provided */
+  caret-color: var(--dark-text, #fff) !important; /* Uses theme variable, fallback provided */
   transition: background-color 5000s ease-in-out 0s !important;
 }
 body.dark-mode input::placeholder,
 body.dark-mode textarea::placeholder {
-  color: #ccc !important;
+  color: var(--neutral-400, #ccc) !important; /* Uses theme variable, fallback provided */
   opacity: 1 !important;
 }
 
@@ -101,10 +110,10 @@ body.dark-mode input:-webkit-autofill:hover {
   background-color: #181a22 !important;
   -webkit-box-shadow: 0 0 0 1000px #181a22 inset !important;
   box-shadow: 0 0 0 1000px #181a22 inset !important;
-  -webkit-text-fill-color: #fff !important;
-  color: #fff !important;
-  border: 1px solid #fff !important;
-  caret-color: #fff !important;
+  -webkit-text-fill-color: var(--dark-text, #fff) !important; /* Uses theme variable, fallback provided */
+  color: var(--dark-text, #fff) !important; /* Uses theme variable, fallback provided */
+  border: 1px solid var(--dark-border, #fff) !important; /* Uses theme variable, fallback provided */
+  caret-color: var(--dark-text, #fff) !important; /* Uses theme variable, fallback provided */
   transition: background-color 5000s ease-in-out 0s !important;
 }
 
@@ -112,12 +121,230 @@ body.dark-mode input:-webkit-autofill:hover {
 body.high-contrast input:-webkit-autofill,
 body.high-contrast input:-webkit-autofill:focus,
 body.high-contrast input:-webkit-autofill:hover {
-  background-color: #000 !important;
-  -webkit-box-shadow: 0 0 0 1000px #000 inset !important;
-  box-shadow: 0 0 0 1000px #000 inset !important;
-  -webkit-text-fill-color: #ffd700 !important;
+  background-color: Canvas !important; /* System color for high contrast */
+  -webkit-box-shadow: 0 0 0 1000px Canvas inset !important; /* System color for high contrast */
+  box-shadow: 0 0 0 1000px Canvas inset !important; /* System color for high contrast */
+  -webkit-text-fill-color: Highlight !important; /* System color for high contrast */
   color: #ffd700 !important;
   border: 1px solid #ffd700 !important;
   caret-color: #ffd700 !important;
   transition: background-color 5000s ease-in-out 0s !important;
+}
+
+/* Accessibility Bar Styles */
+.d-flex.justify-content-end.p-2[aria-label="Accessibility options"] {
+    background-color: #75A47F !important;
+    color: #ffffff !important;
+    padding: 0.5rem 1rem !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Accessibility buttons */
+.d-flex.justify-content-end.p-2[aria-label="Accessibility options"] .btn {
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
+    background: transparent !important;
+    margin: 0 0.25rem !important;
+    padding: 0.25rem 0.75rem !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease !important;
+}
+
+.d-flex.justify-content-end.p-2[aria-label="Accessibility options"] .btn:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border-color: var(--dark-border, #fff) !important; /* Uses theme variable, fallback provided */
+}
+
+/* Dark mode styles */
+[data-bs-theme="dark"] .d-flex.justify-content-end.p-2[aria-label="Accessibility options"] {
+    background-color: var(--dark-bg, #181a22) !important; /* Uses theme variable, fallback provided */
+    color: var(--dark-text, #fff) !important; /* Uses theme variable, fallback provided */
+}
+
+[data-bs-theme="dark"] .d-flex.justify-content-end.p-2[aria-label="Accessibility options"] .btn {
+    color: var(--dark-text, #fff) !important; /* Uses theme variable, fallback provided */
+    border-color: var(--dark-border, #fff) !important; /* Uses theme variable, fallback provided */
+    background: transparent !important;
+}
+
+[data-bs-theme="dark"] .d-flex.justify-content-end.p-2[aria-label="Accessibility options"] .btn:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border-color: var(--dark-border, #fff) !important; /* Uses theme variable, fallback provided */
+}
+
+/* High contrast mode styles */
+.high-contrast .d-flex.justify-content-end.p-2[aria-label="Accessibility options"] {
+    background-color: CanvasText !important; /* System color for high contrast */
+    border-bottom: 2px solid Highlight !important; /* System color for high contrast */
+}
+
+.high-contrast .d-flex.justify-content-end.p-2[aria-label="Accessibility options"] .btn {
+    color: Highlight !important; /* System color for high contrast */
+    border-color: Highlight !important; /* System color for high contrast */
+}
+
+.high-contrast .d-flex.justify-content-end.p-2[aria-label="Accessibility options"] .btn:hover {
+    background: Highlight !important; /* System color for high contrast */
+    color: CanvasText !important; /* System color for high contrast */
+}
+
+/* Dark mode toggle button */
+.d-flex.justify-content-end.p-2[aria-label="Accessibility options"] .dark-mode-toggle {
+    background: transparent !important;
+    border: 1px solid var(--dark-border, #fff) !important; /* Uses theme variable, fallback provided */
+    color: var(--dark-text, #fff) !important; /* Uses theme variable, fallback provided */
+    width: 32px !important;
+    height: 32px !important;
+    padding: 4px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s ease !important;
+}
+
+.d-flex.justify-content-end.p-2[aria-label="Accessibility options"] .dark-mode-toggle:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border-color: var(--dark-border, #fff) !important; /* Uses theme variable, fallback provided */
+}
+
+.d-flex.justify-content-end.p-2[aria-label="Accessibility options"] .dark-mode-toggle i {
+    font-size: 1.1rem;
+}
+
+/* Dark mode styles for toggle */
+[data-bs-theme="dark"] .d-flex.justify-content-end.p-2[aria-label="Accessibility options"] .dark-mode-toggle {
+    background: transparent !important;
+    border-color: var(--dark-border, #fff) !important; /* Uses theme variable, fallback provided */
+    color: var(--dark-text, #fff) !important; /* Uses theme variable, fallback provided */
+}
+
+[data-bs-theme="dark"] .d-flex.justify-content-end.p-2[aria-label="Accessibility options"] .dark-mode-toggle:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border-color: var(--dark-border, #fff) !important; /* Uses theme variable, fallback provided */
+}
+
+/* High contrast mode styles for toggle */
+.high-contrast .d-flex.justify-content-end.p-2[aria-label="Accessibility options"] .dark-mode-toggle {
+    background: transparent !important;
+    border-color: Highlight !important; /* System color for high contrast */
+    color: Highlight !important; /* System color for high contrast */
+}
+
+.high-contrast .d-flex.justify-content-end.p-2[aria-label="Accessibility options"] .dark-mode-toggle:hover {
+    background: Highlight !important; /* System color for high contrast */
+    color: CanvasText !important; /* System color for high contrast */
+}
+
+/* Windows High Contrast Mode Support */
+/* --- Strong High Contrast Global Override --- */
+body.high-contrast,
+.high-contrast body,
+.high-contrast main,
+.high-contrast .container,
+.high-contrast .container-fluid,
+.high-contrast .card,
+.high-contrast .modal-content,
+.high-contrast .navbar,
+.high-contrast nav,
+.high-contrast .btn,
+.high-contrast .table,
+.high-contrast .dropdown-menu {
+  background: #000 !important;
+  color: #fff !important;
+  border-color: #fff !important;
+}
+
+.high-contrast a,
+.high-contrast .btn-link,
+.high-contrast .icon,
+.high-contrast i,
+.high-contrast .bi {
+  color: #ff0 !important;
+  text-decoration: underline !important;
+  filter: none !important;
+}
+
+
+.high-contrast section,
+.high-contrast .section,
+.high-contrast .content,
+.high-contrast .content-wrapper,
+.high-contrast .row,
+.high-contrast .col,
+.high-contrast .hero-section,
+.high-contrast .card-body,
+.high-contrast .card-header,
+.high-contrast .card-footer,
+.high-contrast .well,
+.high-contrast .panel,
+.high-contrast .panel-body,
+.high-contrast .panel-heading,
+.high-contrast .panel-footer {
+  background: #000 !important;
+  color: #fff !important;
+  border-color: #fff !important;
+}
+
+
+
+
+
+
+
+
+@media (forced-colors: active) {
+  .hero-section,
+  .hero-section * {
+    color: CanvasText !important;
+    background: Canvas !important;
+    background-image: none !important;
+    border-color: ButtonText !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  .hero-overlay {
+    display: none !important;
+  }
+  .hero-section {
+    background: Canvas !important;
+    background-image: none !important;
+  }
+  .hero-overlay {
+    display: none !important;
+  }
+  body,
+  .hero-section,
+  .cta-section,
+  .services-section,
+  .service-card,
+  .recent-articles-section,
+  .card,
+  .card-landing {
+    background: Canvas !important;
+    color: CanvasText !important;
+    border-color: ButtonText !important;
+  }
+  .btn,
+  .btn-primary,
+  .btn-light {
+    background: ButtonFace !important;
+    color: ButtonText !important;
+    border-color: ButtonText !important;
+  }
+  a,
+  .btn a {
+    color: LinkText !important;
+    text-decoration: underline;
+  }
+  .hero-overlay,
+  .hero-section::before,
+  .hero-section::after {
+    background: none !important;
+    background-image: none !important;
+  }
+  .service-card i,
+  .card-landing .icon-landing {
+    color: ButtonText !important;
+  }
 }

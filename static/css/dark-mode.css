@@ -2,7 +2,7 @@
 
 [data-bs-theme=dark] .navbar .nav-link,
 [data-bs-theme=dark] .navbar .nav-link:visited {
-    color: #fff !important;
+    color: var(--dark-text, #fff) !important; /* Uses theme variable, fallback provided */
     opacity: 0.7;
     background: transparent !important;
 }
@@ -10,7 +10,7 @@
 [data-bs-theme=dark] .navbar .nav-link.active,
 [data-bs-theme=dark] .navbar .nav-link:focus,
 [data-bs-theme=dark] .navbar .nav-link:hover {
-    color: #fff !important;
+    color: var(--dark-text, #fff) !important; /* Uses theme variable, fallback provided */
     opacity: 1 !important;
     background: transparent !important;
 }
@@ -18,11 +18,11 @@
 
 
 [data-bs-theme=dark] {
-    --bs-body-color: #e3e3e3;
+    --bs-body-color: var(--dark-body-color, #e3e3e3); /* Uses theme variable, fallback provided */
     --bs-body-bg: #212529;
-    --bs-border-color: #495057;
-    --bs-primary: #6366f1;
-    --bs-primary-rgb: 99, 102, 241;
+    --bs-border-color: var(--dark-border, #495057); /* Uses theme variable, fallback provided */
+    --bs-primary: #75A47F;
+    --bs-primary-rgb: 117, 164, 127;
     --bs-secondary: #6c757d;
     --bs-secondary-rgb: 108, 117, 125;
     --bs-success: #198754;
@@ -45,32 +45,32 @@
 }
 
 [data-bs-theme=dark] .sidebar .nav-link {
-    color: #e3e3e3;
+    color: var(--dark-body-color, #e3e3e3); /* Uses theme variable, fallback provided */
 }
 
 [data-bs-theme=dark] .sidebar .nav-link:hover {
-    background-color: #495057;
+    background-color: var(--dark-bg-hover, #495057); /* Uses theme variable, fallback provided */
 }
 
 [data-bs-theme=dark] .card {
-    background-color: #2c3034;
-    border-color: #495057;
+    background-color: var(--dark-card-bg, #2c3034); /* Uses theme variable, fallback provided */
+    border-color: var(--dark-border, #495057); /* Uses theme variable, fallback provided */
 }
 
 [data-bs-theme=dark] .table {
-    --bs-table-color: #e3e3e3;
+    --bs-table-color: var(--dark-body-color, #e3e3e3); /* Uses theme variable, fallback provided */
     --bs-table-bg: #2c3034;
-    --bs-table-border-color: #495057;
+    --bs-table-border-color: var(--dark-border, #495057); /* Uses theme variable, fallback provided */
 }
 
 [data-bs-theme=dark] .table-striped>tbody>tr:nth-of-type(odd)>* {
     --bs-table-accent-bg: #343a40;
-    color: #e3e3e3;
+    color: var(--dark-body-color, #e3e3e3); /* Uses theme variable, fallback provided */
 }
 
 [data-bs-theme=dark] .table-hover>tbody>tr:hover>* {
     --bs-table-accent-bg: #495057;
-    color: #e3e3e3;
+    color: var(--dark-body-color, #e3e3e3); /* Uses theme variable, fallback provided */
 }
 
 /* Force dark mode for table headers */
@@ -82,35 +82,35 @@
     --bs-table-bg: #343a40 !important;
     --bs-table-color: #e3e3e3 !important;
     --bs-table-border-color: #495057 !important;
-    background-color: #343a40 !important;
+    background-color: var(--dark-bg-alt, #343a40) !important; /* Uses theme variable, fallback provided */
     color: #e3e3e3 !important;
 }
 
 [data-bs-theme=dark] .table th,
 [data-bs-theme=dark] .table thead th,
 [data-bs-theme=dark] .table> :not(caption)>*>th {
-    background-color: #343a40 !important;
+    background-color: var(--dark-bg-alt, #343a40) !important; /* Uses theme variable, fallback provided */
     color: #e3e3e3 !important;
     border-color: #495057 !important;
 }
 
 [data-bs-theme=dark] .form-control,
 [data-bs-theme=dark] .form-select {
-    background-color: #2c3034;
-    border-color: #495057;
-    color: #e3e3e3;
+    background-color: var(--dark-card-bg, #2c3034); /* Uses theme variable, fallback provided */
+    border-color: var(--dark-border, #495057); /* Uses theme variable, fallback provided */
+    color: var(--dark-body-color, #e3e3e3); /* Uses theme variable, fallback provided */
 }
 
 [data-bs-theme=dark] .form-control:focus,
 [data-bs-theme=dark] .form-select:focus {
-    background-color: #2c3034;
-    color: #e3e3e3;
+    background-color: var(--dark-card-bg, #2c3034); /* Uses theme variable, fallback provided */
+    color: var(--dark-body-color, #e3e3e3); /* Uses theme variable, fallback provided */
 }
 
 /* Button styles */
 [data-bs-theme=dark] .btn-outline-secondary {
     border-color: #6c757d;
-    color: #e3e3e3;
+    color: var(--dark-body-color, #e3e3e3); /* Uses theme variable, fallback provided */
 }
 
 [data-bs-theme=dark] .btn-outline-secondary:hover {
@@ -120,7 +120,7 @@
 
 /* Badge styles */
 [data-bs-theme=dark] .badge.bg-primary {
-    background-color: #0d6efd !important;
+    background-color: #75A47F !important;
 }
 
 [data-bs-theme=dark] .badge.bg-secondary {
@@ -133,7 +133,7 @@
 
 /* Job details styles */
 [data-bs-theme=dark] .bg-light {
-    background-color: #343a40 !important;
+    background-color: var(--dark-bg-alt, #343a40) !important; /* Uses theme variable, fallback provided */
     color: #e3e3e3 !important;
 }
 
@@ -142,7 +142,7 @@
 }
 
 [data-bs-theme=dark] .card-header.bg-primary {
-    background-color: #0d6efd !important;
+    background-color: #75A47F !important;
 }
 
 [data-bs-theme=dark] .card-header.bg-secondary {
@@ -150,7 +150,7 @@
 }
 
 [data-bs-theme=dark] .text-primary {
-    color: #0d6efd !important;
+    color: #75A47F !important;
 }
 
 [data-bs-theme=dark] .badge.bg-light {
@@ -173,15 +173,15 @@
 /* Dropdown styles */
 [data-bs-theme=dark] .dropdown-menu {
     background-color: #343a40;
-    border-color: #495057;
+    border-color: var(--dark-border, #495057); /* Uses theme variable, fallback provided */
 }
 
 [data-bs-theme=dark] .dropdown-item {
-    color: #e3e3e3;
+    color: var(--dark-body-color, #e3e3e3); /* Uses theme variable, fallback provided */
 }
 
 [data-bs-theme=dark] .dropdown-item:hover {
-    background-color: #495057;
+    background-color: var(--dark-bg-hover, #495057); /* Uses theme variable, fallback provided */
     color: #fff;
 }
 
@@ -233,27 +233,27 @@
 [data-bs-theme=dark] .form-control,
 [data-bs-theme=dark] .form-select,
 [data-bs-theme=dark] .input-group-text {
-    background-color: #2c3034;
-    border-color: #495057;
-    color: #e3e3e3;
+    background-color: var(--dark-card-bg, #2c3034); /* Uses theme variable, fallback provided */
+    border-color: var(--dark-border, #495057); /* Uses theme variable, fallback provided */
+    color: var(--dark-body-color, #e3e3e3); /* Uses theme variable, fallback provided */
 }
 
 [data-bs-theme=dark] .form-control:focus,
 [data-bs-theme=dark] .form-select:focus {
-    background-color: #2c3034;
-    color: #e3e3e3;
+    background-color: var(--dark-card-bg, #2c3034); /* Uses theme variable, fallback provided */
+    color: var(--dark-body-color, #e3e3e3); /* Uses theme variable, fallback provided */
     border-color: var(--bs-primary);
     box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
 }
 
 [data-bs-theme=dark] .form-label {
-    color: #e3e3e3;
+    color: var(--dark-body-color, #e3e3e3); /* Uses theme variable, fallback provided */
 }
 
 /* Buttons */
 [data-bs-theme=dark] .btn-outline-secondary {
     border-color: #6c757d;
-    color: #e3e3e3;
+    color: var(--dark-body-color, #e3e3e3); /* Uses theme variable, fallback provided */
 }
 
 [data-bs-theme=dark] .btn-outline-secondary:hover {
@@ -274,8 +274,8 @@
 
 /* Cards */
 [data-bs-theme=dark] .card {
-    background-color: #2c3034;
-    border-color: #495057;
+    background-color: var(--dark-card-bg, #2c3034); /* Uses theme variable, fallback provided */
+    border-color: var(--dark-border, #495057); /* Uses theme variable, fallback provided */
 }
 
 [data-bs-theme=dark] .card-header {
@@ -290,23 +290,23 @@
 
 /* Tables */
 [data-bs-theme=dark] .table {
-    color: #e3e3e3;
+    color: var(--dark-body-color, #e3e3e3); /* Uses theme variable, fallback provided */
 }
 
 [data-bs-theme=dark] .table-striped>tbody>tr:nth-of-type(odd)>* {
     --bs-table-accent-bg: #343a40;
-    color: #e3e3e3;
+    color: var(--dark-body-color, #e3e3e3); /* Uses theme variable, fallback provided */
 }
 
 [data-bs-theme=dark] .table-hover>tbody>tr:hover>* {
     --bs-table-accent-bg: #495057;
-    color: #e3e3e3;
+    color: var(--dark-body-color, #e3e3e3); /* Uses theme variable, fallback provided */
 }
 
 [data-bs-theme=dark] .table thead th {
     background-color: #343a40;
-    color: #e3e3e3;
-    border-color: #495057;
+    color: var(--dark-body-color, #e3e3e3); /* Uses theme variable, fallback provided */
+    border-color: var(--dark-border, #495057); /* Uses theme variable, fallback provided */
 }
 
 /* Badges */
@@ -329,9 +329,9 @@
 
 /* Alerts */
 [data-bs-theme=dark] .alert {
-    background-color: #2c3034;
-    border-color: #495057;
-    color: #e3e3e3;
+    background-color: var(--dark-card-bg, #2c3034); /* Uses theme variable, fallback provided */
+    border-color: var(--dark-border, #495057); /* Uses theme variable, fallback provided */
+    color: var(--dark-body-color, #e3e3e3); /* Uses theme variable, fallback provided */
 }
 
 [data-bs-theme=dark] .alert-info {
@@ -342,23 +342,23 @@
 
 /* List groups */
 [data-bs-theme=dark] .list-group-item {
-    background-color: #2c3034;
-    border-color: #495057;
-    color: #e3e3e3;
+    background-color: var(--dark-card-bg, #2c3034); /* Uses theme variable, fallback provided */
+    border-color: var(--dark-border, #495057); /* Uses theme variable, fallback provided */
+    color: var(--dark-body-color, #e3e3e3); /* Uses theme variable, fallback provided */
 }
 
 /* Dropdowns */
 [data-bs-theme=dark] .dropdown-menu {
     background-color: #343a40;
-    border-color: #495057;
+    border-color: var(--dark-border, #495057); /* Uses theme variable, fallback provided */
 }
 
 [data-bs-theme=dark] .dropdown-item {
-    color: #e3e3e3;
+    color: var(--dark-body-color, #e3e3e3); /* Uses theme variable, fallback provided */
 }
 
 [data-bs-theme=dark] .dropdown-item:hover {
-    background-color: #495057;
+    background-color: var(--dark-bg-hover, #495057); /* Uses theme variable, fallback provided */
     color: #fff;
 }
 
@@ -368,7 +368,7 @@
 
 /* Navbar */
 [data-bs-theme=dark] .navbar {
-    background: linear-gradient(90deg, #4a6da7 0%, #6a5acd 100%) !important;
+    background: linear-gradient(90deg, var(--primary, #75A47F) 0%, var(--primary-dark, #5A8063) 100%) !important; /* Uses theme variables, fallback provided */
 }
 
 [data-bs-theme=dark] .navbar-dark .navbar-nav .nav-link {
@@ -376,7 +376,7 @@
 }
 
 [data-bs-theme=dark] .navbar-dark .navbar-nav .nav-link:hover {
-    color: #ffffff;
+    color: var(--dark-text, #fff); /* Uses theme variable, fallback provided */
 }
 
 /* Theme toggle button */
@@ -418,8 +418,8 @@
 
 /* Modal */
 [data-bs-theme=dark] .modal-content {
-    background-color: #2c3034;
-    border-color: #495057;
+    background-color: var(--dark-card-bg, #2c3034); /* Uses theme variable, fallback provided */
+    border-color: var(--dark-border, #495057); /* Uses theme variable, fallback provided */
 }
 
 [data-bs-theme=dark] .modal-header {
@@ -432,13 +432,13 @@
 
 /* Pagination */
 [data-bs-theme=dark] .pagination .page-link {
-    background-color: #2c3034;
-    border-color: #495057;
-    color: #e3e3e3;
+    background-color: var(--dark-card-bg, #2c3034); /* Uses theme variable, fallback provided */
+    border-color: var(--dark-border, #495057); /* Uses theme variable, fallback provided */
+    color: var(--dark-body-color, #e3e3e3); /* Uses theme variable, fallback provided */
 }
 
 [data-bs-theme=dark] .pagination .page-link:hover {
-    background-color: #495057;
+    background-color: var(--dark-bg-hover, #495057); /* Uses theme variable, fallback provided */
     color: #fff;
 }
 
@@ -451,7 +451,7 @@
 /* Tooltips */
 [data-bs-theme=dark] .tooltip {
     --bs-tooltip-bg: #343a40;
-    --bs-tooltip-color: #e3e3e3;
+    --bs-tooltip-color: var(--dark-body-color, #e3e3e3); /* Uses theme variable, fallback provided */
 }
 
 /* Scrollbar */

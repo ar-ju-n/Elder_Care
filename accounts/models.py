@@ -7,6 +7,18 @@ class User(AbstractUser):
     CAREGIVER = 'caregiver'
     FAMILY = 'family'
     ADMIN = 'admin'
+
+    @property
+    def upvotes_received(self):
+        # Import here to avoid circular import
+        from forum.models import Reply
+        return sum(reply.upvotes.count() for reply in self.forum_replies.all())
+
+    @property
+    def best_answers(self):
+        # Import here to avoid circular import
+        from forum.models import Reply
+        return self.forum_replies.filter(is_best_answer=True).count()
     
     ROLE_CHOICES = [
         (ELDERLY, 'Elderly'),
@@ -67,6 +79,18 @@ class User(AbstractUser):
     is_pending_deletion = models.BooleanField(default=False)
     scheduled_deletion_at = models.DateTimeField(null=True, blank=True)
 
+    PUBLIC = 'public'
+    PRIVATE = 'private'
+    PROFILE_VISIBILITY_CHOICES = [
+        (PUBLIC, 'Public'),
+        (PRIVATE, 'Private'),
+    ]
+    profile_visibility = models.CharField(
+        max_length=10,
+        choices=PROFILE_VISIBILITY_CHOICES,
+        default=PUBLIC,
+    )
+
 class CaregiverVerification(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='caregiver_verification')
     government_id_number = models.CharField(max_length=100, blank=True)
@@ -90,3 +114,30 @@ class AccountDeletionRequest(models.Model):
 
     def __str__(self):
         return f"Deletion request for {self.user.username}"
+
+class EmergencyContact(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='emergency_contacts')
+    name = models.CharField(max_length=100)
+    relationship = models.CharField(max_length=50, blank=True)
+    phone = models.CharField(max_length=30)
+    is_primary = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.name} ({self.relationship}) - {self.phone}"
+
+class MedicationReminder(models.Model):
+    NOTIFY_CHOICES = [
+        ('email', 'Email'),
+        ('browser', 'Browser'),
+    ]
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='medication_reminders')
+    medication_name = models.CharField(max_length=100)
+    dosage = models.CharField(max_length=100, blank=True)
+    notes = models.TextField(blank=True)
+    time_of_day = models.TimeField()
+    notification_method = models.CharField(max_length=10, choices=NOTIFY_CHOICES, default='email')
+    active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.medication_name} at {self.time_of_day} for {self.user.username}"

@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-7">
+      <div class="card shadow-lg border-0 animate__animated animate__fadeInUp">
+        <div class="card-body p-5">
+          <h2 class="card-title text-center fw-bold text-primary mb-4">
+            <i class="bi bi-calendar-event me-2"></i>{{ event.title }}
+          </h2>
+          <ul class="list-unstyled mb-4">
+            <li class="mb-2">
+              <i class="bi bi-clock me-1 text-success"></i>
+              <strong>Date:</strong> {{ event.start_time|date:"M d, Y H:i" }}
+            </li>
+            {% if event.end_time %}
+            <li class="mb-2">
+              <i class="bi bi-hourglass-bottom me-1 text-warning"></i>
+              <strong>Ends:</strong> {{ event.end_time|date:"M d, Y H:i" }}
+            </li>
+            {% endif %}
+            <li class="mb-2">
+              <i class="bi bi-geo-alt me-1 text-danger"></i>
+              <strong>Location:</strong> {{ event.location }}
+            </li>
+          </ul>
+          <p class="mb-4">{{ event.description }}</p>
+          <div class="mb-4">
+            <strong><i class="bi bi-people-fill me-1"></i>Attendees:</strong> {{ event.attendees.count }}
+            {% if event.attendees.count > 0 %}
+              <ul class="mt-2">
+                {% for attendee in event.attendees.all %}
+                  <li>
+                    <i class="bi bi-person-circle me-1"></i>
+                    {% if attendee.get_full_name %}
+                      {{ attendee.get_full_name }}
+                    {% else %}
+                      {{ attendee.username }}
+                    {% endif %}
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+          <div class="mb-4">
+            {% if user.is_authenticated %}
+              <form method="post" action="{% url 'event_rsvp' event.pk %}">
+                {% csrf_token %}
+                {% if user in event.attendees.all %}
+                  <button type="submit" class="btn btn-danger rounded-pill px-4">Cancel RSVP</button>
+                  <span class="text-success ms-3 fw-semibold">You are attending this event.</span>
+                {% else %}
+                  <button type="submit" class="btn btn-primary rounded-pill px-4">RSVP</button>
+                {% endif %}
+              </form>
+            {% else %}
+              <div class="alert alert-info mt-3">
+                <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="alert-link">Log in</a> to RSVP for this event.
+              </div>
+            {% endif %}
+          </div>
+          <div class="text-center mt-4">
+            <a href="{% url 'event_list' %}" class="btn btn-outline-secondary rounded-pill">
+              <i class="bi bi-arrow-left me-1"></i>Back to Events
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

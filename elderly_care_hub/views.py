@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from custom_admin.models import ContactMessage
+from custom_admin.models import ContactMessage, HomepageSlide
 from content.models import Article
 
 def contact_view(request):
@@ -19,7 +19,8 @@ def contact_view(request):
 
 def landing(request):
     articles = Article.objects.all().order_by('-published_at')[:3]
-    return render(request, 'landing.html', {'articles': articles})
+    slides = HomepageSlide.objects.all()
+    return render(request, 'landing.html', {'articles': articles, 'slides': slides})
 
 def about(request):
     return render(request, 'about.html')

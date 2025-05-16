@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-4">
+  <h2>Start a New Topic</h2>
+  <form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="id_category" class="form-label">Category</label>
+      <select name="category" id="id_category" class="form-select" required>
+        <option value="">-- Select Category --</option>
+        {% for category in categories %}
+          <option value="{{ category.id }}" {% if topic and topic.category and topic.category.id == category.id %}selected{% endif %}>{{ category.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="mb-3">
+      <label for="id_title" class="form-label">Title</label>
+      <input type="text" name="title" id="id_title" class="form-control" value="{% if topic %}{{ topic.title }}{% endif %}" required>
+    </div>
+    <div class="mb-3">
+      <label for="id_body" class="form-label">Message</label>
+      <textarea name="body" id="id_body" class="form-control" rows="5" required>{% if topic %}{{ topic.body }}{% endif %}</textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">{% if edit_mode %}Save Changes{% else %}Post Topic{% endif %}</button>
+    <a href="{% url 'forum:topic_list' %}" class="btn btn-link">Cancel</a>
+  </form>
+</div>
+{% endblock %}

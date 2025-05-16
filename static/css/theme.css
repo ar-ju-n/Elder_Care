@@ -1,46 +1,179 @@
 /* Modern Theme for Elder Care Admin Interface */
 
 :root {
-  --primary: #4a6da7;      /* New primary color - a calming blue */
-  --primary-dark: #3a5a8c; /* Darker shade for hover states */
-  --secondary: #8b5cf6;    /* Purple */
-  --success: #10b981;      /* Emerald */
-  --info: #3b82f6;         /* Blue */
-  --warning: #f59e0b;      /* Amber */
-  --danger: #ef4444;       /* Red */
-  --light: #f3f4f6;        /* Gray 100 */
-  --dark: #1f2937;         /* Gray 800 */
-  --body-bg: #f9fafb;      /* Gray 50 */
-  --body-color: #111827;   /* Gray 900 */
-  --border-color: #e5e7eb; /* Gray 200 */
-  --card-bg: #ffffff;      /* White */
+  /* Primary Colors */
+  --primary: #75A47F;
+  --primary-dark: #5a8063;
+  --primary-light: #9dbea5;
+  --primary-lighter: #e9f2eb;
+  
+  /* Secondary Colors */
+  --secondary: #4a6da7;
+  --secondary-dark: #385582;
+  --secondary-light: #7691c1;
+  
+  /* Accent Colors */
+  --accent: #F5DAD2;
+  --accent-dark: #e6b5a8;
+  --accent-light: #faf0ec;
+  
+  /* Neutral Colors */
+  --neutral-50: #f8f9fa;
+  --neutral-100: #f0f2f5;
+  --neutral-200: #e9ecef;
+  --neutral-300: #dee2e6;
+  --neutral-400: #ced4da;
+  --neutral-500: #adb5bd;
+  --neutral-600: #6c757d;
+  --neutral-700: #495057;
+  --neutral-800: #343a40;
+  --neutral-900: #212529;
+  
+  /* Semantic Colors */
+  --success: #75A47F;
+  --info: #4a6da7;
+  --warning: #ffc107;
+  --danger: #dc3545;
+  
+  /* Component Colors */
+  --body-bg: var(--neutral-50);
+  --body-color: var(--neutral-900);
+  --card-bg: #ffffff;
+  --card-border: var(--neutral-200);
+  --input-bg: #ffffff;
+  --input-border: var(--neutral-300);
+  --input-focus-border: var(--primary);
+  
+  /* Link Colors */
+  --link-color: var(--primary-dark);
+  --link-hover-color: var(--primary);
+  
+  /* Button Colors */
+  --btn-primary-bg: var(--primary);
+  --btn-primary-border: var(--primary);
+  --btn-primary-hover-bg: var(--primary-dark);
+  --btn-primary-hover-border: var(--primary-dark);
+  
+  /* Navbar Colors */
+  --navbar-bg: var(--primary);
+  --navbar-color: #ffffff;
+  --navbar-hover-color: var(--accent-light);
+
+  /* Theme Toggle Icon Alignment */
+  --theme-toggle-icon-size: 1.25rem;
+  --theme-toggle-icon-margin: 2px;
+
+  /* Footer Colors */
+  --footer-bg: var(--neutral-800);
+  --footer-color: var(--neutral-200);
+  
+  /* Dark Mode Colors */
+  --dark-bg: #1a1f24;
+  --dark-card-bg: #242a32;
+  --dark-border: #2d353e;
+  --dark-text: #e9ecef;
+  
   --sidebar-width: 250px;
   --header-height: 60px;
   --transition-speed: 0.3s;
 }
 
-/* Dark mode variables */
-[data-bs-theme=dark] {
-  --primary: #818cf8;      /* Lighter indigo */
-  --primary-dark: #6366f1; /* Indigo */
-  --secondary: #a78bfa;    /* Lighter purple */
-  --success: #34d399;      /* Lighter emerald */
-  --info: #60a5fa;         /* Lighter blue */
-  --warning: #fbbf24;      /* Lighter amber */
-  --danger: #f87171;       /* Lighter red */
-  --light: #374151;        /* Gray 700 */
-  --dark: #f9fafb;         /* Gray 50 */
-  --body-bg: #111827;      /* Gray 900 */
-  --body-color: #f9fafb;   /* Gray 50 */
-  --border-color: #374151; /* Gray 700 */
-  --card-bg: #1f2937;      /* Gray 800 */
+/* Dark mode overrides */
+[data-bs-theme="dark"] {
+  --body-bg: var(--dark-bg);
+  --body-color: var(--dark-text);
+  --card-bg: var(--dark-card-bg);
+  --card-border: var(--dark-border);
+  --input-bg: var(--dark-card-bg);
+  --input-border: var(--dark-border);
+  --navbar-bg: var(--primary-dark);
+  --navbar-color: var(--dark-text);
+  --link-color: var(--primary-light);
+  --link-hover-color: var(--primary-lighter);
 }
 
-/* Apply custom theme colors to Bootstrap components */
+/* Apply theme colors to Bootstrap components */
+.btn-primary {
+  background-color: var(--btn-primary-bg);
+  border-color: var(--btn-primary-border);
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background-color: var(--btn-primary-hover-bg);
+  border-color: var(--btn-primary-hover-border);
+}
+
+.btn-outline-primary {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: #ffffff;
+}
+
+.card {
+  background-color: var(--card-bg);
+  border-color: var(--card-border);
+}
+
+.form-control:focus {
+  border-color: var(--input-focus-border);
+  box-shadow: 0 0 0 0.25rem rgba(117, 164, 127, 0.25);
+}
+
+.nav-link {
+  color: var(--link-color);
+}
+
+.nav-link:hover {
+  color: var(--link-hover-color);
+}
+
 .bg-primary {
   background-color: var(--primary) !important;
 }
 
+.text-primary {
+  color: var(--primary) !important;
+}
+
+.border-primary {
+  border-color: var(--primary) !important;
+}
+
+/* Progress bars and other indicators */
+.progress-bar {
+  background-color: var(--primary);
+}
+
+/* Alerts */
+.alert-primary {
+  background-color: var(--primary-lighter);
+  border-color: var(--primary-light);
+  color: var(--primary-dark);
+}
+
+/* List groups */
+.list-group-item.active {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+/* Pagination */
+.page-link {
+  color: var(--primary);
+}
+
+.page-item.active .page-link {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+/* Apply custom theme colors to Bootstrap components */
 .bg-secondary {
   background-color: var(--secondary) !important;
 }
@@ -51,16 +184,6 @@
 
 .bg-danger {
   background-color: var(--danger) !important;
-}
-
-.btn-primary {
-  background-color: var(--primary);
-  border-color: var(--primary);
-}
-
-.btn-primary:hover {
-  background-color: var(--primary-dark);
-  border-color: var(--primary-dark);
 }
 
 .btn-success {
@@ -92,14 +215,6 @@ body {
 }
 
 /* Card styles */
-.card {
-  background-color: var(--card-bg);
-  border-color: var(--border-color);
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: all var(--transition-speed) ease;
-}
-
 .card:hover {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }

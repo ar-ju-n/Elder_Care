@@ -15,12 +15,12 @@
 }
 .chatbot-card-header {
   border-radius: 1.5rem 1.5rem 0 0;
-  background: #0d6efd !important;
+  background: #12346862;
   color: #fff !important;
   box-shadow: 0 2px 8px rgba(13,110,253,0.08);
 }
 .chatbot-title {
-  font-size: 2rem;
+  font-size: 1rem;
   letter-spacing: -1px;
 }
 .chatbot-messages {
@@ -38,7 +38,7 @@
   margin-bottom: 1rem;
 }
 .bot-message .message-content {
-  background: #35374a;
+  background: #08a600a8;
   color: #f3f4f6;
   border-radius: 1.5rem 1.5rem 1.5rem 0.5rem;
   padding: 1rem 1.5rem;
@@ -49,7 +49,7 @@
   justify-content: flex-end;
 }
 .user-message .message-content {
-  background: #007bff;
+  background: #76b97f5d;
   color: #fff;
   border-radius: 1.5rem 1.5rem 0.5rem 1.5rem;
   padding: 1rem 1.5rem;

@@ -120,7 +120,7 @@ def admin_logout(request):
     """
     logout(request)
     messages.success(request, 'You have been successfully logged out.')
-    return redirect('custom_admin:admin_login')
+    return redirect('accounts:logout')
 
 
 @login_required

@@ -11,28 +11,17 @@
         <h1 class="mb-4">Videos</h1>
         <!-- Featured Video -->
         {% if videos and videos|length > 0 %}
-            <div class="featured-video card mb-5 p-4 shadow-sm bg-light">
-    <h2 class="h4">Featured: {{ videos.0.title }}</h2>
-    <div class="mb-2 text-muted small">
-        <i class="bi bi-calendar3 me-1"></i> {{ videos.0.published_at|date:"F j, Y" }}
-        {% if videos.0.author %} | <i class="bi bi-person"></i> {{ videos.0.author }}{% endif %}
+            <div id="featured-video-container" class="featured-video card mb-5 p-4 shadow-sm bg-light">
+    <h2 id="featured-title" class="h4">Featured: {{ videos.0.title }}</h2>
+    <div id="featured-meta" class="mb-2 text-muted small">
+        <i class="bi bi-calendar3 me-1"></i> <span id="featured-date">{{ videos.0.published_at|date:"F j, Y" }}</span>
+        {% if videos.0.author %} | <i class="bi bi-person"></i> <span id="featured-author">{{ videos.0.author }}</span>{% endif %}
     </div>
-    <p>{{ videos.0.description|truncatewords:30 }}</p>
-    {% if videos.0.file %}
-    <video class="w-100 mb-3" controls>
-        <source src="{{ videos.0.file.url }}">
+    <p id="featured-description">{{ videos.0.description|truncatewords:30 }}</p>
+    <video id="featured-video" class="w-100 mb-3" controls>
+        <source id="featured-source" src="{% if videos.0.file %}{{ videos.0.file.url }}{% elif videos.0.url %}{{ videos.0.url }}{% endif %}">
         Your browser does not support the video tag.
     </video>
-{% elif 'youtube.com' in videos.0.url or 'youtu.be' in videos.0.url %}
-    <div class="ratio ratio-16x9 mb-3">
-        <iframe src="{{ videos.0.url|youtube_embed }}" frameborder="0" allowfullscreen></iframe>
-    </div>
-{% elif videos.0.url %}
-    <video class="w-100 mb-3" controls>
-        <source src="{{ videos.0.url }}">
-        Your browser does not support the video tag.
-    </video>
-{% endif %} 
 </div>
         {% endif %}
         <!-- Filter/Tags -->
@@ -53,37 +42,42 @@
             {% for video in videos %}
                 {% if not forloop.first %}
                 <div class="col-md-4">
-                    <div class="card h-100 shadow border-0">
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title">{{ video.title }}</h5>
-                            <div class="mb-2 small text-muted">
-                                <i class="bi bi-calendar3 me-1"></i> {{ video.published_at|date:"F j, Y" }}
-                                {% if video.author %} | <i class="bi bi-person"></i> {{ video.author }}{% endif %}
-                            </div>
-                            <p class="card-text">{{ video.description|truncatewords:15 }}</p>
-                            <div class="mb-2">
-                                {% for tag in video.tags.all %}
-                                    <span class="badge bg-secondary me-1">{{ tag.name }}</span>
-                                {% endfor %}
-                            </div>
-                            {% if video.file %}
-    <video class="w-100 mb-2" controls>
-        <source src="{{ video.file.url }}">
-        Your browser does not support the video tag.
-    </video>
+    <div class="card h-100 shadow border-0 video-card-js"
+         data-url="{% if video.file %}{{ video.file.url }}{% elif video.url %}{{ video.url }}{% endif %}"
+         data-title="{{ video.title }}"
+         data-description="{{ video.description|truncatewords:30 }}"
+         data-date="{{ video.published_at|date:'F j, Y' }}"
+         data-author="{{ video.author }}">
+        <div class="card-body d-flex flex-column">
+            <h5 class="card-title">{{ video.title }}</h5>
+            <div class="mb-2 small text-muted">
+                <i class="bi bi-calendar3 me-1"></i> {{ video.published_at|date:"F j, Y" }}
+                {% if video.author %} | <i class="bi bi-person"></i> {{ video.author }}{% endif %}
+            </div>
+            <p class="card-text">{{ video.description|truncatewords:15 }}</p>
+            <div class="mb-2">
+                {% for tag in video.tags.all %}
+                    <span class="badge bg-secondary me-1">{{ tag.name }}</span>
+                {% endfor %}
+            </div>
+            {% if video.file %}
+<video class="w-100 mb-2" controls>
+    <source src="{{ video.file.url }}">
+    Your browser does not support the video tag.
+</video>
 {% elif 'youtube.com' in video.url or 'youtu.be' in video.url %}
-    <div class="ratio ratio-16x9 mb-2">
-        <iframe src="{{ video.url|youtube_embed }}" frameborder="0" allowfullscreen></iframe>
-    </div>
+<div class="ratio ratio-16x9 mb-2">
+    <iframe src="{{ video.url|youtube_embed }}" frameborder="0" allowfullscreen></iframe>
+</div>
 {% elif video.url %}
-    <video class="w-100 mb-2" controls>
-        <source src="{{ video.url }}">
-        Your browser does not support the video tag.
-    </video>
+<video class="w-100 mb-2" controls>
+    <source src="{{ video.url }}">
+    Your browser does not support the video tag.
+</video>
 {% endif %}
-                        </div>
-                    </div>
-                </div>
+        </div>
+    </div>
+</div>
                 {% endif %}
             {% empty %}
                 <div class="col-12">
@@ -96,7 +90,9 @@
     </div>
 </section>
 {% endblock %}
-
+{% block extra_js %}
+<script src="{% static 'js/video_featured.js' %}"></script>
+{% endblock %}
 
 
 

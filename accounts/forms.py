@@ -55,7 +55,7 @@ class CustomUserCreationForm(UserCreationForm):
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['username', 'email', 'bio', 'profile_picture', 'language_preference', 'timezone', 'email_notifications']
+        fields = ['username', 'email', 'bio', 'profile_picture', 'language_preference', 'timezone', 'email_notifications', 'profile_visibility']
         widgets = {
             'username': forms.TextInput(attrs={'class': 'form-control'}),
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
@@ -63,7 +63,8 @@ class UserProfileForm(forms.ModelForm):
             'profile_picture': forms.FileInput(attrs={'class': 'form-control'}),
             'language_preference': forms.Select(attrs={'class': 'form-select'}),
             'timezone': forms.Select(attrs={'class': 'form-select'}),
-            'email_notifications': forms.CheckboxInput(attrs={'class': 'form-check-input'})
+            'email_notifications': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'profile_visibility': forms.Select(attrs={'class': 'form-select'})
         }
 
 class CaregiverVerificationForm(forms.ModelForm):
@@ -108,6 +109,32 @@ class CustomAuthenticationForm(AuthenticationForm):
                 "Admin users cannot log in here.",
                 code='invalid_login',
             )
+
+class EmergencyContactForm(forms.ModelForm):
+    class Meta:
+        from .models import EmergencyContact
+        model = EmergencyContact
+        fields = ['name', 'relationship', 'phone', 'is_primary']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Full Name'}),
+            'relationship': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Relationship (e.g., Daughter, Doctor)'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number'}),
+            'is_primary': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+class MedicationReminderForm(forms.ModelForm):
+    class Meta:
+        from .models import MedicationReminder
+        model = MedicationReminder
+        fields = ['medication_name', 'dosage', 'notes', 'time_of_day', 'notification_method', 'active']
+        widgets = {
+            'medication_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Medication Name'}),
+            'dosage': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Dosage (e.g., 1 tablet)'}),
+            'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'Notes (optional)'}),
+            'time_of_day': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
+            'notification_method': forms.Select(attrs={'class': 'form-select'}),
+            'active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
 
 
 

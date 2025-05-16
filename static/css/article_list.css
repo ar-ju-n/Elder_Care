@@ -13,7 +13,7 @@
 }
 .article-list-section .icon-article-list {
   font-size: 3rem;
-  color: #0d6efd;
+  color: var(--article-icon, #0d6efd); /* Uses theme variable, fallback provided */
 }
 .article-list-section .article-card-title {
   font-size: 1.3rem;
@@ -30,12 +30,12 @@
 
 /* Dynamic text color classes */
 .block-text-007bff { color: #007bff; }
-.block-text-ff0000 { color: #ff0000; }
+.block-text-ff0000 { color: var(--article-danger, #ff0000); /* Uses theme variable, fallback provided */ }
 /* Add more as needed */
 
 /* Dynamic border color classes */
-.block-border-007bff { border: 2px solid #007bff; }
-.block-border-ff0000 { border: 2px solid #ff0000; }
+.block-border-007bff { border: 2px solid var(--article-primary, #007bff); /* Uses theme variable, fallback provided */ }
+.block-border-ff0000 { border: 2px solid var(--article-danger, #ff0000); /* Uses theme variable, fallback provided */ }
 /* Add more as needed */
 
 /* Dynamic padding classes */
@@ -120,8 +120,8 @@
 .border-width-4 { border-width: 4px; }
 
 /* Background gradient (example) */
-.bg-gradient-blue { background: linear-gradient(90deg, #007bff, #6c757d); }
-.bg-gradient-pink { background: linear-gradient(90deg, #e66465, #9198e5); }
+.bg-gradient-blue { background: var(--article-gradient-blue, linear-gradient(90deg, #007bff, #6c757d)); /* Uses theme variable, fallback provided */ }
+.bg-gradient-pink { background: var(--article-gradient-pink, linear-gradient(90deg, #e66465, #9198e5)); /* Uses theme variable, fallback provided */ }
 
 /* Example custom class */
 .custom-shadow { box-shadow: 0 6px 24px #0002; }
@@ -140,14 +140,14 @@ body.article-list-page {
   .content-block,
   .card,
   .cta-block {
-    background: #1a1a1a !important;
+    background: var(--article-hc-bg, #1a1a1a) !important; /* Uses theme variable, fallback provided */
     color: #fff !important;
     border: 2px solid #fff !important;
-    box-shadow: 0 2px 16px #fff2;
+    box-shadow: var(--article-hc-shadow, 0 2px 16px #fff2); /* Uses theme variable, fallback provided */
   }
   .btn, .btn-primary {
-    background: #fff !important;
-    color: #000 !important;
+    background: var(--article-hc-btn-bg, #fff) !important; /* Uses theme variable, fallback provided */
+    color: var(--article-hc-btn-text, #000) !important; /* Uses theme variable, fallback provided */
     border: 2px solid #fff !important;
   }
   a, .link, .btn-link {
@@ -158,7 +158,7 @@ body.article-list-page {
     color: #ff0 !important;
   }
   :focus {
-    outline: 3px solid #ff0 !important;
+    outline: 3px solid var(--article-hc-outline, #ff0) !important; /* Uses theme variable, fallback provided */
     outline-offset: 2px;
   }
 }

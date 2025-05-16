@@ -10,7 +10,7 @@
         <form method="post">
           {% csrf_token %}
           <button type="submit" class="btn btn-danger">Delete My Account</button>
-          <a href="{% url 'accounts:profile' %}" class="btn btn-secondary ms-2">Cancel</a>
+          <a href="{% url 'accounts:profile' user.id %}" class="btn btn-secondary ms-2">Cancel</a>
         </form>
       </div>
     </div>

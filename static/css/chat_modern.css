@@ -56,23 +56,23 @@
   border-radius: 50%;
   object-fit: cover;
   margin: 0 10px;
-  background: #e0e7ef;
+  background: var(--chat-avatar-bg, #e0e7ef); /* Uses theme variable, fallback provided */
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  color: #4f8cff;
+  color: var(--chat-avatar-color, #4f8cff); /* Uses theme variable, fallback provided */
   font-size: 1.2rem;
 }
 .message-meta {
   font-size: 0.85em;
-  color: #a0a0a0;
+  color: var(--chat-meta, #a0a0a0); /* Uses theme variable, fallback provided */
   margin-top: 2px;
   text-align: right;
 }
 .typing-indicator {
   padding: 0 20px 10px 20px;
-  color: #666;
+  color: var(--chat-typing, #666); /* Uses theme variable, fallback provided */
   font-style: italic;
   font-size: 0.97rem;
 }
@@ -98,8 +98,8 @@
   margin-right: 10px;
 }
 .chat-input-row button {
-  background: #4f8cff;
-  color: #fff;
+  background: var(--chat-send-btn-bg, #4f8cff); /* Uses theme variable, fallback provided */
+  color: var(--chat-send-btn-color, #fff); /* Uses theme variable, fallback provided */
   border: none;
   border-radius: 18px;
   padding: 10px 22px;
@@ -109,6 +109,6 @@
   transition: background 0.2s;
 }
 .chat-input-row button:hover {
-  background: #3464b6;
+  background: var(--chat-send-btn-hover, #3464b6); /* Uses theme variable, fallback provided */
 }
 

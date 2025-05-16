@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-4">
+  <h2>{% if edit_mode %}Edit Reply{% else %}New Reply{% endif %}</h2>
+  <form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+      <textarea name="body" class="form-control" rows="4" required>{{ reply.body|default_if_none:"" }}</textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">{% if edit_mode %}Save Changes{% else %}Post Reply{% endif %}</button>
+    <a href="{% url 'forum:topic_detail' reply.topic.pk %}" class="btn btn-link">Cancel</a>
+  </form>
+</div>
+{% endblock %}

@@ -7,13 +7,12 @@
 
 {# Set background image via body class, remove inline hero image #}
 
-<div class="section">
-  <div class="row justify-content-center">
-    <div class="col-md-7 col-lg-6">
-      <div class="card shadow-lg mt-4 border-0 animate__animated animate__fadeInUp">
-        <div class="card-body p-5">
-          <h2 class="mb-4 fw-bold text-center text-primary animate__animated animate__fadeInDown">Welcome Back</h2>
-          {% if messages %}
+<div class="login-center-container">
+  <div class="card border-0 shadow-lg animate__animated animate__fadeInUp login-card-glass position-relative">
+    <button type="button" class="btn-close position-absolute end-0 mt-3 me-3" aria-label="Close" onclick="window.location.href='/'"></button>
+    <div class="card-body p-4">
+      <h2 class="fw-bold text-center mb-4" style="color:#4a7c59;">Login Form</h2>
+      {% if messages %}
             {% for message in messages %}
               <div class="alert alert-{{ message.tags }} animate__animated animate__shakeX rounded-pill px-4">
                 <i class="bi bi-exclamation-triangle-fill me-2"></i>
@@ -46,9 +45,12 @@
             </div>
             <div class="mb-4">
               <label for="{{ form.password.id_for_label }}" class="form-label fw-semibold">Password</label>
-              <div class="input-group rounded-pill shadow-sm">
+              <div class="input-group rounded-pill shadow-sm position-relative">
                 <span class="input-group-text bg-white border-0"><i class="bi bi-lock-fill"></i></span>
                 {{ form.password|add_class:'form-control rounded-pill border-0 px-4 py-2' }}
+                <button type="button" class="btn btn-link px-2 position-absolute end-0 top-50 translate-middle-y" id="toggle-password" tabindex="-1" aria-label="Show password">
+                  <i class="bi bi-eye-slash" id="toggle-password-icon"></i>
+                </button>
               </div>
               {% if form.password.errors %}
                 <div class="text-danger small mt-1">{{ form.password.errors }}</div>
@@ -78,6 +80,27 @@
         setTimeout(function() { alert.style.display = 'none'; }, 500);
       });
     }, 2000);
+
+    // Show/hide password toggle
+    const toggleBtn = document.getElementById('toggle-password');
+    const passwordInput = document.querySelector('input[type="password"]');
+    const icon = document.getElementById('toggle-password-icon');
+    if (toggleBtn && passwordInput && icon) {
+      toggleBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (passwordInput.type === 'password') {
+          passwordInput.type = 'text';
+          icon.classList.remove('bi-eye-slash');
+          icon.classList.add('bi-eye');
+          toggleBtn.setAttribute('aria-label', 'Hide password');
+        } else {
+          passwordInput.type = 'password';
+          icon.classList.remove('bi-eye');
+          icon.classList.add('bi-eye-slash');
+          toggleBtn.setAttribute('aria-label', 'Show password');
+        }
+      });
+    }
   });
 </script>
 {% endblock %}
