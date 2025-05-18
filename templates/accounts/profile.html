@@ -2,6 +2,11 @@
 {% load static %}
 
 {% block content %}
+{% if user.is_authenticated and user.is_caregiver and not user.is_verified %}
+  <div class="alert alert-warning text-center mb-3">
+    Your caregiver account is pending admin verification. You will not have full access until approved.
+  </div>
+{% endif %}
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
@@ -91,11 +96,40 @@
 
                     <h6>Edit Profile</h6>
                     {% if form %}
-                        <form method="post" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            {{ form.as_p }}
-                            <button type="submit" class="btn btn-success">Update</button>
-                        </form>
+                        <div id="profile-view-mode">
+                            <button class="btn btn-outline-primary float-end mb-2" onclick="toggleEditProfile(true)"><i class="bi bi-pencil"></i> Edit Profile</button>
+                            <ul class="list-group list-group-flush mb-3">
+                                <li class="list-group-item"><strong>Full Name:</strong> {{ user.full_name|default:'-' }}</li>
+                                <li class="list-group-item"><strong>Username:</strong> {{ user.username }}</li>
+                                <li class="list-group-item"><strong>Email:</strong> {{ user.email }}</li>
+                                <li class="list-group-item"><strong>Bio:</strong> {{ user.bio|default:'-' }}</li>
+                                <li class="list-group-item"><strong>Language Preference:</strong> {{ user.language_preference|default:'-' }}</li>
+                                <li class="list-group-item"><strong>Timezone:</strong> {{ user.timezone|default:'-' }}</li>
+                                <li class="list-group-item"><strong>Email Notifications:</strong> {{ user.email_notifications|yesno:"Enabled,Disabled" }}</li>
+                                <li class="list-group-item"><strong>Profile Visibility:</strong> {{ user.profile_visibility|capfirst }}</li>
+                            </ul>
+                        </div>
+                        <div id="profile-edit-mode" style="display:none;">
+                            <form method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                {% if user.profile_picture %}
+                                    <div class="mb-3 text-center">
+                                        <img src="{{ user.profile_picture.url }}" alt="Profile Picture Preview" class="img-thumbnail rounded-circle" style="width: 100px; height: 100px; object-fit: cover;">
+                                    </div>
+                                {% endif %}
+                                {{ form.as_p }}
+                                <div class="d-flex justify-content-between">
+                                    <button type="button" class="btn btn-secondary" onclick="toggleEditProfile(false)">Cancel</button>
+                                    <button type="submit" class="btn btn-success">Update</button>
+                                </div>
+                            </form>
+                        </div>
+                        <script>
+                            function toggleEditProfile(edit) {
+                                document.getElementById('profile-view-mode').style.display = edit ? 'none' : '';
+                                document.getElementById('profile-edit-mode').style.display = edit ? '' : 'none';
+                            }
+                        </script>
                     {% else %}
                         <p class="text-muted">Profile editing coming soon...</p>
                     {% endif %}
@@ -104,4 +138,6 @@
         </div>
     </div>
 </div>
+<div id="toast-container"></div>
+<script src="{% static 'js/profile.js' %}"></script>
 {% endblock %}

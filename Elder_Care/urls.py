@@ -6,6 +6,7 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', include('custom_admin.urls', namespace='custom_admin')),
     path('djadmin/', admin.site.urls),  # Use /djadmin/ for Django admin
+    path('chat/', include('chat.urls', namespace='chat')),
     # Your other URL patterns
 ]
 

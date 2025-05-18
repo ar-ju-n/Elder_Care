@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/registration.css' %}">
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'js/registration.js' %}"></script>
+{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">Caregiver Registration - Step 1</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+                        <input type="hidden" name="step" value="1">
+                        {% for field in user_form %}
+    <div class="mb-3">
+        {{ field.label_tag }}
+        {{ field }}
+        {% if field.help_text %}
+            <small class="form-text text-muted">{{ field.help_text }}</small>
+        {% endif %}
+        {% for error in field.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+{% endfor %}
+{# Explicitly render profile_picture if not in user_form.fields order #}
+{% if user_form.profile_picture %}
+    <div class="mb-3">
+        {{ user_form.profile_picture.label_tag }}
+        {{ user_form.profile_picture }}
+        {% for error in user_form.profile_picture.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+{% endif %}
+                        <button type="submit" class="btn btn-success w-100">Continue to Step 2</button>
+                    </form>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="{% url 'accounts:login' %}">Already have an account? Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,179 +1,103 @@
-<nav class="navbar navbar-expand-lg navbar-dark shadow-sm" style="background-color: #75A47F !important;" role="navigation" aria-label="Main Navigation" tabindex="0">
-    <div class="container-fluid px-4">
-        <a class="navbar-brand d-flex align-items-center me-4" href="{% url 'landing' %}" role="banner" aria-label="Elderly Care Hub Home">
-            <i class="bi bi-heart-pulse-fill text-success fs-4"></i>
-            <div class="d-flex flex-column">
-                <span class="ms-2 fs-5 fw-bold"> Eldercare Hub</span>
-               
-            </div>
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle main navigation menu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse justify-content-center" id="navbarNav" role="menubar" aria-label="Main Navigation Menu">
-            <ul class="navbar-nav" role="list" aria-label="Main Navigation Items">
-                <li class="nav-item">
-                    <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'landing' %}" {% if request.path == '/' %}aria-current="page"{% endif %}>
-    <i class="bi bi-house-door me-1"></i>Home
-</a>
-</li>
-<li class="nav-item">
-    <a class="nav-link {% if '/forum/' in request.path %}active{% endif %}" href="{% url 'forum:topic_list' %}">
-        <i class="bi bi-people me-1"></i>Forum
+<nav class="navbar navbar-expand-lg navbar-eldercare shadow-sm">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{% url 'landing' %}">ElderCareHub</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+  <li class="nav-item">
+    <a class="nav-link{% if request.path == '/' %} active{% endif %}" href="{% url 'landing' %}">Home</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link{% if request.path == '/about/' %} active{% endif %}" href="{% url 'about' %}">About</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link{% if request.path == '/contact/' %} active{% endif %}" href="{% url 'contact' %}">Contact</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link{% if request.path == '/jobs/' %} active{% endif %}" href="{% url 'jobs:job_list' %}">Jobs</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link{% if request.path == '/content/articles/' %} active{% endif %}" href="{% url 'content:article_list' %}">Resources</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link{% if '/forum/' in request.path %} active{% endif %}" href="{% url 'forum:topic_list' %}">Forum</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link{% if '/events/' in request.path %} active{% endif %}" href="{% url 'events:event_list' %}">Events</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link{% if request.path == '/chat/requests/' %} active{% endif %}" href="{% url 'chat:request_list' %}">Chat</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link{% if '/chatbot/' in request.path %} active{% endif %}" href="{% url 'chatbot:chatbot_view' %}"><i class="bi bi-robot me-1"></i>Chatbot</a>
+  </li>
+  {% if not user.is_authenticated %}
+  <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" id="registerDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" tabindex="0">
+      Register As
     </a>
-</li>
-                <li class="nav-item">
-                    <a class="nav-link {% if 'about' in request.path %}active{% endif %}" href="{% url 'about' %}">
-                        <i class="bi bi-info-circle me-1"></i>About Us
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if 'contact' in request.path %}active{% endif %}" href="{% url 'contact' %}">
-                        <i class="bi bi-envelope me-1"></i>Contact Us
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if 'articles' in request.path %}active{% endif %}" href="{% url 'content:article_list' %}">
-                        <i class="bi bi-journal-text me-1"></i>Articles
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if 'videos' in request.path %}active{% endif %}" href="{% url 'content:video_list' %}">
-                        <i class="bi bi-camera-video me-1"></i>Videos
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if 'event' in request.path %}active{% endif %}" href="{% url 'event_list' %}">
-                        <i class="bi bi-calendar-event me-1"></i>Events
-                    </a>
-                </li>
-                {% if user.is_authenticated and user.is_staff %}
-                <li class="nav-item">
-                    <a class="nav-link {% if 'custom_admin' in request.path %}active{% endif %}" href="{% url 'custom_admin:admin_dashboard' %}">
-                        <i class="bi bi-speedometer2 me-1"></i>Custom Admin
-                    </a>
-                </li>
-                {% endif %}
-                {% if user.is_authenticated and user.is_caregiver %}
-                <li class="nav-item">
-                    <a class="nav-link {% if '/chat/accepted/' in request.path %}active{% endif %}" href="{% url 'chat:accepted_elder_list' %}">
-                        <i class="bi bi-people-fill me-1"></i>Accepted Elders
-                    </a>
-                </li>
-                {% endif %}
-                {% if user.is_authenticated %}
-                    {% if user.is_elderly %}
-                        <li class="nav-item">
-                            <a class="nav-link {% if '/chat/caregivers/' in request.path %}active{% endif %}" href="{% url 'chat:caregiver_list' %}">
-                                <i class="bi bi-person-lines-fill me-1"></i>Caregivers
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {% if '/chat/requests/' in request.path %}active{% endif %}" href="{% url 'chat:request_list' %}">
-                                <i class="bi bi-chat-dots me-1"></i>Chat Requests
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {% if '/chatbot/' in request.path %}active{% endif %}" href="{% url 'chatbot:chatbot_view' %}">
-                                <i class="bi bi-robot me-1"></i>AI Assistant
-                            </a>
-                        </li>
-                    {% elif user.is_caregiver %}
-                        <li class="nav-item">
-                            <a class="nav-link {% if '/chat/requests/' in request.path %}active{% endif %}" href="{% url 'chat:request_list' %}">
-                                <i class="bi bi-chat-dots me-1"></i>Chat Requests
-                            </a>
-                        </li>
-                    {% endif %}
-                {% endif %}
-            </ul>
-            <ul class="navbar-nav ms-auto">
-                <!-- Real-time clock -->
-                <li class="nav-item me-3 d-flex align-items-center">
-                    <div id="real-time-clock" class="text-dark" role="status" aria-live="polite">
-                        <i class="bi bi-clock me-1"></i>
-                        <span id="current-time" {% if user.is_authenticated and user.timezone %}data-timezone="{{ user.timezone }}"{% endif %}>00:00:00</span>
-                    </div>
-                </li>
-                <!-- Notification Bell -->
-                {% if user.is_authenticated %}
-                <li class="nav-item me-2 dropdown" id="notification-bell-dropdown">
-                    <a class="nav-link position-relative" href="#" role="button" tabindex="0" id="notification-bell" title="Notifications" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-bell fs-5"></i>
-                        {% if unread_notifications_count > 0 %}
-                        <span id="notification-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">{{ unread_notifications_count }}</span>
-                        {% endif %}
-                    </a>
-                    <div id="notification-dropdown" class="dropdown-menu dropdown-menu-end p-2" style="min-width:300px;max-width:400px;max-height:400px;overflow:auto;" role="menu" aria-label="Notification Menu"></div>
-                </li>
-                <!-- Emergency FAB -->
-                <button type="button" id="emergency-fab" class="btn btn-danger rounded-circle shadow-lg position-fixed" style="bottom:32px;right:32px;z-index:1050;display:flex;align-items:center;justify-content:center;width:64px;height:64px;" data-bs-toggle="modal" data-bs-target="#emergencyContactsModal" role="button" aria-label="Emergency Contacts Button">
-                  <i class="bi bi-telephone-fill fs-3"></i>
-                </button>
-                {% endif %}
-                <!-- Theme Toggle Button -->
-                <li class="nav-item me-2">
-                    <button id="theme-toggle" class="btn btn-outline-secondary rounded-circle theme-toggle-btn" role="button" aria-label="Toggle theme">
-                        <i class="bi bi-sun-fill theme-icon-light" title="Switch to dark mode"></i>
-                        <i class="bi bi-moon-fill theme-icon-dark" title="Switch to light mode"></i>
-                    </button>
-                </li>
-                {% if user.is_authenticated %}
-                    <!-- User is logged in -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-controls="navbarDropdownMenu" tabindex="0">
-                            {% if user.profile_picture %}
-                                <img src="{{ user.profile_picture.url }}" alt="Profile" class="rounded-circle me-1" width="24" height="24">
-                            {% else %}
-                                <i class="bi bi-person-circle me-1"></i>
-                            {% endif %}
-                            {{ user.get_full_name|default:user.username }}
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" id="navbarDropdownMenu" aria-labelledby="navbarDropdown" role="menu">
-                            <li><a class="dropdown-item" href="{% url 'accounts:profile' user.id %}" role="menuitem" aria-label="View your profile"><i class="bi bi-person me-2"></i>Profile</a></li>
-                            {% if user.is_elderly %}
-                                <li><a class="dropdown-item" href="{% url 'chat:caregiver_list' %}"><i class="bi bi-chat-dots me-2"></i>Chat with Caregivers</a></li>
-                                <li><a class="dropdown-item" href="{% url 'chat:request_list' %}"><i class="bi bi-envelope me-2"></i>Chat Requests</a></li>
-                            {% elif user.is_caregiver %}
-                                <li><a class="dropdown-item" href="{% url 'chat:request_list' %}"><i class="bi bi-envelope me-2"></i>Chat Requests</a></li>
-                            {% endif %}
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{% url 'accounts:logout' %}" role="menuitem" aria-label="Logout from your account"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
-                        </ul>
-                    </li>
-                {% else %}
-                    <!-- User is not logged in -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'accounts:login' %}" role="menuitem" aria-label="Login to your account"><i class="bi bi-box-arrow-in-right me-1"></i>Login</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'accounts:register' %}" role="menuitem" aria-label="Create a new account"><i class="bi bi-person-plus me-1"></i>Register</a>
-                    </li>
-                {% endif %}
-            </ul>
-        </div>
-    </div>
-</nav>
-{% if user.is_authenticated %}
-  {{ browser_medication_reminders|json_script:"medication-reminders-data" }}
-  <script>
-    window.userMedicationReminders = JSON.parse(document.getElementById('medication-reminders-data').textContent);
-  </script>
-{% endif %}
-<script src="/static/js/navbar_medication_notifications.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const bell = document.getElementById('notification-bell');
-    if (bell) {
-        bell.addEventListener('click', function(e) {
-            e.preventDefault();
-            // Manually toggle the Bootstrap dropdown
-            if (window.bootstrap && window.bootstrap.Dropdown) {
-                var dropdown = window.bootstrap.Dropdown.getOrCreateInstance(bell);
-                dropdown.toggle();
-            }
-        });
-    }
-});
-</script>
+    <ul class="dropdown-menu" aria-labelledby="registerDropdown">
+      <li><a class="dropdown-item" href="{% url 'accounts:family_register' %}">As Family</a></li>
+      <li><a class="dropdown-item" href="{% url 'accounts:caregiver_register' %}">As Caregiver</a></li>
+    </ul>
+  </li>
+  {% endif %}
+</ul>
+      <ul class="navbar-nav mb-2 mb-lg-0 align-items-center">
+  
+  <li class="nav-item me-2">
+    <span id="navbar-clock" class="badge bg-dark text-white" style="font-size:0.9em;"></span>
+  </li>
+  <li class="nav-item me-2">
+    <!-- Theme toggle button -->
+    <button id="theme-toggle" class="btn btn-outline-secondary" type="button" title="Toggle theme">
+      <span id="theme-icon" class="bi bi-moon"></span>
+    </button>
+  </li>
+  {% if user.is_authenticated %}
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        {% if user.profile_picture and user.profile_picture.url %}
+          <img src="{{ user.profile_picture.url }}" alt="Avatar" class="rounded-circle me-2" width="32" height="32">
+        {% else %}
+          <img src="/static/img/default-avatar.png" alt="Avatar" class="rounded-circle me-2" width="32" height="32">
+        {% endif %}
+        <span>{{ user.full_name|default:user.username }}</span>
+      </a>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+        <li><a class="dropdown-item" href="{% url 'events:event_create' %}"><i class="bi bi-plus-circle me-1"></i> Create Event</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item" href="{% url 'accounts:profile' user.id %}">Profile</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item" href="{% url 'accounts:logout' %}">Logout</a></li>
+      </ul>
+    </li>
+  {% else %}
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'accounts:login' %}">Login</a>
+    </li>
+  {% endif %}
+</ul>
+<!-- Theme toggle script -->
 
+<script>
+  function updateNavbarClock() {
+    const clock = document.getElementById('navbar-clock');
+    if (clock) {
+      const now = new Date();
+      // Format as HH:MM:SS (24-hour)
+      const timeString = now.toLocaleTimeString();
+      clock.textContent = timeString;
+    }
+  }
+  setInterval(updateNavbarClock, 1000);
+  updateNavbarClock(); // Initial call
+</script>
+<!-- Include Bootstrap Icons for theme icon (bi bi-moon/bi-sun) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    </div>
+  </div>
+</nav>

@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from custom_admin.models import ContactMessage, HomepageSlide
+
 from content.models import Article
 
 def contact_view(request):

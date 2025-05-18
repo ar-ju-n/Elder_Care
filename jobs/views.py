@@ -21,13 +21,10 @@ def job_list(request):
     
     # Customize view based on user role
     if request.user.is_authenticated:
-        if request.user.is_elderly():
-            template = 'jobs/find_caregiver.html'
-            # Only show verified caregivers
-            verified_caregivers = User.objects.filter(role='caregiver', is_verified=True)
-            context['caregivers'] = verified_caregivers
-            context['title'] = 'Find a Caregiver'
-            context['button_text'] = 'Contact Caregiver'
+        # No elderly users in the system; if you want family members to see a caregiver list, use is_family()
+        if request.user.is_family():
+            context['title'] = 'Post Caregiving Jobs'
+            context['button_text'] = 'Post a Job'
         elif request.user.is_caregiver():
             context['title'] = 'Available Jobs'
             context['button_text'] = 'Apply'
@@ -76,8 +73,11 @@ def post_job_view(request):
     return render(request, 'jobs/post_job.html', {'form': form})
 
 @login_required
-@user_passes_test(is_caregiver)
 def apply_job_view(request, job_id):
+    if not request.user.is_verified_caregiver():
+        messages.error(request, "Your caregiver account must be verified by an admin before you can apply for jobs.")
+        return redirect('accounts:profile', user_id=request.user.id)
+
     job = get_object_or_404(Job, id=job_id, approved=True)
     if Application.objects.filter(job=job, caregiver=request.user).exists():
         messages.info(request, 'You have already applied to this job.')

@@ -8,6 +8,30 @@ from .services import login_user
 from .models import AccountDeletionRequest, EmergencyContact
 from django.utils import timezone
 from datetime import timedelta
+from django.core.mail import send_mail
+from django.conf import settings
+from django.template.loader import render_to_string
+from .models import Notification, User
+from django.http import JsonResponse
+
+# AJAX endpoints for live username/email validation
+
+def check_username(request):
+    username = request.GET.get('username', '').strip()
+    available = False
+    if username and len(username) >= 3:
+        # For login: available=False means user exists, available=True means user does not exist
+        from .models import User
+        available = not User.objects.filter(username__iexact=username).exists()
+    return JsonResponse({'available': available})
+
+def check_email(request):
+    email = request.GET.get('email', '').strip()
+    available = False
+    if email:
+        from .models import User
+        available = not User.objects.filter(email__iexact=email).exists()
+    return JsonResponse({'available': available})
 
 class CustomLoginView(LoginView):
     form_class = CustomAuthenticationForm
@@ -36,28 +60,132 @@ def logout_view(request):
     logout(request)
     return render(request, 'accounts/logout.html')
 
-from .forms import CaregiverVerificationForm, EmergencyContactForm
+from .forms import CaregiverVerificationForm, EmergencyContactForm, CustomUserCreationForm
 from .models import CaregiverVerification
 
-def register_view(request):
+
+def family_register_view(request):
+    # Single-step registration for family members
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-            # Ensure no one can register as admin through form manipulation
-            if user.role == 'admin':
-                user.role = 'elderly'  # Default to elderly if someone tries to hack the form
+            user.role = 'family'
             user.save()
-            # If caregiver, create blank verification record
-            if user.role == 'caregiver':
-                CaregiverVerification.objects.get_or_create(user=user)
-            # Log the user in
             login(request, user)
-            # Redirect to profile completion
+            messages.success(request, 'Registration successful!')
+            # Notify admins (email + in-app notification)
+            admin_qs = User.objects.filter(is_staff=True)
+            admin_emails = list(admin_qs.values_list('email', flat=True))
+            if admin_emails:
+                admin_html = render_to_string('emails/admin_new_family.html', {'user': user})
+                send_mail(
+                    subject='New Family Member Registration',
+                    message=f'A new family member has registered: {user.full_name} ({user.email})',
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=admin_emails,
+                    fail_silently=True,
+                    html_message=admin_html,
+                )
+                # In-app notification for each admin
+                for admin in admin_qs:
+                    Notification.objects.create(
+                        recipient=admin,
+                        message=f'New family member registered: {user.full_name} ({user.email})',
+                        url=f'/accounts/profile/{user.id}/'
+                    )
+            # Welcome email to user (HTML)
+            welcome_html = render_to_string('emails/welcome_family.html', {'user': user})
+            send_mail(
+                subject='Welcome to Elder Care Hub',
+                message=f'Dear {user.full_name},\n\nWelcome to Elder Care Hub! Your account has been successfully created as a family member.',
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                fail_silently=True,
+                html_message=welcome_html,
+            )
             return redirect('accounts:profile', user_id=user.id)
     else:
-        form = CustomUserCreationForm()
-    return render(request, 'accounts/register.html', {'form': form})
+        form = CustomUserCreationForm(initial={'role': 'family'})
+    return render(request, 'accounts/register_family.html', {'form': form})
+
+def caregiver_register_view(request):
+    # Multi-step registration for caregivers
+    if request.method == 'POST':
+        step = request.POST.get('step', '1')
+        if step == '1':
+            user_form = CustomUserCreationForm(request.POST)
+            if user_form.is_valid():
+                user = user_form.save(commit=False)
+                user.role = 'caregiver'
+                user.is_active = False  # Optionally require admin verification before login
+                user.save()
+                request.session['pending_caregiver_id'] = user.id
+                return render(request, 'accounts/register_caregiver_step2.html', {
+                    'verification_form': CaregiverVerificationForm(),
+                    'step': '2',
+                })
+            else:
+                return render(request, 'accounts/register_caregiver_step1.html', {
+                    'user_form': user_form,
+                    'step': '1',
+                })
+        elif step == '2':
+            caregiver_id = request.session.get('pending_caregiver_id')
+            user = get_object_or_404(User, id=caregiver_id)
+            verification_form = CaregiverVerificationForm(request.POST, request.FILES)
+            if verification_form.is_valid():
+                verification = verification_form.save(commit=False)
+                verification.user = user
+                verification.save()
+                user.is_active = True  # Optionally activate after document upload
+                user.save()
+                # Notify admins (email + in-app notification)
+                admin_qs = User.objects.filter(is_staff=True)
+                admin_emails = list(admin_qs.values_list('email', flat=True))
+                if admin_emails:
+                    admin_html = render_to_string('emails/admin_new_caregiver.html', {'user': user})
+                    send_mail(
+                        subject='New Caregiver Registration',
+                        message=f'A new caregiver has registered: {user.full_name} ({user.email}). Please review their submitted documents for verification.',
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        recipient_list=admin_emails,
+                        fail_silently=True,
+                        html_message=admin_html,
+                    )
+                    # In-app notification for each admin
+                    for admin in admin_qs:
+                        Notification.objects.create(
+                            recipient=admin,
+                            message=f'New caregiver registered: {user.full_name} ({user.email}). Please review their documents.',
+                            url=f'/accounts/profile/{user.id}/'
+                        )
+                # Welcome email to user (HTML)
+                welcome_html = render_to_string('emails/welcome_caregiver.html', {'user': user})
+                send_mail(
+                    subject='Welcome to Elder Care Hub',
+                    message=f'Dear {user.full_name},\n\nWelcome to Elder Care Hub! Your caregiver account has been created. Your documents have been submitted for admin review. You will be notified once verified.',
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[user.email],
+                    fail_silently=True,
+                    html_message=welcome_html,
+                )
+                login(request, user)
+                del request.session['pending_caregiver_id']
+                messages.success(request, 'Registration successful! Your documents will be reviewed by admin.')
+                return redirect('accounts:profile', user_id=user.id)
+            else:
+                return render(request, 'accounts/register_caregiver_step2.html', {
+                    'verification_form': verification_form,
+                    'step': '2',
+                })
+    else:
+        # GET request, start at step 1
+        user_form = CustomUserCreationForm(initial={'role': 'caregiver'})
+        return render(request, 'accounts/register_caregiver_step1.html', {
+            'user_form': user_form,
+            'step': '1',
+        })
 
 @login_required
 def emergency_contacts_view(request):
@@ -315,6 +443,10 @@ def profile_view(request, user_id):
 
     is_owner = request.user.id == user.id
     is_admin = request.user.is_staff or request.user.is_superuser
+    # Restrict access to unverified caregiver profiles
+    if user.is_caregiver() and not user.is_verified and not (is_owner or is_admin):
+        messages.error(request, "This caregiver is not yet verified and cannot be viewed.")
+        return redirect('landing')
     if user.profile_visibility == user.PRIVATE and not (is_owner or is_admin):
         return render(request, 'accounts/profile_private.html', {'profile_user': user})
     # Add emergency_contacts for modal in base.html

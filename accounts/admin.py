@@ -12,10 +12,10 @@ from django.contrib import messages
 @admin.register(CaregiverVerification)
 class CaregiverVerificationAdmin(admin.ModelAdmin):
     list_display = (
-        'user', 'government_id_number', 'address', 'certification_type', 'submitted_at', 'reviewed', 'approved', 'reviewed_at', 'admin_comment'
+        'user', 'government_id_number', 'certification_type', 'submitted_at', 'reviewed', 'approved', 'reviewed_at', 'admin_comment'
     )
-    readonly_fields = ('user', 'government_id_number', 'address', 'certification_type', 'document', 'submitted_at', 'reviewed', 'approved', 'reviewed_at')
-    search_fields = ('user__username', 'user__email', 'government_id_number', 'address', 'certification_type')
+    readonly_fields = ('user', 'government_id_number', 'certification_type', 'document', 'submitted_at', 'reviewed', 'approved', 'reviewed_at')
+    search_fields = ('user__username', 'user__email', 'government_id_number', 'certification_type')
     list_filter = ('reviewed', 'approved', 'submitted_at')
     actions = None  # Remove all bulk actions
     change_form_template = 'accounts/caregiververification/change_form.html'

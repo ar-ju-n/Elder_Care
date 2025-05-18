@@ -120,6 +120,54 @@ body.about-page {
 
 /* Add more about-specific styles here */
 
+.about-hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+.about-svg-icon {
+    margin-bottom: -18px;
+    z-index: 2;
+}
+
+.about-team-img {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border: 4px solid #fff;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    margin-top: -12px;
+}
+
+.about-team-margin-top {
+    margin-top: 1rem;
+}
+
+.about-timeline-bg {
+    background-image: url('../images/placeholder-timeline.jpg');
+    background-size: cover;
+    background-position: center;
+    border-radius: 12px;
+    position: relative;
+    min-height: 220px;
+    margin-bottom: 1rem;
+}
+
+.about-timeline-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(40,40,40,0.35);
+    border-radius: 12px;
+}
+
+.about-timeline-content {
+    position: relative;
+    z-index: 2;
+    padding: 2rem;
+    color: #fff;
+}
+
+
 /* Accessibility: High Contrast Mode */
 @media (forced-colors: active), (prefers-contrast: more) {
   body {

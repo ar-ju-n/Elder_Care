@@ -9,6 +9,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Prevent anchor jump for a[href="#"], but allow Bootstrap dropdown toggles
+    document.querySelectorAll('a[href="#"]').forEach(function(el) {
+        el.addEventListener('click', function(e) {
+            if (!el.hasAttribute('data-bs-toggle')) {
+                e.preventDefault();
+            }
+        });
+    });
+
     // Real-time clock functionality
     const clockElement = document.getElementById('real-time-clock');
     if (clockElement) {

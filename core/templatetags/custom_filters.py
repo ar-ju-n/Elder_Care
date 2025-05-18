@@ -17,3 +17,14 @@ def startswith(text, starts):
         return text.startswith(starts)
     return False
 
+@register.filter
+def multiply(value, arg):
+    """
+    Multiplies the value by the argument.
+    Usage: {{ value|multiply:arg }}
+    """
+    try:
+        return float(value) * float(arg)
+    except (ValueError, TypeError):
+        return ''
+

@@ -1,0 +1,105 @@
+/* registration.css - Modern styling for registration pages, fully theme-compatible */
+
+.registration-card {
+    max-width: 430px;
+    margin: 2rem auto;
+    padding: 2.5rem 2rem;
+    background: var(--card-bg, #fff);
+    border-radius: 18px;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.09);
+}
+
+.registration-card input[type="text"],
+.registration-card input[type="email"],
+.registration-card input[type="password"],
+.registration-card select {
+    margin-bottom: 1.2rem;
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid var(--input-border, #ddd);
+    background: var(--input-bg, #fafbfc);
+    transition: border-color 0.2s;
+    font-size: 1.1rem;
+    padding: 0.75rem;
+}
+
+.registration-card input[type="text"]:focus,
+.registration-card input[type="email"]:focus,
+.registration-card input[type="password"]:focus,
+.registration-card select:focus {
+    border-color: var(--primary, #4f8cff);
+    outline: none;
+}
+
+.toggle-password {
+    background: none !important;
+    border: none !important;
+    color: #6c757d !important;
+    display: flex;
+    align-items: center;
+    padding: 0 0.75rem;
+    height: 100%;
+    box-shadow: none;
+}
+.input-group .form-control {
+    border-right: 0;
+}
+.input-group .toggle-password {
+    border-left: 0;
+    background: none !important;
+    color: #6c757d !important;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 0.75rem;
+}
+.input-group .toggle-password:focus {
+    box-shadow: none;
+
+    font-size: 1.2rem;
+}
+
+.form-text {
+    font-size: 0.97rem;
+    color: var(--muted, #888);
+    margin-top: -0.8rem;
+    margin-bottom: 1rem;
+}
+
+.valid-feedback {
+    color: var(--success, #2e7d32) !important;
+    font-weight: 500;
+    margin-top: -0.8rem;
+    margin-bottom: 1rem;
+}
+
+.invalid-feedback {
+    color: var(--danger, #c62828) !important;
+    font-weight: 500;
+    margin-top: -0.8rem;
+    margin-bottom: 1rem;
+}
+
+.registration-success {
+    background: var(--success-bg, #e3f9e5);
+    color: var(--success, #2e7d32);
+    border: 1px solid var(--success, #2e7d32);
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    text-align: center;
+    animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .registration-card {
+        margin-top: 2rem;
+    }
+}

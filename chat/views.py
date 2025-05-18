@@ -13,9 +13,9 @@ from django.urls import reverse
 
 @login_required
 def accepted_elder_list(request):
-    if not request.user.is_caregiver():
-        messages.error(request, 'Only caregivers can view this page.')
-        return redirect('landing')
+    if not request.user.is_verified_caregiver():
+        messages.error(request, 'Only verified caregivers can view this page.')
+        return redirect('accounts:profile', user_id=request.user.id)
     accepted_requests = ChatRequest.objects.filter(caregiver=request.user, status='accepted').select_related('elder')
     # Gather more details and unread message count for each elder
     detailed_requests = []
@@ -37,8 +37,8 @@ def accepted_elder_list(request):
 
 @login_required
 def caregiver_list(request):
-    if not request.user.is_elderly():
-        messages.error(request, 'Only elders can send chat requests.')
+    if not request.user.is_family():
+        messages.error(request, 'Only family members can send chat requests.')
         return redirect('landing')
     caregivers = User.objects.filter(role=User.CAREGIVER, is_verified=True)
     caregiver_data = []
@@ -73,10 +73,14 @@ def caregiver_list(request):
 
 @login_required
 def send_request(request, caregiver_id):
-    if not request.user.is_elderly():
-        messages.error(request, 'Only elders can send chat requests.')
+    if not request.user.is_family():
+        messages.error(request, 'Only family members can send chat requests.')
         return redirect('landing')
     caregiver = get_object_or_404(User, id=caregiver_id, role=User.CAREGIVER, is_verified=True)
+    # Prevent unverified caregivers from receiving chat requests
+    if not caregiver.is_verified:
+        messages.error(request, 'You cannot send a chat request to an unverified caregiver.')
+        return redirect('chat:caregiver_list')
     # Check for last request time
     from django.utils import timezone
     from datetime import timedelta
@@ -103,7 +107,7 @@ def send_request(request, caregiver_id):
 def request_list(request):
     if request.user.is_caregiver():
         requests = ChatRequest.objects.filter(caregiver=request.user).order_by('-created_at')
-    elif request.user.is_elderly():
+    elif request.user.is_family():
         requests = ChatRequest.objects.filter(elder=request.user).order_by('-created_at')
     else:
         messages.error(request, 'Access denied.')
@@ -141,6 +145,10 @@ def respond_request(request, request_id, action):
 
 @login_required
 def chat_room(request, request_id):
+    # Prevent unverified caregivers from accessing chat rooms
+    if request.user.is_caregiver() and not request.user.is_verified_caregiver():
+        messages.error(request, 'Your caregiver account must be verified by an admin before you can access chat rooms.')
+        return redirect('accounts:profile', user_id=request.user.id)
     chat_request = get_object_or_404(ChatRequest, id=request_id, status='accepted')
     
     # Ensure only participants can access the chat
@@ -179,6 +187,9 @@ def chat_room(request, request_id):
 
 @login_required
 def upload_attachment(request, request_id):
+    # Prevent unverified caregivers from uploading attachments
+    if request.user.is_caregiver() and not request.user.is_verified_caregiver():
+        return JsonResponse({'success': False, 'error': 'Your caregiver account must be verified by an admin before you can upload attachments.'})
     """Handle file uploads via AJAX"""
     if request.method != 'POST' or not request.FILES.get('attachment'):
         return JsonResponse({'success': False, 'error': 'Invalid request'})

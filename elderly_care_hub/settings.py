@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'content',
     'feedback',
     'chatbot',
-    'custom_admin',
+    
     'channels',  # Added for WebSockets
     'widget_tweaks',  # For add_class template filter
     'django.contrib.admin',

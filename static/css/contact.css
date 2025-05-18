@@ -3,23 +3,53 @@
 /* Dark mode form improvements */
 body,
 .contact-dark-bg {
+  background: var(--body-bg);
+  color: var(--body-color);
+}
+
+[data-bs-theme="dark"] body,
+[data-bs-theme="dark"] .contact-dark-bg {
   background: #181a20;
   color: #e9ecef;
+}
+
+[data-bs-theme="light"] body,
+[data-bs-theme="light"] .contact-dark-bg {
+  background: #f8f9fa;
+  color: #232946;
 }
 
 input[type="text"],
 input[type="email"],
 input[type="password"],
 textarea {
-  background: #22273a;
-  color: #e9ecef;
-  border: 1.5px solid #6c63ff;
+  background: var(--input-bg);
+  color: var(--body-color);
+  border: 1.5px solid var(--input-border, #6c63ff);
   border-radius: 8px;
   padding: 0.75em 1em;
   margin-bottom: 1em;
   width: 100%;
   box-sizing: border-box;
   transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+[data-bs-theme="dark"] input[type="text"],
+[data-bs-theme="dark"] input[type="email"],
+[data-bs-theme="dark"] input[type="password"],
+[data-bs-theme="dark"] textarea {
+  background: #22273a;
+  color: #e9ecef;
+  border: 1.5px solid #6c63ff;
+}
+
+[data-bs-theme="light"] input[type="text"],
+[data-bs-theme="light"] input[type="email"],
+[data-bs-theme="light"] input[type="password"],
+[data-bs-theme="light"] textarea {
+  background: #fff;
+  color: #232946;
+  border: 1.5px solid #9dbea5;
 }
 
 @media (prefers-color-scheme: light) {
@@ -55,10 +85,16 @@ textarea:focus {
 }
 
 label {
-  color: #e9ecef;
+  color: var(--body-color);
   margin-bottom: 0.3em;
   display: block;
   font-weight: 500;
+}
+[data-bs-theme="dark"] label {
+  color: #e9ecef;
+}
+[data-bs-theme="light"] label {
+  color: #232946;
 }
 
 input::placeholder,
@@ -482,6 +518,28 @@ body.contact-page {
 }
 
 /* Add more contact-specific styles here */
+
+.contact-office-bg {
+    background-image: url('../images/office.jpg');
+    background-size: cover;
+    background-position: center;
+    height: 140px;
+    border-radius: 8px;
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.contact-office-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(40,40,40,0.25);
+    border-radius: 8px;
+}
+
+.contact-map-frame {
+    border: 0;
+}
+
 
 /* Accessibility: High Contrast Mode */
 @media (forced-colors: active),

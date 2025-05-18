@@ -68,7 +68,7 @@
             <i class="bi bi-info-circle me-2"></i>
             <span class="fs-5">No chat requests at this time.</span>
           </div>
-          {% if user.is_elderly %}
+          {% if user.is_family %}
             <a href="{% url 'chat:caregiver_list' %}" class="btn btn-primary mt-3 px-4 py-2 fs-6">
               <i class="bi bi-plus-circle me-2"></i>Find Caregivers
             </a>
@@ -78,15 +78,6 @@
     </div>
   </div>
   
-  {% if user.is_elderly %}
-    <div class="text-center mt-4">
-      {% if request.id %}
-        <a href="{% url 'chat:chat_room' request.id %}" class="btn btn-outline-primary">Join Chat</a>
-      {% endif %}
-      <a href="{% url 'chat:caregiver_list' %}" class="btn btn-primary">
-        <i class="bi bi-plus-circle me-2"></i>Find Caregivers
-      </a>
-    </div>
-  {% endif %}
+
 </div>
 {% endblock %}

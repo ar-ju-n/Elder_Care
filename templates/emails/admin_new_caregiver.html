@@ -1,0 +1,16 @@
+{% autoescape off %}
+<html>
+<head><style>body{font-family:sans-serif;}</style></head>
+<body>
+  <h2>New Caregiver Registration</h2>
+  <p>A new caregiver has registered and submitted documents for verification:</p>
+  <ul>
+    <li><strong>Name:</strong> {{ user.full_name }}</li>
+    <li><strong>Email:</strong> {{ user.email }}</li>
+  </ul>
+  <p>Please review their documents in the admin panel.</p>
+  <br>
+  <p>— Elder Care Hub Notification</p>
+</body>
+</html>
+{% endautoescape %}

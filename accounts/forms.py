@@ -5,6 +5,28 @@ from django.contrib.auth import authenticate
 from django.core.exceptions import ValidationError
 
 class CustomUserCreationForm(UserCreationForm):
+    profile_picture = forms.ImageField(
+        required=False,
+        widget=forms.ClearableFileInput(attrs={
+            'class': 'form-control',
+        })
+    )
+    password1 = forms.CharField(
+        label='Password',
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Create a password',
+            'id': 'id_password1'
+        })
+    )
+    password2 = forms.CharField(
+        label='Confirm Password',
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Confirm your password',
+            'id': 'id_password2'
+        })
+    )
     email = forms.EmailField(
         required=True,
         widget=forms.EmailInput(attrs={
@@ -20,23 +42,34 @@ class CustomUserCreationForm(UserCreationForm):
         })
     )
     
-    password1 = forms.CharField(
-        widget=forms.PasswordInput(attrs={
+    full_name = forms.CharField(
+        required=True,
+        widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Create a password'
+            'placeholder': 'Full Name'
         })
     )
-    
-    password2 = forms.CharField(
-        widget=forms.PasswordInput(attrs={
+
+    address = forms.CharField(
+        required=True,
+        widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Confirm your password'
+            'placeholder': 'Address'
         })
     )
-    
+
+    rate_per_hour = forms.IntegerField(
+        required=False,
+        min_value=0,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Rate per hour (NPR) - required for caregivers'
+        })
+    )
+
+
     # Define role choices without admin option
     ROLE_CHOICES = [
-        ('elderly', 'Elderly Person'),
         ('caregiver', 'Caregiver'),
         ('family', 'Family Member'),
     ]
@@ -50,12 +83,20 @@ class CustomUserCreationForm(UserCreationForm):
     
     class Meta:
         model = User
-        fields = ('username', 'email', 'password1', 'password2', 'role')
+        fields = ('username', 'email', 'full_name', 'address', 'profile_picture', 'rate_per_hour', 'password1', 'password2', 'role')
+
+    def clean(self):
+        cleaned_data = super().clean()
+        role = cleaned_data.get('role')
+        rate_per_hour = cleaned_data.get('rate_per_hour')
+        if role == 'caregiver' and not rate_per_hour:
+            self.add_error('rate_per_hour', 'Caregivers must specify their rate per hour.')
+        return cleaned_data
 
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['username', 'email', 'bio', 'profile_picture', 'language_preference', 'timezone', 'email_notifications', 'profile_visibility']
+        fields = ['username', 'full_name', 'email', 'bio', 'profile_picture', 'language_preference', 'timezone', 'email_notifications', 'profile_visibility']
         widgets = {
             'username': forms.TextInput(attrs={'class': 'form-control'}),
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
@@ -67,15 +108,20 @@ class UserProfileForm(forms.ModelForm):
             'profile_visibility': forms.Select(attrs={'class': 'form-select'})
         }
 
+from .models import CERTIFICATION_CHOICES
+
 class CaregiverVerificationForm(forms.ModelForm):
+    certification_type = forms.ChoiceField(
+        choices=CERTIFICATION_CHOICES,
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
     class Meta:
         from .models import CaregiverVerification
         model = CaregiverVerification
-        fields = ['government_id_number', 'address', 'certification_type', 'document']
+        fields = ['government_id_number', 'certification_type', 'document']
         widgets = {
             'government_id_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Government ID Number'}),
-            'address': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Address'}),
-            'certification_type': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Certification Type (optional)'}),
             'document': forms.FileInput(attrs={'class': 'form-control'}),
         }
 

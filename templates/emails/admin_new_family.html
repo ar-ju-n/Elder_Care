@@ -1,0 +1,16 @@
+{% autoescape off %}
+<html>
+<head><style>body{font-family:sans-serif;}</style></head>
+<body>
+  <h2>New Family Member Registration</h2>
+  <p>A new family member has registered:</p>
+  <ul>
+    <li><strong>Name:</strong> {{ user.full_name }}</li>
+    <li><strong>Email:</strong> {{ user.email }}</li>
+  </ul>
+  <p>Login to the admin panel to view more details.</p>
+  <br>
+  <p>— Elder Care Hub Notification</p>
+</body>
+</html>
+{% endautoescape %}

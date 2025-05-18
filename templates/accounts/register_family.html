@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/registration.css' %}">
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'js/registration.js' %}"></script>
+{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Family Member Registration</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+                        {% for field in form %}
+                            <div class="mb-3" id="field-{{ field.name }}">
+    {{ field.label_tag }}
+    {% if field.name == 'password1' or field.name == 'password2' %}
+        <div class="input-group align-items-center">
+            {{ field }}
+            <button type="button" class="btn btn-outline-secondary toggle-password" data-target="{{ field.auto_id }}" tabindex="-1" aria-label="Show/hide password">
+                <i class="bi bi-eye-fill"></i>
+            </button>
+        </div>
+        {% if field.help_text %}
+            <small class="form-text text-muted d-block mt-1">{{ field.help_text }}</small>
+        {% endif %}
+    {% else %}
+        {{ field }}
+        {% if field.help_text %}
+            <small class="form-text text-muted">{{ field.help_text }}</small>
+        {% endif %}
+    {% endif %}
+    {% for error in field.errors %}
+        <div class="text-danger small">{{ error }}</div>
+    {% endfor %}
+                            </div>
+                        {% endfor %}
+                        <button type="submit" class="btn btn-primary w-100">Register</button>
+                    </form>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="{% url 'accounts:login' %}">Already have an account? Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

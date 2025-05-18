@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block extra_head %}
+{% block extra_css %}
     <link rel="stylesheet" href="{% static 'css/about-responsive.css' %}">
     <link rel="stylesheet" href="{% static 'css/about_dynamic.css' %}">
 {% endblock %}
 {% block content %}
 <!-- Hero Section -->
-<section class="about-hero text-center py-5 bg-light" role="banner" aria-label="About Us Hero Section">
+<section class="about-hero text-center py-5" role="banner" aria-label="About Us Hero Section">
     <div class="hero-overlay" aria-hidden="true"></div>
-    <div class="container" style="position: relative; z-index: 2;" role="region" aria-label="About Us Introduction">
+    <div class="container" class="about-hero-content" role="region" aria-label="About Us Introduction">
         <h1 class="display-4" id="about-heading">About Elderly Care & Mindful Support Hub</h1>
         <p class="lead">Empowering Nepal's elderly community with compassion, dignity, and support.</p>
     </div>
@@ -35,12 +35,12 @@
         <div class="row justify-content-center">
             <div class="col-md-4 text-center mb-4" role="region" aria-labelledby="team-member-heading">
                 <div class="d-flex flex-column align-items-center">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="#ffc107" xmlns="http://www.w3.org/2000/svg" style="margin-bottom: -18px; z-index: 2;" aria-hidden="true">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="#ffc107" xmlns="http://www.w3.org/2000/svg" class="about-svg-icon" aria-hidden="true">
                     <path d="M2 7l5 7 5-9 5 9 5-7-5 13H7L2 7z"/>
                 </svg>
-                    <img src="{% static 'images/person.png' %}" alt="Team Member Photo" class="rounded-circle mb-2" style="width:200px; height:200px; object-fit:cover; border: 4px solid #fff; box-shadow: 0 4px 16px rgba(0,0,0,0.15); margin-top: -12px;">
+                    <img src="{% static 'images/person.png' %}" alt="Team Member Photo" class="rounded-circle mb-2" class="about-team-img">
                 </div>
-                <div style="margin-top: 1rem;"></div>
+                <div class="about-team-margin-top"></div>
                 <h5 class="mt-2">Arjun Thapa</h5>
                 <small>Founder & Director</small>
             </div>
@@ -51,9 +51,9 @@
 <!-- Timeline/Milestones -->
 <section class="container my-5">
     <h2 class="text-center mb-4">Our Journey</h2>
-    <div style="background-image: url('{% static 'images/placeholder-timeline.jpg' %}'); background-size: cover; background-position: center; border-radius: 12px; position: relative; min-height: 220px; margin-bottom: 1rem;" role="region" aria-label="Our Journey Timeline">
-        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(40,40,40,0.35); border-radius: 12px;"></div>
-        <div style="position: relative; z-index: 2; padding: 2rem; color: #fff;">
+    <div class="about-timeline-bg" role="region" aria-label="Our Journey Timeline">
+        <div class="about-timeline-overlay"></div>
+        <div class="about-timeline-content">
             <ul class="timeline list-unstyled mb-0">
         <li><strong>2018:</strong> Elderly Care & Mindful Support Hub founded in Kathmandu.</li>
         <li><strong>2019:</strong> Launched first wellness and caregiver training programs.</li>
@@ -65,12 +65,12 @@
 </section>
 
 <!-- Testimonials -->
-<section class="bg-light py-5">
+<section class="py-5">
     <div class="container">
         <h2 class="text-center mb-4">What People Say</h2>
         <div class="row justify-content-center text-center g-4" role="group" aria-label="Testimonials">
             <div class="col-md-5" role="region" aria-label="Testimonial 1">
-                <div class="p-4 bg-white rounded shadow-sm h-100" style="color: #222;">
+                <div class="p-4 rounded shadow-sm h-100">
                     <blockquote class="blockquote mb-0">
                         <p class="mb-2">“The support and care my mother received changed her life. Thank you!”</p>
             <footer class="blockquote-footer">Sunita K., Kathmandu</footer>
@@ -78,7 +78,7 @@
     </div>
             </div>
             <div class="col-md-5">
-                <div class="p-4 bg-white rounded shadow-sm h-100" style="color: #222;">
+                <div class="p-4 rounded shadow-sm h-100">
                     <blockquote class="blockquote mb-0">
                         <p class="mb-2">“A wonderful community for seniors and their families.”</p>
             <footer class="blockquote-footer">Rajesh D., Pokhara</footer>

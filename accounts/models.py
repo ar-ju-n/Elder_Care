@@ -3,7 +3,6 @@ from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
     # Role choices
-    ELDERLY = 'elderly'
     CAREGIVER = 'caregiver'
     FAMILY = 'family'
     ADMIN = 'admin'
@@ -21,7 +20,6 @@ class User(AbstractUser):
         return self.forum_replies.filter(is_best_answer=True).count()
     
     ROLE_CHOICES = [
-        (ELDERLY, 'Elderly'),
         (CAREGIVER, 'Caregiver'),
         (FAMILY, 'Family Member'),
         (ADMIN, 'Administrator'),
@@ -44,9 +42,12 @@ class User(AbstractUser):
         ('Europe/London', 'UK Time'),
     ]
     
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default=ELDERLY)
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default=FAMILY)
     profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
     bio = models.TextField(blank=True)
+    full_name = models.CharField(max_length=150)  # Required for both family and caregiver
+    address = models.CharField(max_length=255)    # Required for both family and caregiver
+    rate_per_hour = models.PositiveIntegerField(null=True, blank=True, help_text="Caregiver's rate per hour in NPR. Only required for caregivers.")
     
     # Settings fields
     email_notifications = models.BooleanField(default=True)
@@ -58,14 +59,13 @@ class User(AbstractUser):
     verified_at = models.DateTimeField(blank=True, null=True)
     
     # Additional methods to check roles
-    def is_elderly(self):
-        return self.role == self.ELDERLY
-    
     def is_caregiver(self):
         return self.role == self.CAREGIVER
     
     def is_family(self):
         return self.role == self.FAMILY
+
+
     
     def is_admin_role(self):
         return self.role == self.ADMIN
@@ -91,11 +91,18 @@ class User(AbstractUser):
         default=PUBLIC,
     )
 
+CERTIFICATION_CHOICES = [
+    ('nursing', 'Nursing Certificate'),
+    ('elderly_care', 'Elderly Care Certification'),
+    ('first_aid', 'First Aid/CPR'),
+    ('medical_assistant', 'Medical Assistant'),
+    ('other', 'Other'),
+]
+
 class CaregiverVerification(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='caregiver_verification')
     government_id_number = models.CharField(max_length=100, blank=True)
-    address = models.CharField(max_length=255, blank=True)
-    certification_type = models.CharField(max_length=100, blank=True)
+    certification_type = models.CharField(max_length=100, blank=True, choices=CERTIFICATION_CHOICES)
     document = models.FileField(upload_to='caregiver_documents/', blank=True, null=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
     reviewed = models.BooleanField(default=False)
@@ -105,6 +112,13 @@ class CaregiverVerification(models.Model):
 
     def __str__(self):
         return f"Verification for {self.user.username} (Approved: {self.approved})"
+
+# NOTE: After this change, run:
+#   python -m pip install --force-reinstall django
+#   python manage.py makemigrations
+#   python manage.py migrate
+# to reset the database and apply the new user model.
+
 
 class AccountDeletionRequest(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -141,3 +155,13 @@ class MedicationReminder(models.Model):
 
     def __str__(self):
         return f"{self.medication_name} at {self.time_of_day} for {self.user.username}"
+
+class Notification(models.Model):
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='account_notifications')
+    message = models.TextField()
+    url = models.CharField(max_length=255, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Notification for {self.recipient.username}: {self.message[:40]}..."

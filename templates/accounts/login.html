@@ -1,106 +1,49 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load widget_tweaks %}
-{% block body_class %}login-bg{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/login_new.css' %}">
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'js/login_new.js' %}"></script>
+{% endblock %}
 {% block content %}
-{% block extra_css %}<link rel="stylesheet" href="/static/css/login.css">{% endblock %}
-
-{# Set background image via body class, remove inline hero image #}
-
-<div class="login-center-container">
-  <div class="card border-0 shadow-lg animate__animated animate__fadeInUp login-card-glass position-relative">
-    <button type="button" class="btn-close position-absolute end-0 mt-3 me-3" aria-label="Close" onclick="window.location.href='/'"></button>
-    <div class="card-body p-4">
-      <h2 class="fw-bold text-center mb-4" style="color:#4a7c59;">Login Form</h2>
-      {% if messages %}
-            {% for message in messages %}
-              <div class="alert alert-{{ message.tags }} animate__animated animate__shakeX rounded-pill px-4">
-                <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                {{ message }}
-              </div>
-            {% endfor %}
-          {% endif %}
-          {% if form.errors %}
-            <div class="alert alert-danger animate__animated animate__shakeX rounded-pill px-4">
-              <i class="bi bi-exclamation-triangle-fill me-2"></i>
-              Your username and password didn't match. Please try again.
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary ">
+                    <h4 class="mb-0">Login to Your Account</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" novalidate class="contact-form">
+                        {% csrf_token %}
+                        {% for field in form %}
+                            <div class="mb-3">
+                                {{ field.label_tag }}
+                                {{ field }}
+                                {% if field.help_text %}
+                                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                                {% endif %}
+                                {% for error in field.errors %}
+                                    <div class="text-danger small">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <a href="{% url 'accounts:password_reset' %}" class="small">Forgot password?</a>
+                            <button type="submit" class="btn btn-primary">Login</button>
+                        </div>
+                    </form>
+                    <div class="mt-3 text-center">
+                        <span class="login-register-hint">Don't have an account?</span>
+                        <div class="btn-group mt-2" role="group">
+                            <a href="{% url 'accounts:family_register' %}" class="btn btn-outline-secondary btn-sm">Register as Family</a>
+                            <a href="{% url 'accounts:caregiver_register' %}" class="btn btn-outline-secondary btn-sm">Register as Caregiver</a>
+                        </div>
+                    </div>
+                </div>
             </div>
-          {% endif %}
-          {% if is_admin_login %}
-            <div class="alert alert-info text-center mb-4">
-              <i class="bi bi-shield-lock-fill me-2"></i>Admin Login
-            </div>
-          {% endif %}
-          <form method="post" class="contact-form">
-            {% csrf_token %}
-            <div class="mb-4">
-              <label for="{{ form.username.id_for_label }}" class="form-label fw-semibold">Username</label>
-              <div class="input-group rounded-pill shadow-sm">
-                <span class="input-group-text bg-white border-0"><i class="bi bi-person-fill"></i></span>
-                {{ form.username|add_class:'form-control rounded-pill border-0 px-4 py-2' }}
-              </div>
-              {% if form.username.errors %}
-                <div class="text-danger small mt-1">{{ form.username.errors }}</div>
-              {% endif %}
-            </div>
-            <div class="mb-4">
-              <label for="{{ form.password.id_for_label }}" class="form-label fw-semibold">Password</label>
-              <div class="input-group rounded-pill shadow-sm position-relative">
-                <span class="input-group-text bg-white border-0"><i class="bi bi-lock-fill"></i></span>
-                {{ form.password|add_class:'form-control rounded-pill border-0 px-4 py-2' }}
-                <button type="button" class="btn btn-link px-2 position-absolute end-0 top-50 translate-middle-y" id="toggle-password" tabindex="-1" aria-label="Show password">
-                  <i class="bi bi-eye-slash" id="toggle-password-icon"></i>
-                </button>
-              </div>
-              {% if form.password.errors %}
-                <div class="text-danger small mt-1">{{ form.password.errors }}</div>
-              {% endif %}
-            </div>
-            <div class="d-grid gap-2 mb-3">
-              <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 fw-bold animate__animated animate__pulse animate__infinite">
-                <i class="bi bi-box-arrow-in-right me-2"></i>Login
-              </button>
-            </div>
-            <div class="mt-3 text-center">
-              <p class="mb-1">Don't have an account? <a href="{% url 'accounts:register' %}" class="fw-semibold">Register here</a></p>
-              <p><a href="{% url 'accounts:password_reset' %}" class="fw-semibold">Forgot your password?</a></p>
-            </div>
-          </form>
         </div>
-      </div>
     </div>
-  </div>
 </div>
-<script src="{% static 'js/accounts_login.js' %}"></script>
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(function() {
-      document.querySelectorAll('.alert').forEach(function(alert) {
-        alert.classList.add('animate__fadeOut');
-        setTimeout(function() { alert.style.display = 'none'; }, 500);
-      });
-    }, 2000);
-
-    // Show/hide password toggle
-    const toggleBtn = document.getElementById('toggle-password');
-    const passwordInput = document.querySelector('input[type="password"]');
-    const icon = document.getElementById('toggle-password-icon');
-    if (toggleBtn && passwordInput && icon) {
-      toggleBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        if (passwordInput.type === 'password') {
-          passwordInput.type = 'text';
-          icon.classList.remove('bi-eye-slash');
-          icon.classList.add('bi-eye');
-          toggleBtn.setAttribute('aria-label', 'Hide password');
-        } else {
-          passwordInput.type = 'password';
-          icon.classList.remove('bi-eye');
-          icon.classList.add('bi-eye-slash');
-          toggleBtn.setAttribute('aria-label', 'Show password');
-        }
-      });
-    }
-  });
-</script>
 {% endblock %}

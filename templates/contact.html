@@ -1,9 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block extra_head %}
+{% block extra_css %}
     <link rel="stylesheet" href="{% static 'css/contact-responsive.css' %}">
     <link rel="stylesheet" href="{% static 'css/contact.css' %}">
-
 {% endblock %}
 {% block content %}
 <section class="contact-section py-5" role="region" aria-label="Contact Form Section">
@@ -39,8 +38,11 @@
                     </div>
                     <button type="submit" class="btn btn-primary" aria-label="Submit contact form">Send Message</button>
                 </form>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
+{% block extra_js %}
+<script src="{% static 'js/contact.js' %}"></script>
+{% endblock %}
+
+<!--
   function hideTempMailIcons() {
     // Target the email wrapper and input
     const wrapper = document.querySelector('.email-wrapper');
@@ -83,9 +85,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
             </div>
             <div class="col-md-6" role="complementary">
-                <div class="contact-info bg-light p-4 rounded mb-4" role="region" aria-label="Contact Information">
-                    <div style="background-image: url('{% static 'images/office.jpg' %}'); background-size: cover; background-position: center; height: 140px; border-radius: 8px; position: relative; margin-bottom: 1rem;">
-                        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(40,40,40,0.25); border-radius: 8px;"></div>
+                <div class="contact-info card p-4 rounded mb-4" role="region" aria-label="Contact Information">
+                    <div class="contact-office-bg">
+                        <div class="contact-office-overlay"></div>
                     </div>
                     <h2>Our Office</h2>
                     <p>Kathmandu, Nepal<br>Email: info@eldercarehub.com<br>Phone: +1 (555) 123-4567</p>
@@ -106,7 +108,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 </div>
                 <div class="mb-4">
                     <h3>Find Us</h3>
-                    <iframe src="https://maps.google.com/maps?q=Ranipauwa,Pokhara,Nepal&amp;z=14&amp;output=embed" width="100%" height="200" frameborder="0" style="border:0" allowfullscreen></iframe>
+                    <iframe src="https://maps.google.com/maps?q=Ranipauwa,Pokhara,Nepal&amp;z=14&amp;output=embed" width="100%" height="200" frameborder="0" class="contact-map-frame" allowfullscreen></iframe>
                 </div>
                 <div class="faq">
                     <h3>Frequently Asked Questions</h3>

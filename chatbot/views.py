@@ -8,16 +8,20 @@ from accounts.models import User
 @login_required
 def chatbot_view(request):
     """Main chatbot interface view"""
-    if not request.user.is_elderly():
-        return render(request, 'chatbot/access_denied.html', {'error': 'Only Elderly users can access the chatbot.'}, status=403)
-    
+    user = request.user
+    # Robust elderly check: authenticated and not caregiver/family/admin
+    is_family = user.is_authenticated and (hasattr(user, 'is_family') and user.is_family())
+    if not is_family:
+        return render(request, 'chatbot/access_denied.html', {'error': 'Only Family users can access the chatbot.'}, status=403)
     return render(request, 'chatbot/chatbot.html')
 
 @csrf_exempt
 @login_required
 def chatbot_api(request):
-    if not request.user.is_elderly():
-        return JsonResponse({'error': 'Only Elderly users can access the chatbot.'}, status=403)
+    user = request.user
+    is_family = user.is_authenticated and (hasattr(user, 'is_family') and user.is_family())
+    if not is_family:
+        return JsonResponse({'error': 'Only Family users can access the chatbot.'}, status=403)
     if request.method == 'POST':
         message = request.POST.get('message', '')
         # Use OpenAI API for response

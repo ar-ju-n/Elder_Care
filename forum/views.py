@@ -107,27 +107,31 @@ def reply_create(request, pk):
             from django.urls import reverse
             from django.conf import settings
             import re
-            notified_users = set()
-            # In-app notification to topic author (reply)
             from .models import Notification
+            from forum.models import broadcast_notification
+            from .models import Notification as NotifModel
+            from django.contrib.auth import get_user_model
+            User = get_user_model()
+            notified_users = set()
+
+            # 1. In-app notification to topic author (for reply)
             if topic.author != request.user:
-                notif = Notification.objects.create(
+                Notification.objects.create(
                     user=topic.author,
-                    message=f"{request.user.username} replied to your topic: {topic.title}",
+                    message=f"{request.user.get_full_name() or request.user.username} replied to your topic: {topic.title}",
                     url=reverse('forum:topic_detail', args=[topic.pk]),
                     notif_type='reply',
                 )
-                from forum.models import broadcast_notification
-                from .models import Notification as NotifModel
                 unread_count = NotifModel.objects.filter(user=topic.author, is_read=False).count()
                 broadcast_notification(topic.author.id, unread_count)
-            # Email notification to topic author (if not the replier and opted-in)
+
+            # 2. Email notification to topic author (if not replier and opted-in)
             profile = getattr(topic.author, 'profile', None)
             if topic.author != request.user and topic.author.email and (not profile or getattr(profile, 'forum_email_notifications', True)):
                 subject = f"New reply to your topic: {topic.title}"
                 topic_url = request.build_absolute_uri(reverse('forum:topic_detail', args=[topic.pk]))
                 message = f"Hi {topic.author.username},\n\n" \
-                          f"{request.user.username} has replied to your forum topic: {topic.title}.\n\n" \
+                          f"{request.user.get_full_name() or request.user.username} has replied to your forum topic: {topic.title}.\n\n" \
                           f"Read it here: {topic_url}\n\n" \
                           f"---\nElder Care & Mindful Support Hub"
                 send_mail(
@@ -138,24 +142,21 @@ def reply_create(request, pk):
                     fail_silently=True
                 )
                 notified_users.add(topic.author.username)
-            # Mention notification (in-app and email) for @username in reply body
+
+            # 3. Mention notification (in-app and email) for @username in reply body
             mentioned_usernames = set(re.findall(r'@([\w.-]+)', body or ''))
-            from django.contrib.auth import get_user_model
-            User = get_user_model()
             for username in mentioned_usernames:
                 try:
                     user = User.objects.get(username=username)
-                    if user.username == request.user.username or user.username == topic.author.username:
+                    if user.username in [request.user.username, topic.author.username]:
                         continue
                     # In-app notification for mention
-                    notif = Notification.objects.create(
+                    Notification.objects.create(
                         user=user,
-                        message=f"{request.user.username} mentioned you in a reply to: {topic.title}",
+                        message=f"{request.user.get_full_name() or request.user.username} mentioned you in a reply to: {topic.title}",
                         url=reverse('forum:topic_detail', args=[topic.pk]),
                         notif_type='mention',
                     )
-                    from forum.models import broadcast_notification
-                    from .models import Notification as NotifModel
                     unread_count = NotifModel.objects.filter(user=user, is_read=False).count()
                     broadcast_notification(user.id, unread_count)
                     profile = getattr(user, 'profile', None)
@@ -163,7 +164,7 @@ def reply_create(request, pk):
                         subject = f"You were mentioned in a forum reply"
                         topic_url = request.build_absolute_uri(reverse('forum:topic_detail', args=[topic.pk]))
                         message = f"Hi {user.username},\n\n" \
-                                  f"{request.user.username} mentioned you in a reply to the topic: {topic.title}.\n\n" \
+                                  f"{request.user.get_full_name() or request.user.username} mentioned you in a reply to the topic: {topic.title}.\n\n" \
                                   f"Read it here: {topic_url}\n\n" \
                                   f"---\nElder Care & Mindful Support Hub"
                         send_mail(
