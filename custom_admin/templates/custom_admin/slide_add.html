@@ -1,0 +1,57 @@
+{% extends 'custom_admin/base.html' %}
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-md-9">
+            <div class="card shadow-lg p-4">
+                <h2 class="fw-bold mb-4 text-center">Add Slide</h2>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-10">
+            {% if messages %}
+              {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                  {{ message }}
+                  <button aria-label="Close" class="btn-close" data-bs-dismiss="alert" type="button"></button>
+                </div>
+              {% endfor %}
+            {% endif %}
+            <h2>Add Homepage Slide</h2>
+            <form enctype="multipart/form-data" method="post">
+              {% csrf_token %}
+              <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                  <div class="mb-3">
+                    <label class="form-label" for="id_title">Title</label>
+                    <input class="form-control" id="id_title" name="title" required="" type="text"/>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label" for="id_description">Description (optional)</label>
+                    <textarea class="form-control" id="id_description" name="description" rows="3"></textarea>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label" for="id_image">Image</label>
+                    <input class="form-control" id="id_image" name="image" required="" type="file"/>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label" for="id_ordering">Ordering</label>
+                    <input class="form-control" id="id_ordering" name="ordering" type="number" value="0"/>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label" for="id_link">Link (optional)</label>
+                    <input class="form-control" id="id_link" name="link" placeholder="https://example.com" type="url"/>
+                  </div>
+                  <button class="btn btn-success" type="submit">Save Slide</button>
+                  <a class="btn btn-secondary ms-2" href="{% url 'custom_admin:slide_list' %}">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

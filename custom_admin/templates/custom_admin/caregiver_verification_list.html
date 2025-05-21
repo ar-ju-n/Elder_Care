@@ -1,0 +1,153 @@
+{% extends 'custom_admin/base.html' %}
+{% block title %}Caregiver Verifications{% endblock %}
+{% block content %}
+<div class="container mt-4">
+<h2>Caregiver Verification Requests</h2>
+<form class="mb-3" method="get">
+<div class="row g-2 align-items-end">
+<div class="col-auto">
+<label>Status:</label>
+<select class="form-select w-auto" name="status" onchange="this.form.submit()">
+<option %}="" %}selected{%="" endif="" filter="pending" if="" value="pending" {%="">Pending</option>
+<option %}="" %}selected{%="" endif="" filter="approved" if="" value="approved" {%="">Approved</option>
+<option %}="" %}selected{%="" endif="" filter="rejected" if="" value="rejected" {%="">Rejected</option>
+</select>
+</div>
+<div class="col-auto">
+<label>Search:</label>
+<input class="form-control" name="search" placeholder="Name or email" type="text" value="{{ search_query }}"/>
+</div>
+<div class="col-auto">
+<label>From:</label>
+<input class="form-control" name="start_date" type="date" value="{{ start_date }}"/>
+</div>
+<div class="col-auto">
+<label>To:</label>
+<input class="form-control" name="end_date" type="date" value="{{ end_date }}"/>
+</div>
+<div class="col-auto">
+<button class="btn btn-outline-primary" type="submit">Filter</button>
+</div>
+<div class="col-auto">
+<a class="btn btn-outline-secondary" href="?status={{ filter }}&amp;search={{ search_query }}&amp;start_date={{ start_date }}&amp;end_date={{ end_date }}&amp;export=1">Export to CSV</a>
+</div>
+</div>
+</form>
+</div>
+<form id="mainForm" method="post">
+  {% csrf_token %}
+  <input id="mainAction" name="action" type="hidden"/>
+<input id="mainAdminComment" name="admin_comment" type="hidden"/>
+<input id="modalSingleId" type="hidden"/>
+<input id="modalBulk" type="hidden"/>
+<table class="table table-striped align-middle">
+<thead>
+<tr class="caregiver-row">
+<th><input id="selectAll" onclick="toggleAll(this)" type="checkbox"/></th>
+<th>Caregiver</th>
+<th>Govt. ID</th>
+<th>Certification</th>
+<th>Document</th>
+<th>Submitted</th>
+<th>Status</th>
+<th>Admin Comment</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+      {% for v in verifications %}
+      <tr class="caregiver-row">
+<td><input name="selected" type="checkbox" value="{{ v.id }}"/></td>
+<td>{{ v.user.get_full_name|default:v.user.username }}</td>
+<td>{{ v.government_id_number }}</td>
+<td>{{ v.get_certification_type_display }}</td>
+<td>
+          {% if v.document %}
+            <a href="{{ v.document.url }}" target="_blank">View</a>
+          {% else %}-{% endif %}
+        </td>
+<td>{{ v.submitted_at|date:'Y-m-d H:i' }}</td>
+<td>
+          {% if not v.reviewed %}<span class="badge bg-warning text-dark">Pending</span>{% elif v.approved %}<span class="badge bg-success">Approved</span>{% else %}<span class="badge bg-danger">Rejected</span>{% endif %}
+        </td>
+<td>{{ v.admin_comment|default:'-' }}</td>
+<td>
+          {% if not v.reviewed %}
+            <button class="btn btn-success btn-sm approve-btn" data-action="approve" data-id="{{ v.id }}" onclick="openCommentModal('approve', {{ v.id }})" type="button">Approve</button>
+<button class="btn btn-danger btn-sm reject-btn" data-action="reject" data-id="{{ v.id }}" onclick="openCommentModal('reject', {{ v.id }})" type="button">Reject</button>
+          {% else %}-{% endif %}
+        </td>
+</tr>
+      {% endfor %}
+    </tbody>
+</table>
+<div class="mt-2">
+<button class="btn btn-success btn-sm" onclick="openCommentModal('approve', null, true)" type="button">Approve Selected</button>
+<button class="btn btn-danger btn-sm" onclick="openCommentModal('reject', null, true)" type="button">Reject Selected</button>
+</div>
+</form>
+<!-- Admin Comment Modal -->
+<div aria-hidden="true" aria-labelledby="adminCommentModalLabel" class="modal fade" id="adminCommentModal" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="adminCommentModalLabel">Admin Comment</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<input id="modalAction" type="hidden"/>
+<input id="modalSingleId" type="hidden"/>
+<input id="modalBulk" type="hidden"/>
+<div class="mb-3">
+<label class="form-label" for="modalAdminComment">Comment (optional):</label>
+<textarea class="form-control" id="modalAdminComment" placeholder="Enter a comment for this action..." rows="3"></textarea>
+</div>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancel</button>
+<button class="btn btn-primary" onclick="submitAdminComment()" type="button">Submit</button>
+</div>
+</div>
+</div>
+</div>
+<script>
+function toggleAll(source) {
+  document.querySelectorAll('input[name="selected"]').forEach(cb => cb.checked = source.checked);
+}
+function selectOne(id) {
+  document.querySelectorAll('input[name="selected"]').forEach(cb => cb.checked = (cb.value == id));
+}
+// Modal for admin comment
+function openCommentModal(action, id, isBulk) {
+  document.getElementById('modalAction').value = action;
+  document.getElementById('modalAdminComment').value = '';
+  document.getElementById('modalSingleId').value = id || '';
+  document.getElementById('modalBulk').value = isBulk ? '1' : '';
+  var modal = new bootstrap.Modal(document.getElementById('adminCommentModal'));
+  modal.show();
+}
+function submitAdminComment() {
+  // For single: select only the one checkbox
+  var isBulk = document.getElementById('modalBulk').value;
+  var singleId = document.getElementById('modalSingleId').value;
+  if (!isBulk && singleId) {
+    document.querySelectorAll('input[name="selected"]').forEach(cb => cb.checked = (cb.value == singleId));
+  }
+  // Set action and comment
+  document.getElementById('mainAction').value = document.getElementById('modalAction').value;
+  document.getElementById('mainAdminComment').value = document.getElementById('modalAdminComment').value;
+  // Set hidden fields for bulk/single
+  document.getElementById('modalBulk').value = isBulk;
+  document.getElementById('modalSingleId').value = singleId;
+  document.getElementById('mainForm').submit();
+}
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+    new bootstrap.Tooltip(tooltipTriggerEl);
+  });
+});
+</script>
+{% endblock %}

@@ -31,3 +31,6 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels.layers.InMemoryChannelLayer"
     }
 }
+
+# Redirect all login-required admin views to the custom admin login page
+LOGIN_URL = '/custom_admin/login/'

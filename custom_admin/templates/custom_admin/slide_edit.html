@@ -1,0 +1,53 @@
+{% extends 'custom_admin/base.html' %}
+{% block content %}
+<div class="row">
+
+<div class="col-md-10">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button aria-label="Close" class="btn-close" data-bs-dismiss="alert" type="button"></button>
+</div>
+      {% endfor %}
+    {% endif %}
+    <h2>Edit Homepage Slide</h2>
+<form enctype="multipart/form-data" method="post">
+    {% csrf_token %}
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            {{ form.non_field_errors }}
+            <div class="mb-3">
+                <label class="form-label" for="id_title">Title</label>
+                {{ form.title }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="id_image">Image</label>
+                {% if slide.image %}
+                <div class="mb-2">
+                    <img alt="{{ slide.title }}" class="img-thumbnail" src="{{ slide.image.url }}" style="max-width:160px; max-height:90px; object-fit:cover;"/>
+                </div>
+                {% endif %}
+                {{ form.image }}
+                <small class="text-muted">Leave empty to keep current image</small>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="id_description">Description</label>
+                {{ form.description }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="id_link">Link</label>
+                {{ form.link }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="id_ordering">Ordering</label>
+                {{ form.ordering }}
+            </div>
+            <button class="btn btn-success" type="submit">Update Slide</button>
+            <a class="btn btn-secondary ms-2" href="{% url 'custom_admin:slide_list' %}">Cancel</a>
+        </div>
+    </div>
+</form>
+</div>
+</div>
+{% endblock %}

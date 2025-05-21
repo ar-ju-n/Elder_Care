@@ -5,6 +5,10 @@ from . import views
 app_name = 'accounts'
 
 urlpatterns = [
+    path('notifications/api/recent/', views.notifications_api_recent, name='notifications_api_recent'),
+    path('notifications/api/mark_read/', views.notifications_api_mark_read, name='notifications_api_mark_read'),
+    path('messages/api/recent/', views.messages_api_recent, name='messages_api_recent'),
+    path('messages/api/mark_read/', views.messages_api_mark_read, name='messages_api_mark_read'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('register/family/', views.family_register_view, name='family_register'),
@@ -13,6 +17,21 @@ urlpatterns = [
     path('api/check_email/', views.check_email, name='check_email'),
     path('status/', views.auth_status, name='auth_status'),
     path('profile/<int:user_id>/', views.profile_view, name='profile'),
+    path('profile/update/', views.update_profile, name='update_profile'),
+    path('profile/update-contact/', views.update_contact, name='update_contact'),
+    path('profile/change-password/', views.change_password, name='change_password'),
+    path('profile/privacy-settings/', views.privacy_settings, name='privacy_settings'),
+    path('profile/notification-settings/', views.notification_settings, name='notification_settings'),
+    path('profile/connected-accounts/', views.connected_accounts, name='connected_accounts'),
+    path('profile/verify-email/', views.verify_email, name='verify_email'),
+    path('profile/verify-email/confirm/<uidb64>/<token>/', views.verify_email_confirm, name='verify_email_confirm'),
+    # 2FA URLs
+    path('profile/2fa/setup/', views.setup_2fa, name='setup_2fa'),
+    path('profile/2fa/disable/', views.disable_2fa, name='disable_2fa'),
+    path('profile/2fa/verify/', views.verify_2fa, name='verify_2fa'),
+    path('profile/2fa/backup-codes/', views.backup_codes, name='backup_codes'),
+    path('profile/upload-avatar/', views.upload_avatar, name='upload_avatar'),
+    path('profile/upload-picture/', views.ajax_upload_profile_picture, name='ajax_upload_profile_picture'),
     path('settings/', views.settings_view, name='settings'),
     path('emergency-contacts/', views.emergency_contacts_view, name='emergency_contacts'),
     path('medication-reminders/', views.medication_reminders_view, name='medication_reminders'),

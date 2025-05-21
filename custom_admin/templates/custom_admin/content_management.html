@@ -1,0 +1,950 @@
+{% extends 'custom_admin/base.html' %}
+{% load static %}
+{% block content %}
+<div class="container py-4">
+<h2 class="mb-4">Content &amp; Resource Management</h2>
+
+  {# Django messages #}
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button aria-label="Close" class="btn-close" data-bs-dismiss="alert" type="button"></button>
+</div>
+    {% endfor %}
+  {% endif %}
+
+  <ul class="nav nav-tabs" id="contentTabs" role="tablist">
+<li class="nav-item" role="presentation">
+<button class="nav-link active" data-bs-target="#articles" data-bs-toggle="tab" id="articles-tab" role="tab" type="button">Articles</button>
+</li>
+<li class="nav-item" role="presentation">
+<button class="nav-link" data-bs-target="#integrations" data-bs-toggle="tab" id="integrations-tab" role="tab" type="button">Integrations</button>
+</li>
+<li class="nav-item" role="presentation">
+<button class="nav-link" data-bs-target="#links" data-bs-toggle="tab" id="links-tab" role="tab" type="button">Links</button>
+</li>
+<li class="nav-item" role="presentation">
+<button class="nav-link" data-bs-target="#videos" data-bs-toggle="tab" id="videos-tab" role="tab" type="button">Videos</button>
+</li>
+<li class="nav-item" role="presentation">
+<button class="nav-link" data-bs-target="#slides" data-bs-toggle="tab" id="slides-tab" role="tab" type="button">Homepage Slides</button>
+</li>
+</ul>
+<div class="tab-content pt-3" id="contentTabsContent">
+<!-- Homepage Slides Tab -->
+<div class="tab-pane fade" id="slides" role="tabpanel">
+<div class="sticky-top bg-white py-2 mb-2 d-flex justify-content-between align-items-center">
+<h5 class="card-title">Homepage Slides</h5>
+<p>Slides in context: {{ homepage_slides|length }}</p>
+        {% for slide in homepage_slides %}
+          <p>{{ slide.title }} - {% if slide.image %}{{ slide.image.url }}{% else %}(no image){% endif %}</p>
+        {% endfor %}
+        <button aria-label="Add Slide" class="btn btn-success btn-sm" data-bs-target="#addSlideModal" data-bs-toggle="modal">Add Slide</button>
+</div>
+<div class="table-responsive">
+<table class="table table-striped align-middle">
+<thead>
+<tr><th>Title</th><th>Image</th><th>Description</th><th>Link</th><th>Order</th><th>Actions</th></tr>
+</thead>
+<tbody>
+            {% for slide in homepage_slides %}
+            <tr>
+<td>{{ slide.title }}</td>
+<td>{% if slide.image %}<img alt="{{ slide.title }}" src="{{ slide.image.url }}"/>{% endif %}</td>
+<td>{{ slide.description|truncatechars:60 }}</td>
+<td>{% if slide.link %}<a href="{{ slide.link }}" target="_blank">{{ slide.link }}</a>{% endif %}</td>
+<td>{{ slide.ordering }}</td>
+<td class="d-flex gap-2">
+<button class="btn btn-primary btn-sm" data-bs-target="#editSlideModal{{ slide.id }}" data-bs-toggle="modal" title="Edit Slide" type="button">
+<i class="bi bi-pencil"></i> Edit
+                </button>
+<button class="btn btn-danger btn-sm" data-bs-target="#deleteSlideModal{{ slide.id }}" data-bs-toggle="modal" title="Delete Slide" type="button">
+<i class="bi bi-trash"></i> Delete
+                </button>
+<!-- Delete Confirmation Modal -->
+<div aria-hidden="true" aria-labelledby="deleteSlideModalLabel{{ slide.id }}" class="modal fade" id="deleteSlideModal{{ slide.id }}" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="deleteSlideModalLabel{{ slide.id }}">Confirm Delete</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+                        Are you sure you want to delete the slide <strong>{{ slide.title }}</strong>?
+                      </div>
+<div class="modal-footer">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancel</button>
+<form action="" method="post">
+                          {% csrf_token %}
+                          <input name="delete_slide_id" type="hidden" value="{{ slide.id }}"/>
+<button class="btn btn-danger" type="submit">Delete</button>
+</form>
+</div>
+</div>
+</div>
+</div>
+<!-- Edit Modal Placeholder (to be implemented) -->
+<div aria-hidden="true" aria-labelledby="editSlideModalLabel{{ slide.id }}" class="modal fade" id="editSlideModal{{ slide.id }}" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="editSlideModalLabel{{ slide.id }}">Edit Slide</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<form action="" enctype="multipart/form-data" method="post">
+                          {% csrf_token %}
+                          <input name="edit_slide_id" type="hidden" value="{{ slide.id }}"/>
+<div class="mb-3">
+<label class="form-label">Title</label>
+<input class="form-control bg-dark text-white" name="title" required="" type="text" value="{{ slide.title }}"/>
+</div>
+<div class="mb-3">
+<label class="form-label">Image</label>
+                            {% if slide.image %}
+                              <img alt="Current image" class="mb-2" src="{{ slide.image.url }}"/><br/>
+                            {% endif %}
+                            <input class="form-control" multiple="" name="image" type="file"/>
+</div>
+<div class="mb-3">
+<label class="form-label">Description</label>
+<textarea class="form-control bg-dark text-white" name="description" rows="2">{{ slide.description }}</textarea>
+</div>
+<div class="mb-3">
+<label class="form-label">Link</label>
+<input class="form-control bg-dark text-white" name="link" type="url" value="{{ slide.link }}"/>
+</div>
+<div class="mb-3">
+<label class="form-label">Order</label>
+<input class="form-control bg-dark text-white" name="ordering" required="" type="number" value="{{ slide.ordering }}"/>
+</div>
+<div class="d-flex justify-content-end gap-2">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancel</button>
+<button class="btn btn-primary" type="submit">Save Changes</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
+</td>
+</tr>
+            {% empty %}
+            <tr>
+<td class="text-center text-muted py-5" colspan="6">
+<div class="mb-2"><i class="bi bi-images"></i></div>
+<div>No slides found. <a data-bs-target="#addSlideModal" data-bs-toggle="modal" href="#">Add your first slide</a>!</div>
+</td>
+</tr>
+            {% endfor %}
+          </tbody>
+</table>
+</div>
+</div>
+<!-- Add/Edit Slide Modal -->
+<div aria-hidden="true" aria-labelledby="addSlideModalLabel" class="modal fade" id="addSlideModal" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="addSlideModalLabel">Add Homepage Slide</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<form action="" enctype="multipart/form-data" method="post">
+              {% csrf_token %}
+              <div class="mb-3">
+                {{ homepage_slide_form.title }}
+                {% if homepage_slide_form.title.errors %}
+                  <div class="text-danger small">{{ homepage_slide_form.title.errors }}</div>
+                {% endif %}
+              </div>
+<div class="mb-3">
+                {{ homepage_slide_form.image }}
+                {% if homepage_slide_form.image.errors %}
+                  <div class="text-danger small">{{ homepage_slide_form.image.errors }}</div>
+                {% endif %}
+              </div>
+<div class="mb-3">
+                {{ homepage_slide_form.description }}
+                {% if homepage_slide_form.description.errors %}
+                  <div class="text-danger small">{{ homepage_slide_form.description.errors }}</div>
+                {% endif %}
+              </div>
+<div class="mb-3">
+                {{ homepage_slide_form.link }}
+                {% if homepage_slide_form.link.errors %}
+                  <div class="text-danger small">{{ homepage_slide_form.link.errors }}</div>
+                {% endif %}
+              </div>
+<div class="mb-3">
+                {{ homepage_slide_form.ordering }}
+                {% if homepage_slide_form.ordering.errors %}
+                  <div class="text-danger small">{{ homepage_slide_form.ordering.errors }}</div>
+                {% endif %}
+              </div>
+<button class="btn btn-success" type="submit">Save Slide</button>
+</form>
+</div>
+</div>
+</div>
+</div>
+<!-- Videos Tab -->
+<div class="tab-pane fade" id="videos" role="tabpanel">
+<div class="sticky-top bg-white py-2 mb-2 d-flex justify-content-between align-items-center">
+<h5 class="mb-0">Videos</h5>
+<button aria-label="Add Video" class="btn btn-success btn-sm" data-bs-target="#addVideoModal" data-bs-toggle="modal">Add Video</button>
+</div>
+<div class="table-responsive">
+<table class="table table-striped align-middle">
+<thead>
+<tr><th>Title</th><th>URL</th><th>File</th><th>Tags</th><th>Published</th><th>Actions</th></tr>
+</thead>
+<tbody>
+            {% for video in videos %}
+            <tr>
+<td>{{ video.title }}</td>
+<td>{% if video.url %}<a href="{{ video.url }}" target="_blank">{{ video.url }}</a>{% endif %}</td>
+<td>{% if video.file %}<a href="{{ video.file.url }}" target="_blank">Download</a>{% endif %}</td>
+<td>{% for tag in video.tags.all %}<span class="badge bg-secondary">{{ tag.name }}</span> {% endfor %}</td>
+<td>{{ video.published_at|date:'M d, Y H:i' }}</td>
+<td class="d-flex gap-2">
+<!-- Edit Button -->
+<button class="btn btn-primary btn-sm" data-bs-target="#editVideoModal{{ video.id }}" data-bs-toggle="modal" title="Edit Video" type="button">
+<i class="bi bi-pencil"></i> Edit
+  </button>
+<!-- Delete Button -->
+<button class="btn btn-danger btn-sm" data-bs-target="#deleteVideoModal{{ video.id }}" data-bs-toggle="modal" title="Delete Video" type="button">
+<i class="bi bi-trash"></i> Delete
+  </button>
+<!-- Delete Confirmation Modal -->
+<div aria-hidden="true" aria-labelledby="deleteVideoModalLabel{{ video.id }}" class="modal fade" id="deleteVideoModal{{ video.id }}" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="deleteVideoModalLabel{{ video.id }}">Confirm Delete</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+          Are you sure you want to delete the video <strong>{{ video.title }}</strong>?
+        </div>
+<div class="modal-footer">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancel</button>
+<form action="" method="post">
+            {% csrf_token %}
+            <input name="delete_video_id" type="hidden" value="{{ video.id }}"/>
+<button class="btn btn-danger" type="submit">Delete</button>
+</form>
+</div>
+</div>
+</div>
+</div>
+<!-- Edit Modal -->
+<div aria-hidden="true" aria-labelledby="editVideoModalLabel{{ video.id }}" class="modal fade" id="editVideoModal{{ video.id }}" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="editVideoModalLabel{{ video.id }}">Edit Video</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<form action="" enctype="multipart/form-data" method="post">
+            {% csrf_token %}
+            <input name="edit_video_id" type="hidden" value="{{ video.id }}"/>
+<div class="mb-3">
+<label class="form-label">Title</label>
+<input class="form-control bg-dark text-white" name="title" required="" type="text" value="{{ video.title }}"/>
+</div>
+<div class="mb-3">
+<label class="form-label">URL</label>
+<input class="form-control bg-dark text-white" name="url" type="url" value="{{ video.url }}"/>
+</div>
+<div class="mb-3">
+<label class="form-label">File</label>
+              {% if video.file %}
+                <a href="{{ video.file.url }}" target="_blank">Current File</a><br/>
+              {% endif %}
+              <input class="form-control" name="file" type="file"/>
+</div>
+<div class="mb-3">
+<label class="form-label">Tags</label>
+<select class="form-control bg-dark text-white" multiple="" name="tags">
+                {% for tag in tags %}
+                  <option %}="" %}selected{%="" endif="" if="" in="" tag="" value="{{ tag.id }}" video.tags.all="" {%="">{{ tag.name }}</option>
+                {% endfor %}
+              </select>
+</div>
+<div class="d-flex justify-content-end gap-2">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancel</button>
+<button class="btn btn-primary" type="submit">Save Changes</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
+</td>
+</tr>
+            {% empty %}
+            <tr>
+<td class="text-center text-muted py-5" colspan="6">
+<div class="mb-2"><i class="bi bi-film"></i></div>
+<div>No videos found. <a data-bs-target="#addVideoModal" data-bs-toggle="modal" href="#">Add your first video</a>!</div>
+</td>
+</tr>
+            {% endfor %}
+          </tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="mb-3">
+              {{ video_form.title }}
+              {% if video_form.title.errors %}
+                <div class="text-danger small">{{ video_form.title.errors }}</div>
+              {% endif %}
+            </div>
+<div class="mb-3">
+              {{ video_form.url }}
+              {% if video_form.url.errors %}
+                <div class="text-danger small">{{ video_form.url.errors }}</div>
+              {% endif %}
+            </div>
+<div class="mb-3">
+              {{ video_form.file }}
+              {% if video_form.file.errors %}
+                <div class="text-danger small">{{ video_form.file.errors }}</div>
+              {% endif %}
+            </div>
+<div class="mb-3">
+              {{ video_form.tags }}
+              {% if video_form.tags.errors %}
+                <div class="text-danger small">{{ video_form.tags.errors }}</div>
+              {% endif %}
+            </div>
+<button class="btn btn-success" type="submit">Save Video</button>
+</div>
+<!-- Articles Tab -->
+<div class="tab-pane fade" id="integrations" role="tabpanel">
+<div class="sticky-top bg-white py-2 mb-2 d-flex justify-content-between align-items-center">
+<h5 class="mb-0">Integrations</h5>
+<button class="btn btn-success btn-sm" data-bs-target="#addIntegrationModal" data-bs-toggle="modal" id="addIntegrationBtn">Add Integration</button>
+</div>
+<div class="table-responsive">
+<table class="table table-striped align-middle" id="integrationsTable">
+<thead>
+<tr><th>Name</th><th>Type</th><th>Status</th><th>Config</th><th>Actions</th></tr>
+</thead>
+<tbody>
+<!-- Integrations will be loaded here by JS -->
+</tbody>
+</table>
+</div>
+</div>
+<!-- Add Integration Modal -->
+<div aria-hidden="true" aria-labelledby="addIntegrationModalLabel" class="modal fade" id="addIntegrationModal" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="addIntegrationModalLabel">Add Integration</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<form id="addIntegrationForm">
+<div class="mb-3">
+<label class="form-label">Name</label>
+<input class="form-control" name="name" required="" type="text"/>
+</div>
+<div class="mb-3">
+<label class="form-label">Type</label>
+<select class="form-select" name="service_type" required="">
+<option value="sendgrid">SendGrid</option>
+<option value="twilio">Twilio</option>
+</select>
+</div>
+<div class="mb-3">
+<label class="form-label">Status</label>
+<input class="form-control" name="status" required="" type="text" value="Not Connected"/>
+</div>
+<div class="mb-3">
+<label class="form-label">Config (JSON)</label>
+<textarea class="form-control" name="config" placeholder='{"api_key": "..."}' required="" rows="3"></textarea>
+</div>
+<div class="d-flex justify-content-end gap-2">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancel</button>
+<button class="btn btn-success" type="submit">Add Integration</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
+<!-- Edit Integration Modal -->
+<div aria-hidden="true" aria-labelledby="editIntegrationModalLabel" class="modal fade" id="editIntegrationModal" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="editIntegrationModalLabel">Edit Integration</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<form id="editIntegrationForm">
+<input name="id" type="hidden"/>
+<div class="mb-3">
+<label class="form-label">Name</label>
+<input class="form-control" name="name" required="" type="text"/>
+</div>
+<div class="mb-3">
+<label class="form-label">Type</label>
+<select class="form-select" name="service_type" required="">
+<option value="sendgrid">SendGrid</option>
+<option value="twilio">Twilio</option>
+</select>
+</div>
+<div class="mb-3">
+<label class="form-label">Status</label>
+<input class="form-control" name="status" required="" type="text"/>
+</div>
+<div class="mb-3">
+<label class="form-label">Config (JSON)</label>
+<textarea class="form-control" name="config" required="" rows="3"></textarea>
+</div>
+<div class="d-flex justify-content-end gap-2">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancel</button>
+<button class="btn btn-primary" type="submit">Save Changes</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
+<!-- Delete Integration Modal -->
+<div aria-hidden="true" aria-labelledby="deleteIntegrationModalLabel" class="modal fade" id="deleteIntegrationModal" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="deleteIntegrationModalLabel">Delete Integration</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<p>Are you sure you want to delete this integration?</p>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancel</button>
+<button class="btn btn-danger" id="confirmDeleteIntegrationBtn" type="button">Delete</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Connect Integration Modal -->
+<div aria-hidden="true" aria-labelledby="connectIntegrationModalLabel" class="modal fade" id="connectIntegrationModal" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="connectIntegrationModalLabel">Connect Integration</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<p>Are you sure you want to connect this integration?</p>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancel</button>
+<button class="btn btn-primary" id="confirmConnectIntegrationBtn" type="button">Connect</button>
+</div>
+</div>
+</div>
+</div>
+<div class="tab-pane fade show active" id="articles" role="tabpanel">
+<div class="sticky-top bg-white py-2 mb-2 d-flex justify-content-between align-items-center">
+<h5 class="mb-0">Articles</h5>
+<div class="d-flex gap-2">
+<button aria-label="Add Tag" class="btn btn-outline-secondary btn-sm" data-bs-target="#addTagModal" data-bs-toggle="modal">Add Tag</button>
+<button aria-label="Add Article" class="btn btn-success btn-sm" data-bs-target="#addArticleModal" data-bs-toggle="modal">Add Article</button>
+</div>
+</div>
+<!-- Add Tag Modal -->
+<div aria-hidden="true" aria-labelledby="addTagModalLabel" class="modal fade" id="addTagModal" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<form id="add-tag-form" method="post">
+              {% csrf_token %}
+              <div class="modal-header">
+<h5 class="modal-title" id="addTagModalLabel">Add Tag</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<div class="mb-3">
+<label class="form-label" for="tagNameInput">Tag Name</label>
+<input class="form-control" id="tagNameInput" name="tag_name" required="" type="text"/>
+</div>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancel</button>
+<button class="btn btn-primary" type="submit">Add Tag</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+<div aria-hidden="true" aria-labelledby="addTagModalLabel" class="modal fade" id="addTagModal" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="addTagModalLabel">Add Tag</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<form action="" id="addTagForm" method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+<label class="form-label" for="tagNameInput">Tag Name</label>
+<input class="form-control" id="tagNameInput" name="tag_name" required="" type="text"/>
+</div>
+<div class="d-flex justify-content-end gap-2">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancel</button>
+<button class="btn btn-primary" type="submit">Add Tag</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
+<!-- Tag Management Table -->
+<div class="mt-3">
+<div class="d-flex justify-content-between align-items-center mb-2">
+<h6 class="mb-0">Manage Tags</h6>
+<button aria-label="Add Tag" class="btn btn-success btn-sm" data-bs-target="#addTagModal" data-bs-toggle="modal">
+<i class="bi bi-plus"></i> Add Tag
+          </button>
+</div>
+<div class="table-responsive">
+<table class="table table-bordered table-sm align-middle mb-0">
+<thead>
+<tr><th>Tag Name</th><th>Actions</th></tr>
+</thead>
+<tbody>
+              {% for tag in tags %}
+              <tr id="tag-row-{{ tag.id }}">
+<td>{{ tag.name }}</td>
+<td>
+<button class="btn btn-outline-primary btn-sm me-1" data-bs-target="#editTagModal-{{ tag.id }}" data-bs-toggle="modal">Edit</button>
+<button class="btn btn-outline-danger btn-sm" data-bs-target="#deleteTagModal-{{ tag.id }}" data-bs-toggle="modal">Delete</button>
+</td>
+</tr>
+              {% endfor %}
+            </tbody>
+</table>
+</div>
+</div>
+<!-- End Tag Management Table -->
+<!-- Tag Modals (moved outside table for Bootstrap compatibility) -->
+      {% for tag in tags %}
+      <!-- Edit Tag Modal -->
+<div aria-hidden="true" aria-labelledby="editTagModalLabel-{{ tag.id }}" class="modal fade" id="editTagModal-{{ tag.id }}" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="editTagModalLabel-{{ tag.id }}">Edit Tag</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<form class="edit-tag-form" data-tag-id="{{ tag.id }}" method="post">
+                {% csrf_token %}
+                <input name="edit_tag_id" type="hidden" value="{{ tag.id }}"/>
+<div class="mb-3">
+<label class="form-label" for="editTagNameInput-{{ tag.id }}">Tag Name</label>
+<input class="form-control" id="editTagNameInput-{{ tag.id }}" name="edit_tag_name" required="" type="text" value="{{ tag.name }}"/>
+</div>
+<div class="d-flex justify-content-end gap-2">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancel</button>
+<button class="btn btn-primary" type="submit">Save</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
+<!-- Delete Tag Modal -->
+<div aria-hidden="true" aria-labelledby="deleteTagModalLabel-{{ tag.id }}" class="modal fade" id="deleteTagModal-{{ tag.id }}" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="deleteTagModalLabel-{{ tag.id }}">Delete Tag</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<form class="delete-tag-form" data-tag-id="{{ tag.id }}" method="post">
+                {% csrf_token %}
+                <input name="delete_tag_id" type="hidden" value="{{ tag.id }}"/>
+<p>Are you sure you want to delete the tag <strong>{{ tag.name }}</strong>?</p>
+<div class="d-flex justify-content-end gap-2">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancel</button>
+<button class="btn btn-danger" type="submit">Delete</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
+      {% endfor %}
+            
+
+</div>
+<!-- End Tag Management Table -->
+<div class="table-responsive">
+<table class="table table-striped align-middle">
+<thead><tr><th>Title</th><th>Description</th><th>Last Updated</th><th>Actions</th></tr></thead>
+<tbody>
+            {% if tag_form_errors %}
+<tr><td colspan="4"><div class="alert alert-danger">{{ tag_form_errors }}</div></td></tr>
+{% endif %}
+{% for article in articles %}
+            <tr{% %}="" and="" class="table-info" edit_article="" edit_article.id="article.id" endif="" if="" {%="">
+<td>{{ article.title }}</td>
+<td>{{ article.body|truncatechars:60 }}</td>
+<td>{{ article.updated_at|date:'M d, Y H:i' }}</td>
+<td class="d-flex gap-2">
+<button class="btn btn-primary btn-sm edit-article-btn" data-article-body="{{ article.body|escapejs }}" data-article-id="{{ article.id }}" data-article-tags="{% for tag in article.tags.all %}{{ tag.id }}{% if not forloop.last %},{% endif %}{% endfor %}" data-article-title="{{ article.title|escapejs }}" data-bs-target="#addArticleModal" data-bs-toggle="modal" title="Edit Article" type="button">
+<i class="bi bi-pencil"></i> Edit
+</button>
+<button class="btn btn-danger btn-sm" data-bs-target="#deleteArticleModal{{ article.id }}" data-bs-toggle="modal" title="Delete Article" type="button">
+<i class="bi bi-trash"></i> Delete
+                </button>
+<!-- Delete Confirmation Modal -->
+<div aria-hidden="true" aria-labelledby="deleteArticleModalLabel{{ article.id }}" class="modal fade" id="deleteArticleModal{{ article.id }}" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="deleteArticleModalLabel{{ article.id }}">Confirm Delete</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+                        Are you sure you want to delete the article <strong>{{ article.title }}</strong>?
+                      </div>
+<div class="modal-footer">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancel</button>
+<form action="" method="post">
+                          {% csrf_token %}
+                          <input name="delete_article_id" type="hidden" value="{{ article.id }}"/>
+<button class="btn btn-danger" type="submit">Delete</button>
+</form>
+</div>
+</div>
+</div>
+</div>
+</td>
+
+            {% empty %}
+            <tr>
+<td class="text-center text-muted py-5" colspan="4">
+<div class="mb-2"><i class="bi bi-journal-x"></i></div>
+<div>No articles found. <a data-bs-target="#addArticleModal" data-bs-toggle="modal" href="#">Add your first article</a>!</div>
+</td>
+</tr>
+            {% endfor %}
+          </tr{%></tbody>
+</table>
+</div>
+<!-- Add/Edit Article Modal -->
+<div aria-hidden="true" aria-labelledby="addArticleModalLabel" class="modal fade" id="addArticleModal" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="addArticleModalLabel">{% if edit_article %}Edit Article{% else %}Add Article{% endif %}</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<form action="" method="post">
+                {% csrf_token %}
+                {% if edit_article %}
+                  <input name="edit_article_id" type="hidden" value="{{ edit_article.id }}"/>
+                {% else %}
+                  <input name="add_article" type="hidden" value="1"/>
+                {% endif %}
+                <div class="mb-3">
+<label class="form-label" for="{{ article_form.title.id_for_label }}">Title</label>
+  {{ article_form.title }}
+  {% if article_form.title.errors %}
+    <div class="text-danger small">{{ article_form.title.errors }}</div>
+  {% endif %}
+</div>
+<div class="mb-3">
+<label class="form-label" for="{{ article_form.body.id_for_label }}">Body</label>
+  {{ article_form.body }}
+  {% if article_form.body.errors %}
+    <div class="text-danger small">{{ article_form.body.errors }}</div>
+  {% endif %}
+</div>
+<div class="mb-3">
+<label class="form-label" for="{{ article_form.tags.id_for_label }}">Tags</label>
+  {{ article_form.tags }}
+  {% if article_form.tags.errors %}
+    <div class="text-danger small">{{ article_form.tags.errors }}</div>
+  {% endif %}
+</div>
+<button class="btn btn-success" type="submit">Save Article</button>
+</form>
+</div>
+</div>
+</div>
+</div>
+<!-- Links Tab -->
+<div class="tab-pane fade" id="links" role="tabpanel">
+<div class="sticky-top bg-white py-2 mb-2 d-flex justify-content-between align-items-center">
+<h5 class="mb-0">Links</h5>
+<button aria-label="Add Link" class="btn btn-success btn-sm" data-bs-target="#addLinkModal" data-bs-toggle="modal">Add Link</button>
+</div>
+<div class="table-responsive">
+<table class="table table-striped align-middle">
+<thead><tr><th>Title</th><th>Description</th><th>URL</th><th>Last Updated</th><th>Actions</th></tr></thead>
+<tbody>
+            {% for link in links %}
+            <tr{% %}="" and="" class="table-info" edit_link="" edit_link.id="link.id" endif="" if="" {%="">
+<td>{{ link.title }}</td>
+<td>{{ link.description|truncatechars:60 }}</td>
+<td><a href="{{ link.url }}" rel="noopener" target="_blank">{{ link.url }}</a></td>
+<td>{{ link.updated_at|date:'M d, Y H:i' }}</td>
+<td class="d-flex gap-2">
+<button class="btn btn-primary btn-sm edit-link-btn" data-bs-target="#addLinkModal" data-bs-toggle="modal" data-link-description="{{ link.description|escapejs }}" data-link-id="{{ link.id }}" data-link-title="{{ link.title|escapejs }}" data-link-url="{{ link.url|escapejs }}" title="Edit Link" type="button">
+<i class="bi bi-pencil"></i> Edit
+</button>
+<button class="btn btn-danger btn-sm" data-bs-target="#deleteLinkModal{{ link.id }}" data-bs-toggle="modal" title="Delete Link" type="button">
+<i class="bi bi-trash"></i> Delete
+</button>
+<!-- Delete Confirmation Modal -->
+<div aria-hidden="true" aria-labelledby="deleteLinkModalLabel{{ link.id }}" class="modal fade" id="deleteLinkModal{{ link.id }}" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="deleteLinkModalLabel{{ link.id }}">Confirm Delete</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<form action="" method="post">
+<div class="modal-body">
+    Are you sure you want to delete the link <strong>{{ link.title }}</strong>?
+  </div>
+<div class="modal-footer">
+    {% csrf_token %}
+    <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancel</button>
+<input name="delete_link_id" type="hidden" value="{{ link.id }}"/>
+<button class="btn btn-danger" type="submit">Delete</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+</td>
+
+            {% empty %}
+            <tr>
+<td class="text-center text-muted py-5" colspan="5">
+<div class="mb-2"><i class="bi bi-link-45deg"></i></div>
+<div>No links found. <a data-bs-target="#addLinkModal" data-bs-toggle="modal" href="#">Add your first link</a>!</div>
+</td>
+</tr>
+            {% endfor %}
+          </tr{%></tbody>
+</table>
+</div>
+<!-- Add/Edit Link Modal -->
+<div aria-hidden="true" aria-labelledby="addLinkModalLabel" class="modal fade" id="addLinkModal" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="addLinkModalLabel">{% if edit_link %}Edit Link{% else %}Add Link{% endif %}</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<form action="" method="post">
+                {% csrf_token %}
+                {% if edit_link %}
+                  <input name="edit_link_id" type="hidden" value="{{ edit_link.id }}"/>
+                {% else %}
+                  <input name="add_link" type="hidden" value="1"/>
+                {% endif %}
+                <div class="mb-3">
+<label class="form-label" for="{{ link_form.title.id_for_label }}">Title</label>
+  {{ link_form.title }}
+  {% if link_form.title.errors %}
+    <div class="text-danger small">{{ link_form.title.errors }}</div>
+  {% endif %}
+</div>
+<div class="mb-3">
+<label class="form-label" for="{{ link_form.description.id_for_label }}">Description</label>
+  {{ link_form.description }}
+  {% if link_form.description.errors %}
+    <div class="text-danger small">{{ link_form.description.errors }}</div>
+  {% endif %}
+</div>
+<div class="mb-3">
+<label class="form-label" for="{{ link_form.url.id_for_label }}">URL</label>
+  {{ link_form.url }}
+  {% if link_form.url.errors %}
+    <div class="text-danger small">{{ link_form.url.errors }}</div>
+  {% endif %}
+</div>
+<button class="btn btn-success" type="submit">Save Link</button>
+</form>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script src="{% static 'custom_admin/tags_ajax.js' %}"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    {% if edit_article %}
+      var articleModal = new bootstrap.Modal(document.getElementById('addArticleModal'));
+      articleModal.show();
+    {% endif %}
+    {% if edit_link %}
+      var linkModal = new bootstrap.Modal(document.getElementById('addLinkModal'));
+      linkModal.show();
+    {% endif %}
+  });
+</script>
+<script src="{% static 'custom_admin/article_edit.js' %}"></script>
+<script src="{% static 'custom_admin/link_edit.js' %}"></script>
+
+{% endblock %}
+<script>
+// --- Integrations AJAX Logic ---
+let selectedIntegrationId = null;
+
+function loadIntegrations() {
+  fetch('/custom_admin/api/integrations/')
+    .then(r => r.json())
+    .then(data => {
+      const tbody = document.querySelector('#integrationsTable tbody');
+      tbody.innerHTML = '';
+      data.integrations.forEach(integration => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${integration.name}</td>
+          <td>${integration.service_type}</td>
+          <td>${integration.status}</td>
+          <td><pre class='mb-0'>${JSON.stringify(integration.config, null, 2)}</pre></td>
+          <td class="d-flex gap-2">
+            <button class="btn btn-outline-primary btn-sm edit-integration-btn" data-id="${integration.id}">Edit</button>
+            <button class="btn btn-outline-danger btn-sm delete-integration-btn" data-id="${integration.id}">Delete</button>
+            <button class="btn btn-outline-success btn-sm connect-integration-btn" data-id="${integration.id}">Connect</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Load integrations on tab show
+  document.getElementById('integrations-tab').addEventListener('shown.bs.tab', loadIntegrations);
+  // Also load on page load if integrations tab is active
+  if(document.getElementById('integrations').classList.contains('show')) loadIntegrations();
+
+  // Add Integration
+  document.getElementById('addIntegrationForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const form = e.target;
+    fetch('/custom_admin/api/integrations/add/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
+      body: JSON.stringify({
+        name: form.name.value,
+        service_type: form.service_type.value,
+        status: form.status.value,
+        config: form.config.value
+      })
+    }).then(r => {
+      if(r.ok) return r.json();
+      return r.json().then(data => { throw data; });
+    }).then(() => {
+      form.reset();
+      bootstrap.Modal.getOrCreateInstance(document.getElementById('addIntegrationModal')).hide();
+      loadIntegrations();
+    }).catch(err => alert('Error adding integration: ' + JSON.stringify(err.errors)));
+  });
+
+  // Edit Integration (open modal)
+  document.querySelector('#integrationsTable').addEventListener('click', function(e) {
+    if(e.target.classList.contains('edit-integration-btn')) {
+      selectedIntegrationId = e.target.getAttribute('data-id');
+      fetch(`/custom_admin/api/integrations/`)
+        .then(r => r.json())
+        .then(data => {
+          const integration = data.integrations.find(i => i.id == selectedIntegrationId);
+          const form = document.getElementById('editIntegrationForm');
+          form.id.value = integration.id;
+          form.name.value = integration.name;
+          form.service_type.value = integration.service_type;
+          form.status.value = integration.status;
+          form.config.value = typeof integration.config === 'object' ? JSON.stringify(integration.config, null, 2) : integration.config;
+          bootstrap.Modal.getOrCreateInstance(document.getElementById('editIntegrationModal')).show();
+        });
+    }
+    // Delete Integration (open modal)
+    if(e.target.classList.contains('delete-integration-btn')) {
+      selectedIntegrationId = e.target.getAttribute('data-id');
+      bootstrap.Modal.getOrCreateInstance(document.getElementById('deleteIntegrationModal')).show();
+    }
+    // Connect Integration (open modal)
+    if(e.target.classList.contains('connect-integration-btn')) {
+      selectedIntegrationId = e.target.getAttribute('data-id');
+      bootstrap.Modal.getOrCreateInstance(document.getElementById('connectIntegrationModal')).show();
+    }
+  });
+
+  // Edit Integration (submit)
+  document.getElementById('editIntegrationForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const form = e.target;
+    fetch(`/custom_admin/api/integrations/${form.id.value}/edit/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
+      body: JSON.stringify({
+        name: form.name.value,
+        service_type: form.service_type.value,
+        status: form.status.value,
+        config: form.config.value
+      })
+    }).then(r => {
+      if(r.ok) return r.json();
+      return r.json().then(data => { throw data; });
+    }).then(() => {
+      bootstrap.Modal.getOrCreateInstance(document.getElementById('editIntegrationModal')).hide();
+      loadIntegrations();
+    }).catch(err => alert('Error editing integration: ' + JSON.stringify(err.errors)));
+  });
+
+  // Delete Integration (confirm)
+  document.getElementById('confirmDeleteIntegrationBtn').addEventListener('click', function() {
+    fetch(`/custom_admin/api/integrations/${selectedIntegrationId}/delete/`, {
+      method: 'POST',
+      headers: { 'X-CSRFToken': getCSRFToken() }
+    }).then(r => r.json()).then(() => {
+      bootstrap.Modal.getOrCreateInstance(document.getElementById('deleteIntegrationModal')).hide();
+      loadIntegrations();
+    }).catch(() => alert('Error deleting integration.'));
+  });
+
+  // Connect Integration (confirm)
+  document.getElementById('confirmConnectIntegrationBtn').addEventListener('click', function() {
+    fetch(`/custom_admin/api/integrations/${selectedIntegrationId}/connect/`, {
+      method: 'POST',
+      headers: { 'X-CSRFToken': getCSRFToken() }
+    }).then(r => r.json()).then(() => {
+      bootstrap.Modal.getOrCreateInstance(document.getElementById('connectIntegrationModal')).hide();
+      loadIntegrations();
+    }).catch(() => alert('Error connecting integration.'));
+  });
+});
+
+function getCSRFToken() {
+  const name = 'csrftoken';
+  const cookies = document.cookie.split(';');
+  for(let i=0; i<cookies.length; i++) {
+    const c = cookies[i].trim();
+    if(c.startsWith(name + '=')) return decodeURIComponent(c.substring(name.length+1));
+  }
+  return '';
+}
+</script>

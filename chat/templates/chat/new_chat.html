@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+{{ block.super }}
+
+{% endblock %}
+
+{% block content %}
+<div class="new-chat-container">
+<!-- Header -->
+<div class="new-chat-header">
+<a class="new-chat-back" href="{% url 'chat:chat_list' %}">
+<i class="bi bi-arrow-left"></i>
+</a>
+<h1 class="new-chat-title">New Chat</h1>
+</div>
+<!-- Search Bar -->
+<div class="new-chat-search">
+<div class="input-group">
+<span class="input-group-text border-0 bg-transparent">
+<i class="bi bi-search"></i>
+</span>
+<input class="form-control border-0" id="userSearchInput" placeholder="Search users..." type="text"/>
+</div>
+</div>
+<!-- User List -->
+    {% if available_users %}
+    <ul class="user-list" id="userList">
+        {% for user in available_users %}
+        <a class="user-item" href="{% url 'chat:start_chat' user.id %}">
+<img alt="{{ user.get_full_name }}" class="user-avatar" src="{{ user.profile_picture.url|default:'/static/images/default-avatar.png' }}"/>
+<div class="user-info">
+<div class="d-flex align-items-center">
+<h3 class="user-name">{{ user.get_full_name|default:user.username }}</h3>
+<span class="user-status {% if not user.is_online %}offline{% endif %}"></span>
+</div>
+<p class="user-role">
+                    {{ user.get_role_display }}
+                    {% if user.is_verified %}
+                    <span class="badge bg-success ms-2">
+<i class="bi bi-check-circle-fill me-1"></i>Verified
+                    </span>
+                    {% endif %}
+                </p>
+</div>
+<i class="bi bi-chevron-right text-muted"></i>
+</a>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <div class="empty-state">
+<div class="empty-state-icon">
+<i class="bi bi-people"></i>
+</div>
+<h3 class="empty-state-title">No users available</h3>
+<p class="empty-state-text">There are no users available to start a chat with at the moment.</p>
+<a class="btn btn-outline-primary" href="{% url 'chat:chat_list' %}">
+<i class="bi bi-arrow-left me-2"></i>Back to Chats
+        </a>
+</div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // User search functionality
+        const userSearchInput = document.getElementById('userSearchInput');
+        const userItems = document.querySelectorAll('.user-item');
+        
+        if (userSearchInput && userItems.length > 0) {
+            userSearchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                
+                userItems.forEach(item => {
+                    const name = item.querySelector('.user-name').textContent.toLowerCase();
+                    const role = item.querySelector('.user-role').textContent.toLowerCase();
+                    
+                    if (name.includes(searchTerm) || role.includes(searchTerm)) {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        }
+        
+        // Add click handler to user items
+        document.querySelectorAll('.user-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                // In a real app, you would navigate to the chat or create a new one
+                console.log('Starting chat with user:', this.querySelector('.user-name').textContent);
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -3,93 +3,263 @@
 {% load slugify_extras %}
 {% load static %}
 {% load content_extras %}
+
 {% block extra_head %}
-    <link rel="stylesheet" href="{% static 'css/article_list_dynamic.css' %}">
+    <link as="style" href="{% static 'css/content.css' %}" onload="this.onload=null;this.rel='stylesheet'" rel="preload"/>
+<noscript></noscript>
 {% endblock %}
+
 {% block content %}
-<section class="article-list-section py-5">
+<main class="content-page py-5">
     <div class="container">
-        <h1 class="mb-4">Articles</h1>
+        <!-- Page Header -->
+        <div class="content-management-header mb-4">
+            <div class="page-header">
+                <h1 class="page-title fw-bold mb-0">
+                    <i class="bi bi-newspaper me-2"></i>Articles
+                </h1>
+                <p class="page-subtitle text-muted">Discover the latest articles and stories from the community.</p>
+            </div>
+        </div>
+
         <!-- Featured Article -->
         {% if articles and articles|length > 0 %}
-            <div class="featured-article card mb-5 p-4 shadow-sm bg-light">
-    {% if articles.0.video_url %}
-        {% if 'youtube.com' in articles.0.video_url or 'youtu.be' in articles.0.video_url %}
-            <div class="ratio ratio-16x9 mb-3">
-                <iframe src="{{ articles.0.video_url|youtube_embed }}" frameborder="0" allowfullscreen></iframe>
-            </div>
-        {% else %}
-            <video class="w-100 mb-3" controls>
-                <source src="{{ articles.0.video_url }}">
-                Your browser does not support the video tag.
-            </video>
-        {% endif %}
-    {% endif %}
-    <h2 class="h4">Featured: {{ articles.0.title }}</h2>
-    <div class="mb-2 text-muted small">
-        <i class="bi bi-calendar3 me-1"></i> {{ articles.0.published_at|date:"F j, Y" }}
-        {% if articles.0.author %} | <i class="bi bi-person"></i> {{ articles.0.author }}{% endif %}
-    </div>
-    <p>{{ articles.0.body|truncatewords:40 }}</p>
-    <a href="{% url 'content:article_detail' articles.0.pk|slugify_dir %}" class="btn btn-outline-primary btn-sm">Read Full Article</a>
-</div>
-        {% endif %}
-        <!-- Filter/Tags -->
-        <div class="mb-3">
-            <span class="me-2">Filter by tag:</span>
-            {% if articles %}
-                {% for article in articles %}
-                    {% for tag in article.tags.all %}
-                        <span class="badge bg-secondary me-1">{{ tag.name }}</span>
-                    {% endfor %}
-                {% endfor %}
-            {% else %}
-                <span class="text-muted">No tags available.</span>
-            {% endif %}
-        </div>
-        <!-- Article Cards -->
-        <div class="row g-4">
-            {% for article in articles %}
-                {% if not forloop.first %}
-                <div class="col-md-4">
-                    <div class="card h-100 shadow border-0">
-                        <div class="card-body">
-                            {% if article.video_url %}
-    {% if 'youtube.com' in article.video_url or 'youtu.be' in article.video_url %}
-        <div class="ratio ratio-16x9 mb-2">
-            <iframe src="{{ article.video_url|youtube_embed }}" frameborder="0" allowfullscreen></iframe>
-        </div>
-    {% else %}
-        <video class="w-100 mb-2" controls>
-            <source src="{{ article.video_url }}">
-            Your browser does not support the video tag.
-        </video>
-    {% endif %}
-{% endif %}
-<h5 class="card-title">{{ article.title }}</h5>
-                            <div class="mb-2 small text-muted">
-                                <i class="bi bi-calendar3 me-1"></i> {{ article.published_at|date:"F j, Y" }}
-                                {% if article.author %} | <i class="bi bi-person"></i> {{ article.author }}{% endif %}
+            <article class="content-card card-featured mb-5">
+                <div class="card-body p-0">
+                    <div class="row g-0">
+                        <div class="col-lg-6">
+                            <div class="content-media">
+                                {% if articles.0.video_url %}
+                                    {% if 'youtube.com' in articles.0.video_url or 'youtu.be' in articles.0.video_url %}
+                                        <div class="ratio ratio-16x9">
+                                            <iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" src="{{ articles.0.video_url|youtube_embed }}"></iframe>
+                                        </div>
+                                    {% else %}
+                                        <video class="w-100" controls="">
+                                            <source src="{{ articles.0.video_url }}"/>
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    {% endif %}
+                                {% elif articles.0.image %}
+                                    <img alt="{{ articles.0.title }}" class="img-fluid" src="{{ articles.0.image.url }}"/>
+                                {% else %}
+                                    <div class="content-media-placeholder">
+                                        <i class="bi bi-image"></i>
+                                    </div>
+                                {% endif %}
                             </div>
-                            <p class="card-text">{{ article.body|truncatewords:20 }}</p>
-                            <div class="mb-2">
-                                {% for tag in article.tags.all %}
-                                    <span class="badge bg-secondary me-1">{{ tag.name }}</span>
-                                {% endfor %}
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="p-4 p-lg-5">
+                                <div class="d-flex align-items-center mb-3">
+                                    <span class="badge bg-primary me-2">Featured</span>
+                                    <span class="text-muted small">
+                                        <i class="bi bi-calendar3 me-1"></i> {{ articles.0.published_at|date:"F j, Y" }}
+                                    </span>
+                                </div>
+                                <h2 class="h3 mb-3">{{ articles.0.title }}</h2>
+                                <p class="text-muted mb-4">{{ articles.0.body|truncatewords:40|striptags }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="author-info d-flex align-items-center">
+                                        {% if articles.0.author %}
+                                            {% if articles.0.author.profile.avatar %}
+                                                <img alt="{{ articles.0.author.get_full_name }}" class="rounded-circle me-2" height="32" src="{{ articles.0.author.profile.avatar.url }}" width="32"/>
+                                            {% else %}
+                                                <div class="avatar-placeholder bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2">
+                                                    {{ articles.0.author.get_initials|default:articles.0.author.username|default:"A" }}
+                                                </div>
+                                            {% endif %}
+                                            <div>
+                                                <div class="fw-medium">{{ articles.0.author.get_full_name|default:articles.0.author.username }}</div>
+                                                <div class="text-muted small">{{ articles.0.author.profile.title|default:"Author" }}</div>
+                                            </div>
+                                        {% else %}
+                                            <div class="avatar-placeholder bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2">
+                                                A
+                                            </div>
+                                            <div>
+                                                <div class="fw-medium">Unknown Author</div>
+                                                <div class="text-muted small">Author</div>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <a class="btn btn-outline-primary" href="{% url 'content:article_detail' articles.0.pk|slugify_dir %}">
+                                        Read Full Article <i class="bi bi-arrow-right ms-2"></i>
+                                    </a>
+                                </div>
                             </div>
-                            <a href="{% url 'content:article_detail' article.pk %}" class="btn btn-primary btn-sm">Read More</a>
                         </div>
                     </div>
                 </div>
-                {% endif %}
-            {% empty %}
-                <div class="col-12">
-                    <div class="alert alert-info text-center">
-                        <i class="bi bi-info-circle-fill me-2"></i>No articles available at the moment.
-                    </div>
-                </div>
-            {% endfor %}
+            </article>
+        {% endif %}
+
+        <!-- Content Filters -->
+        <form method="get" class="content-filters mb-4">
+    <div class="row g-3">
+        <div class="col-md-8">
+            <div class="search-box">
+                <i class="bi bi-search"></i>
+                <input class="form-control" name="q" placeholder="Search articles..." type="text" value="{{ search_query|default:'' }}" />
+            </div>
+        </div>
+        <div class="col-md-4">
+            <select class="form-select" name="tag" onchange="this.form.submit()">
+                <option value="" {% if not selected_tag %}selected{% endif %}>All Categories</option>
+                {% for tag in all_tags %}
+                    <option value="{{ tag.name }}" {% if tag.name == selected_tag %}selected{% endif %}>{{ tag.name }}</option>
+                {% endfor %}
+            </select>
         </div>
     </div>
-</section>
+</form>
+
+        <!-- Active Filters -->
+        {% if search_query or selected_tag %}
+            <div class="active-filters mb-4">
+                <div class="d-flex flex-wrap gap-2">
+                    {% if search_query %}
+                        <span class="badge bg-light text-dark border">
+                            Search: {{ search_query }}
+                            <a class="ms-2 text-dark" href="?{% if selected_tag %}tag={{ selected_tag }}{% endif %}">
+                                <i class="bi bi-x"></i>
+                            </a>
+                        </span>
+                    {% endif %}
+                    {% if selected_tag %}
+                        <span class="badge bg-light text-dark border">
+                            Category: {{ selected_tag }}
+                            <a class="ms-2 text-dark" href="?{% if search_query %}q={{ search_query }}{% endif %}">
+                                <i class="bi bi-x"></i>
+                            </a>
+                        </span>
+                    {% endif %}
+                    <a class="ms-2 small align-self-center" href="?">Clear all</a>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Articles Grid -->
+        <div class="content-grid">
+            <div class="row g-4">
+                {% for article in articles %}
+                    {% if not forloop.first or not articles.0 %}
+                        <div class="col-md-6 col-lg-4">
+                            <article class="content-card h-100">
+                                <div class="content-media">
+                                    {% if article.video_url %}
+                                        {% if 'youtube.com' in article.video_url or 'youtu.be' in article.video_url %}
+                                            <div class="ratio ratio-16x9">
+                                                <iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" src="{{ article.video_url|youtube_embed }}"></iframe>
+                                            </div>
+                                        {% else %}
+                                            <video class="w-100" controls="">
+                                                <source src="{{ article.video_url }}"/>
+                                                Your browser does not support the video tag.
+                                            </video>
+                                        {% endif %}
+                                    {% elif article.image %}
+                                        <img alt="{{ article.title }}" class="img-fluid" src="{{ article.image.url }}"/>
+                                    {% else %}
+                                        <div class="content-media-placeholder">
+                                            <i class="bi bi-image"></i>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span class="badge bg-secondary me-2">
+                                            {{ article.category.name|default:"Uncategorized" }}
+                                        </span>
+                                        <span class="text-muted small">
+                                            <i class="bi bi-calendar3 me-1"></i> {{ article.published_at|date:"M j, Y" }}
+                                        </span>
+                                    </div>
+                                    <h3 class="h5 mb-3">
+                                        <a class="text-decoration-none text-dark" href="{% url 'content:article_detail' article.pk %}">
+                                            {{ article.title }}
+                                        </a>
+                                    </h3>
+                                    <p class="text-muted mb-3">
+                                        {{ article.body|truncatewords:20|striptags }}
+                                    </p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="author-info d-flex align-items-center">
+                                            {% if article.author.profile.avatar %}
+                                                <img alt="{{ article.author.get_full_name }}" class="rounded-circle me-2" height="24" src="{{ article.author.profile.avatar.url }}" width="24"/>
+                                            {% else %}
+                                                <div class="avatar-placeholder bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2">
+                                                    {{ article.author.get_initials }}
+                                                </div>
+                                            {% endif %}
+                                            <span class="small">{{ article.author.get_full_name|default:article.author.username }}</span>
+                                        </div>
+                                        <a class="btn btn-sm btn-link text-primary p-0" href="{% url 'content:article_detail' article.pk %}">
+                                            Read More <i class="bi bi-arrow-right ms-1"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                    {% endif %}
+                {% empty %}
+                    <div class="col-12">
+                        <div class="empty-state">
+                            <i class="bi bi-newspaper empty-state-icon"></i>
+                            <h4>No Articles Found</h4>
+                            <p>There are no articles to display at the moment. Check back later or create a new article.</p>
+                            <a class="btn btn-primary" href="{% url 'content:publish_article' %}">
+                                <i class="bi bi-plus-lg me-2"></i>Create Article
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <nav aria-label="Page navigation" class="mt-5">
+<ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+<a aria-label="First" class="page-link" href="?page=1">
+<span aria-hidden="true">««</span>
+</a>
+</li>
+<li class="page-item">
+<a aria-label="Previous" class="page-link" href="?page={{ page_obj.previous_page_number }}">
+<span aria-hidden="true">«</span>
+</a>
+</li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active">
+<span class="page-link">{{ num }}</span>
+</li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item">
+<a class="page-link" href="?page={{ num }}">{{ num }}</a>
+</li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+<a aria-label="Next" class="page-link" href="?page={{ page_obj.next_page_number }}">
+<span aria-hidden="true">»</span>
+</a>
+</li>
+<li class="page-item">
+<a aria-label="Last" class="page-link" href="?page={{ page_obj.paginator.num_pages }}">
+<span aria-hidden="true">»»</span>
+</a>
+</li>
+                {% endif %}
+            </ul>
+</nav>
+        {% endif %}
+    </div>
+</main>
 {% endblock %}

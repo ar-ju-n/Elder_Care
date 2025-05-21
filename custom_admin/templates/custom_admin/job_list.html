@@ -1,0 +1,57 @@
+{% extends 'custom_admin/base.html' %}
+{% block content %}
+<div class="container py-4">
+  <h2 class="fw-bold mb-4">Jobs</h2>
+  {% if user_role != 'caregiver' %}
+  <div class="mb-3 text-end">
+    <a href="{% url 'custom_admin:job_add' %}" class="btn btn-success"><i class="bi bi-plus"></i> Add Job</a>
+  </div>
+  {% endif %}
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <table class="table table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for job in jobs %}
+          <tr>
+            <td>{{ job.id }}</td>
+            <td>{{ job.title }}</td>
+            <td>{{ job.status }}</td>
+            <td>{{ job.created_at }}</td>
+            <td>
+              <a class="btn btn-sm btn-outline-info" href="{% url 'custom_admin:job_detail' job.id %}"><i class="bi bi-eye"></i> View</a>
+              {% if user_role == 'caregiver' %}
+                {# Show Apply button if not already applied #}
+                {% with already_applied=False %}
+                  {% for app in job.applications.all %}
+                    {% if app.caregiver_id == request.user.id %}
+                      {% with already_applied=True %}{% endwith %}
+                    {% endif %}
+                  {% endfor %}
+                  {% if not already_applied %}
+                    <a class="btn btn-sm btn-outline-success" href="{% url 'custom_admin:job_detail' job.id %}"><i class="bi bi-check2-circle"></i> Apply</a>
+                  {% endif %}
+                {% endwith %}
+              {% elif job.posted_by_id == request.user.id %}
+                <a class="btn btn-sm btn-outline-primary" href="{% url 'custom_admin:job_edit' job.id %}"><i class="bi bi-pencil"></i> Edit</a>
+                <a class="btn btn-sm btn-outline-danger" href="{% url 'custom_admin:job_delete' job.id %}"><i class="bi bi-trash"></i> Delete</a>
+              {% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="5" class="text-center">No jobs found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

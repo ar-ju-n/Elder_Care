@@ -1,0 +1,213 @@
+/* Elder Care Admin Custom Styles */
+
+/* Card and Table Enhancements */
+.card-admin {
+    border-radius: 1rem;
+    box-shadow: 0 2px 16px rgba(60, 72, 88, 0.06);
+    border: none;
+    background: #fff;
+}
+.table {
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 1px 6px rgba(60, 72, 88, 0.05);
+}
+.table thead {
+    background: #f8fafc;
+}
+
+/* Avatar Circle and Initials */
+.avatar-circle {
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #e9ecef;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 0.25rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #495057;
+}
+.avatar-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+.avatar-initials {
+    font-size: 1.1rem;
+    color: #3a3a3a;
+    font-weight: 600;
+}
+
+/* Action Buttons */
+.btn-admin-primary {
+    background: linear-gradient(90deg, #4e54c8 0%, #8f94fb 100%);
+    color: #fff;
+    border: none;
+    box-shadow: 0 2px 8px rgba(78, 84, 200, 0.10);
+    transition: background 0.2s, box-shadow 0.2s;
+}
+.btn-admin-primary:hover, .btn-admin-primary:focus {
+    background: linear-gradient(90deg, #8f94fb 0%, #4e54c8 100%);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(78, 84, 200, 0.18);
+}
+.btn-outline-primary, .btn-outline-secondary, .btn-outline-success, .btn-outline-danger, .btn-outline-warning, .btn-outline-info {
+    border-radius: 0.5rem;
+    border-width: 2px;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+.btn-outline-primary:hover, .btn-outline-primary:focus {
+    background: #4e54c8;
+    color: #fff;
+    border-color: #4e54c8;
+}
+.btn-outline-danger:hover, .btn-outline-danger:focus {
+    background: #f44336;
+    color: #fff;
+    border-color: #f44336;
+}
+.btn-outline-success:hover, .btn-outline-success:focus {
+    background: #28a745;
+    color: #fff;
+    border-color: #28a745;
+}
+.btn-outline-warning:hover, .btn-outline-warning:focus {
+    background: #ffc107;
+    color: #212529;
+    border-color: #ffc107;
+}
+.btn-outline-info:hover, .btn-outline-info:focus {
+    background: #17a2b8;
+    color: #fff;
+    border-color: #17a2b8;
+}
+
+/* Badges and Status */
+.badge {
+    font-size: 0.95em;
+    padding: 0.5em 0.8em;
+    border-radius: 0.5em;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+}
+.badge.bg-success {
+    background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+    color: #1b4636;
+}
+.badge.bg-danger {
+    background: linear-gradient(90deg, #f85032 0%, #e73827 100%);
+    color: #fff;
+}
+.badge.bg-primary {
+    background: linear-gradient(90deg, #2193b0 0%, #6dd5ed 100%);
+    color: #fff;
+}
+.badge.bg-secondary {
+    background: #e2e3e5;
+    color: #495057;
+}
+.badge.bg-info {
+    background: linear-gradient(90deg, #43cea2 0%, #185a9d 100%);
+    color: #fff;
+}
+.badge.bg-warning {
+    background: linear-gradient(90deg, #f7971e 0%, #ffd200 100%);
+    color: #856404;
+}
+
+/* Table Row Hover */
+.table-hover tbody tr:hover {
+    background: #f0f4ff;
+    transition: background 0.2s;
+}
+
+/* Modal Customization */
+.modal-content {
+    border-radius: 1rem;
+    box-shadow: 0 2px 24px rgba(60, 72, 88, 0.15);
+}
+
+/* Edit Row Styling */
+.user-row-edit {
+    background: #f8fafc;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 12px rgba(60, 72, 88, 0.07);
+    padding: 2rem 2.5rem 1.5rem 2.5rem;
+    margin: 0.5rem 0 1.5rem 0;
+    border: 1px solid #e0e6ed;
+}
+.user-row-edit label {
+    font-weight: 500;
+    color: #3a3a3a;
+    margin-bottom: 0.25rem;
+    display: block;
+}
+.user-row-edit input[type="text"],
+.user-row-edit input[type="email"],
+.user-row-edit select {
+    border-radius: 0.5rem;
+    border: 1px solid #cfd8dc;
+    padding: 0.45rem 0.75rem;
+    margin-bottom: 1rem;
+    width: 100%;
+    background: #fff;
+    font-size: 1em;
+    transition: border 0.2s;
+}
+.user-row-edit input[type="checkbox"] {
+    margin-right: 0.5em;
+}
+.user-row-edit .btn-primary {
+    background: linear-gradient(90deg, #4e54c8 0%, #8f94fb 100%);
+    border-radius: 0.5rem;
+    border: none;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 0.5em 1.5em;
+    box-shadow: 0 2px 8px rgba(78, 84, 200, 0.10);
+    transition: background 0.2s, box-shadow 0.2s;
+}
+.user-row-edit .btn-primary:hover, .user-row-edit .btn-primary:focus {
+    background: linear-gradient(90deg, #8f94fb 0%, #4e54c8 100%);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(78, 84, 200, 0.18);
+}
+.user-row-edit a {
+    margin-left: 1rem;
+    color: #6c757d;
+    text-decoration: underline;
+    font-weight: 500;
+}
+.user-row-edit a:hover {
+    color: #4e54c8;
+    text-decoration: none;
+}
+
+/* Miscellaneous */
+.messages li {
+    margin-bottom: 0.5rem;
+    font-size: 1.05em;
+}
+
+/* Responsive Tweaks */
+@media (max-width: 767px) {
+    .card-admin, .modal-content {
+        border-radius: 0.5rem;
+    }
+    .table {
+        font-size: 0.97em;
+    }
+    .avatar-circle {
+        width: 28px;
+        height: 28px;
+        font-size: 0.95rem;
+    }
+}

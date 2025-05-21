@@ -1,0 +1,687 @@
+{% extends 'jobs/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/jobs.css' %}">
+<style>
+    .job-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+    .job-meta {
+        margin: 1rem 0;
+    }
+    .job-meta .badge {
+        font-weight: 500;
+        padding: 0.5em 0.8em;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: #333;
+        border-bottom: 2px solid #f0f0f0;
+        padding-bottom: 0.5rem;
+    }
+    .job-description {
+        line-height: 1.7;
+        color: #444;
+    }
+    .user-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 1rem;
+    }
+    .applicant-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+    .status-badge {
+        font-size: 0.8rem;
+        padding: 0.35em 0.65em;
+        border-radius: 50rem;
+        text-transform: capitalize;
+    }
+    .status-pending {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+    .status-accepted {
+        background-color: #d4edda;
+        color: #155724;
+    }
+    .status-rejected {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+    .job-actions .btn {
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    .document-preview {
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        background-color: #f8f9fa;
+    }
+    .document-preview iframe {
+        width: 100%;
+        height: 600px;
+        border: none;
+        border-radius: 4px;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script src="{% static 'js/jobs/job_detail.js' %}"></script>
+<script>
+    // Lazy load images with better error handling
+    document.addEventListener('DOMContentLoaded', function() {
+        const lazyImages = document.querySelectorAll('img.lazy-load');
+        
+        const imageObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    const src = img.getAttribute('data-src');
+                    
+                    if (src) {
+                        const tempImg = new Image();
+                        tempImg.onload = function() {
+                            img.src = src;
+                            img.classList.remove('lazy-load');
+                        };
+                        tempImg.onerror = function() {
+                            // Keep the default avatar if loading fails
+                            img.src = '{% static "img/default-avatar.png" %}';
+                            img.classList.remove('lazy-load');
+                        };
+                        tempImg.src = src;
+                    }
+                    
+                    observer.unobserve(img);
+                }
+            });
+        });
+
+        lazyImages.forEach(img => imageObserver.observe(img));
+    });
+
+    // WebSocket connection for real-time updates
+    const jobId = '{{ job.id }}';
+    const websocketProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const websocketUrl = `${websocketProtocol}//${window.location.host}/ws/jobs/${jobId}/`;
+    
+    // Connect to WebSocket
+    const jobSocket = new WebSocket(websocketUrl);
+    
+    jobSocket.onopen = function(e) {
+        console.log('Connected to job updates');
+    };
+    
+    jobSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        if (data.type === 'status_update') {
+            updateJobStatusUI(data.status);
+        } else if (data.type === 'application_update') {
+            updateApplicationsUI(data.application);
+        }
+    };
+    
+    jobSocket.onclose = function(e) {
+        console.log('Disconnected from job updates');
+    };
+    
+    function updateJobStatusUI(status) {
+        const statusBadge = document.querySelector('.job-status-badge');
+        if (statusBadge) {
+            statusBadge.textContent = status;
+            statusBadge.className = `badge bg-${getStatusBadgeClass(status)} job-status-badge`;
+        }
+        
+        // Update any status dropdowns
+        const statusSelects = document.querySelectorAll('.status-select');
+        statusSelects.forEach(select => {
+            select.value = status;
+        });
+    }
+    
+    function updateApplicationsUI(application) {
+        // TODO: Implement application list update
+        console.log('Application updated:', application);
+        // Reload the page for now
+        window.location.reload();
+    }
+    
+    function getStatusBadgeClass(status) {
+        const statusMap = {
+            'open': 'success',
+            'in_progress': 'primary',
+            'completed': 'secondary',
+            'cancelled': 'danger'
+        };
+        return statusMap[status.toLowerCase()] || 'secondary';
+    }
+    
+    // Handle status change form submission
+    document.addEventListener('DOMContentLoaded', function() {
+        const statusForm = document.getElementById('statusForm');
+        if (statusForm) {
+            statusForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(statusForm);
+                const status = formData.get('status');
+                
+                // Send status update via WebSocket
+                if (jobSocket.readyState === WebSocket.OPEN) {
+                    jobSocket.send(JSON.stringify({
+                        'type': 'status_update',
+                        'status': status
+                    }));
+                }
+                
+                // Also submit the form normally for server-side processing
+                fetch(statusForm.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    credentials: 'same-origin'
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}
+
+{% block job_content %}
+<div class="container job-detail-container">
+    <div class="row">
+        <div class="col-12">
+            <!-- Back Button -->
+            <a class="btn btn-outline-secondary mb-4" href="{% if request.META.HTTP_REFERER %}{{ request.META.HTTP_REFERER }}{% else %}{% url 'jobs:job_list' %}{% endif %}">
+                <i class="fas fa-arrow-left me-1"></i> Back to {% if 'application' in request.META.HTTP_REFERER|default:'' %}Applications{% else %}Jobs{% endif %}
+            </a>
+            <!-- Job Header -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <div class="d-flex align-items-center mb-2">
+                                <h1 class="h3 mb-0 me-3">{{ job.title }}</h1>
+                                <span class="badge bg-{{ job.status|lower }} job-status-badge">
+                                    {{ job.get_status_display }}
+                                </span>
+                            </div>
+                            <div class="job-meta">
+                                <span class="badge bg-primary me-2">
+                                    <i class="fas fa-map-marker-alt me-1"></i> {{ job.location }}
+                                </span>
+                                {% if job.pay %}
+                                <span class="badge bg-success me-2">
+                                    <i class="fas fa-money-bill-wave me-1"></i> ${{ job.pay }}/hr
+                                </span>
+                                {% endif %}
+                                {% if job.schedule %}
+                                <span class="badge bg-info text-dark">
+                                    <i class="fas fa-clock me-1"></i> {{ job.schedule }}
+                                </span>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Job Description -->
+                            <div class="job-description mt-3">
+                                <h5 class="section-title">Job Description</h5>
+                                {{ job.description|linebreaks }}
+                            </div>
+                            
+                            <!-- Posted By -->
+                            <div class="posted-by mt-4">
+                                <h5 class="section-title">Posted By</h5>
+                                <div class="d-flex align-items-center">
+                                    <img alt="{{ job.posted_by.get_full_name }}" 
+                                         class="user-avatar lazy-load" 
+                                         data-src="{% if job.posted_by.userprofile.profile_picture %}{{ job.posted_by.userprofile.profile_picture.url }}{% else %}{% static 'img/default-avatar.png' %}{% endif %}"
+                                         src="{% static 'img/default-avatar.png' %}">
+                                    <div class="user-info">
+                                        <h6 class="mb-1">{{ job.posted_by.get_full_name|default:job.posted_by.username }}</h6>
+                                        <p class="mb-1 text-muted">
+                                            <i class="far fa-clock me-1"></i> Posted {{ job.created_at|timesince }} ago
+                                        </p>
+                                        {% if job.posted_by.userprofile.phone_number %}
+                                        <p class="mb-0 text-muted">
+                                            <i class="fas fa-phone me-1"></i> {{ job.posted_by.userprofile.phone_number }}
+                                        </p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Assigned Caregiver -->
+                            {% if job.assigned_caregiver %}
+                            <div class="assigned-caregiver mt-4">
+                                <h5 class="section-title">Assigned Caregiver</h5>
+                                <div class="d-flex align-items-center">
+                                    <img alt="{{ job.assigned_caregiver.get_full_name }}" 
+                                         class="user-avatar lazy-load" 
+                                         data-src="{% if job.assigned_caregiver.userprofile.profile_picture %}{{ job.assigned_caregiver.userprofile.profile_picture.url }}{% else %}{% static 'img/default-avatar.png' %}{% endif %}"
+                                         src="{% static 'img/default-avatar.png' %}">
+                                    <div class="user-info">
+                                        <h6 class="mb-1">{{ job.assigned_caregiver.get_full_name|default:job.assigned_caregiver.username }}</h6>
+                                        <p class="mb-1 text-muted">
+                                            <i class="fas fa-envelope me-1"></i> {{ job.assigned_caregiver.email }}
+                                        </p>
+                                        {% if job.assigned_caregiver.userprofile.phone_number %}
+                                        <p class="mb-0 text-muted">
+                                            <i class="fas fa-phone me-1"></i> {{ job.assigned_caregiver.userprofile.phone_number }}
+                                        </p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <!-- Job Actions -->
+                        <div class="job-actions">
+                            {% if can_manage or job.assigned_caregiver == user %}
+                                <form action="{% url 'jobs:update_job_status' job.id %}" class="d-inline-block me-2 mb-2" id="statusForm" method="post">
+                                    {% csrf_token %}
+                                    <select aria-label="Update status" class="form-select form-select-sm status-select" name="status">
+                                        {% for value, label in job.STATUS_CHOICES %}
+                                            <option value="{{ value }}" {% if job.status == value %}selected{% endif %}>
+                                                {{ label }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </form>
+                                
+                                <div class="dropdown d-inline-block">
+                                    <button aria-expanded="false" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" id="jobActionsDropdown" type="button">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul aria-labelledby="jobActionsDropdown" class="dropdown-menu dropdown-menu-end">
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'jobs:update_job' job.id %}">
+                                                <i class="fas fa-edit me-2"></i> Edit Job
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <button class="dropdown-item text-danger" data-bs-target="#deleteJobModal" data-bs-toggle="modal">
+                                                <i class="fas fa-trash-alt me-2"></i> Delete Job
+                                            </button>
+                                        </li>
+                                        {% if not job.assigned_caregiver %}
+                                            <li><hr class="dropdown-divider"/></li>
+                                            <li>
+                                                <a class="dropdown-item" href="{% url 'jobs:assign_caregiver' job.id %}">
+                                                    <i class="fas fa-user-plus me-2"></i> Assign Caregiver
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Application List -->
+            {% if applications %}
+                {% include 'jobs/partials/application_list.html' %}
+            {% endif %}
+            
+            <!-- Application Form (for caregivers who haven't applied) -->
+            {% if user.is_authenticated and user.role == 'caregiver' and not has_applied %}
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-paper-plane me-2"></i> Apply for this Job
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" action="{% url 'jobs:apply_job' job.id %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="cover_letter" class="form-label">Cover Letter</label>
+                            <textarea class="form-control" id="cover_letter" name="cover_letter" rows="4" required></textarea>
+                            <div class="form-text">Tell us why you're a good fit for this position.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="resume" class="form-label">Resume (PDF, DOC, DOCX)</label>
+                            <input type="file" class="form-control" id="resume" name="resume" accept=".pdf,.doc,.docx" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="credentials" class="form-label">Certifications & Credentials (Optional)</label>
+                            <input type="file" class="form-control" id="credentials" name="credentials" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                        </div>
+                        <div class="mb-3">
+                            <label for="reference_letter" class="form-label">Reference Letters (Optional)</label>
+                            <input type="file" class="form-control" id="reference_letter" name="reference_letter" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane me-1"></i> Submit Application
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Delete Job Modal -->
+            <div class="modal fade" id="deleteJobModal" tabindex="-1" aria-labelledby="deleteJobModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteJobModalLabel">Confirm Deletion</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Are you sure you want to delete this job posting? This action cannot be undone.</p>
+                            <p class="text-danger">Note: This will also delete all applications associated with this job.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <form action="{% url 'jobs:delete_job' job.id %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fas fa-trash-alt me-1"></i> Delete Job
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                    {% if job.assigned_caregiver %}
+                        <h5 class="section-title">Assigned Caregiver</h5>
+<div class="d-flex align-items-center">
+<img alt="{{ job.assigned_caregiver.get_full_name }}" class="user-avatar" src="{% if job.assigned_caregiver.userprofile.profile_picture %}{{ job.assigned_caregiver.userprofile.profile_picture.url }}{% else %}{% static 'img/default-avatar.png' %}{% endif %}"/>
+<div class="user-info">
+<h6 class="mb-1">{{ job.assigned_caregiver.get_full_name|default:job.assigned_caregiver.username }}</h6>
+<p class="mb-0">
+<span class="badge bg-success">
+<i class="fas fa-check-circle me-1"></i> Position Filled
+                                    </span>
+</p>
+</div>
+</div>
+                    {% else %}
+                        <!-- Empty state when no caregiver is assigned -->
+<div class="text-muted">
+<i class="fas fa-user-plus me-2"></i> No caregiver assigned yet
+                        </div>
+                    {% endif %}
+                    </div>
+<!-- Toast Container -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" id="toast-container">
+<!-- Toasts will be added here dynamically -->
+</div>
+<!-- Action Buttons -->
+<div class="d-flex flex-wrap gap-2 mt-4 pt-3 border-top job-actions">
+                        {% if user.is_authenticated %}
+                            {% if can_apply %}
+                            <a class="btn btn-primary" href="{% url 'jobs:apply_job' job.id %}">
+<i class="fas fa-paper-plane me-1"></i> Apply Now
+                            </a>
+                            {% elif user_application %}
+                            <button class="btn btn-success" disabled="">
+<i class="fas fa-check-circle me-1"></i> 
+                                {% if user_application.status == 'pending' %}Application Submitted
+                                {% elif user_application.status == 'accepted' %}Application Accepted
+                                {% else %}Application Submitted{% endif %}
+                            </button>
+                            {% endif %}
+                            
+                            {% if can_manage and not job.assigned_caregiver %}
+                            <a class="btn btn-outline-primary" href="{% url 'jobs:assign_caregiver' job.id %}">
+<i class="fas fa-user-plus me-1"></i> Assign Caregiver
+                            </a>
+                            {% endif %}
+                        {% else %}
+                        <a class="btn btn-primary" href="{% url 'accounts:login' %}?next={% url 'jobs:job_detail' job.id %}">
+<i class="fas fa-sign-in-alt me-1"></i> Login to Apply
+                        </a>
+                        {% endif %}
+                        
+                        {% if user.is_authenticated %}
+                        <button class="btn btn-outline-secondary ms-auto" id="share-job-btn">
+<i class="fas fa-share-alt me-1"></i> Share
+                        </button>
+                        {% endif %}
+                    </div>
+</div>
+</div>
+<!-- Applications Section (Visible to job poster and admin) -->
+            {% if applications %}
+            <div class="card mb-4">
+<div class="card-header">
+<h5 class="mb-0">Applications ({{ applications|length }})</h5>
+</div>
+<div class="card-body">
+<div class="list-group">
+            {% for application in applications %}
+            <div class="list-group-item">
+<div class="d-flex w-100 justify-content-between">
+<div class="d-flex align-items-center">
+<div class="flex-shrink-0">
+<i class="fas fa-user-circle fa-2x text-secondary"></i>
+</div>
+<div class="ms-3">
+<h6 class="mb-0">{{ application.caregiver.get_full_name|default:application.caregiver.username }}</h6>
+<small class="text-muted">Applied {{ application.applied_at|timesince }} ago</small>
+</div>
+</div>
+<div>
+                        {% if application.status == 'pending' %}
+                            <span class="badge bg-warning text-dark">Pending</span>
+                        {% elif application.status == 'accepted' %}
+                            <span class="badge bg-success">Accepted</span>
+                        {% else %}
+                            <span class="badge bg-danger">Rejected</span>
+                        {% endif %}
+                    </div>
+</div>
+                
+                {% if application.cover_letter %}
+                <div class="mt-3">
+<h6>Cover Letter</h6>
+<p class="mb-2">{{ application.cover_letter|linebreaks }}</p>
+</div>
+                {% endif %}
+                
+                <div class="mt-2">
+                    {% if application.resume %}
+                    <a class="btn btn-sm btn-outline-primary me-2" href="{{ application.resume.url }}" target="_blank">
+<i class="fas fa-file-pdf me-1"></i> View Resume
+                    </a>
+                    {% endif %}
+                    
+                    {% if application.credentials %}
+                    <a class="btn btn-sm btn-outline-secondary me-2" href="{{ application.credentials.url }}" target="_blank">
+<i class="fas fa-certificate me-1"></i> View Credentials
+                    </a>
+                    {% endif %}
+                    
+                    {% if application.reference_letter %}
+                    <a class="btn btn-sm btn-outline-info" href="{{ application.reference_letter.url }}" target="_blank">
+<i class="fas fa-file-alt me-1"></i> Reference Letter
+                    </a>
+                    {% endif %}
+                </div>
+                
+                {% if application.status == 'pending' %}
+                <div class="mt-3 d-flex justify-content-end">
+<form action="{% url 'jobs:update_application_status' application.id %}" class="d-inline me-2" method="post">
+                        {% csrf_token %}
+                        <input name="status" type="hidden" value="accepted"/>
+<button class="btn btn-sm btn-success" type="submit">
+<i class="fas fa-check-circle me-1"></i> Accept
+                        </button>
+</form>
+<form action="{% url 'jobs:update_application_status' application.id %}" class="d-inline" method="post">
+                        {% csrf_token %}
+                        <input name="status" type="hidden" value="rejected"/>
+<button class="btn btn-sm btn-danger" type="submit">
+<i class="fas fa-times-circle me-1"></i> Reject
+                        </button>
+</form>
+</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+</div>
+</div>
+{% endif %}
+
+<!-- Delete Job Modal -->
+<div aria-hidden="true" aria-labelledby="deleteJobModalLabel" class="modal fade" id="deleteJobModal" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="deleteJobModalLabel">Confirm Delete</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+                Are you sure you want to delete this job posting? This action cannot be undone.
+            </div>
+<div class="modal-footer">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancel</button>
+<form action="{% url 'jobs:delete_job' job.id %}" class="d-inline" method="post">
+                    {% csrf_token %}
+                    <button class="btn btn-danger" type="submit">
+<i class="fas fa-trash me-1"></i> Delete Job
+                    </button>
+</form>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Applicants Section -->
+{% if can_manage and applications %}
+<div class="card mb-4">
+    <div class="card-header bg-light">
+        <h5 class="mb-0">
+            <i class="fas fa-users me-2"></i> Applicants ({{ applications|length }})
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Applied On</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for application in applications %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img src="{% if application.caregiver.userprofile.profile_picture %}{{ application.caregiver.userprofile.profile_picture.url }}{% else %}{% static 'img/default-avatar.png' %}{% endif %}" 
+                                     alt="{{ application.caregiver.get_full_name }}" 
+                                     class="rounded-circle me-2" 
+                                     style="width: 40px; height: 40px; object-fit: cover;">
+                                <div>
+                                    <h6 class="mb-0">{{ application.caregiver.get_full_name|default:application.caregiver.username }}</h6>
+                                    <small class="text-muted">{{ application.caregiver.email }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ application.applied_at|date:"M d, Y" }}</td>
+                        <td>
+                            <span class="badge bg-{{ application.status|lower }}">
+                                {{ application.get_status_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{% url 'jobs:application_detail' application.id %}" 
+                                   class="btn btn-outline-primary" 
+                                   title="View Application">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                {% if job.status == 'open' %}
+                                <form action="{% url 'jobs:update_application_status' application.id %}" method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="status" value="accepted">
+                                    <button type="submit" class="btn btn-outline-success" title="Accept Application">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                </form>
+                                <form action="{% url 'jobs:update_application_status' application.id %}" method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="status" value="rejected">
+                                    <button type="submit" class="btn btn-outline-danger" title="Reject Application">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Application Form (for caregivers) -->
+{% if can_apply %}
+<div class="card mb-4">
+    <div class="card-header bg-light">
+        <h5 class="mb-0">
+            <i class="fas fa-paper-plane me-2"></i> Apply for this Job
+        </h5>
+    </div>
+    <div class="card-body">
+        <form method="post" action="{% url 'jobs:apply_job' job.id %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="id_cover_letter" class="form-label">Cover Letter</label>
+                <textarea name="cover_letter" class="form-control" id="id_cover_letter" rows="4" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="id_resume" class="form-label">Resume (PDF or Word)</label>
+                <input type="file" name="resume" class="form-control" id="id_resume" accept=".pdf,.doc,.docx">
+            </div>
+            <div class="mb-3">
+                <label for="id_credentials" class="form-label">Certifications/Credentials (Optional, PDF)</label>
+                <input type="file" name="credentials" class="form-control" id="id_credentials" accept=".pdf">
+            </div>
+            <div class="mb-3">
+                <label for="id_reference_letter" class="form-label">Reference Letters (Optional, PDF)</label>
+                <input type="file" name="reference_letter" class="form-control" id="id_reference_letter" accept=".pdf">
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-paper-plane me-1"></i> Submit Application
+            </button>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+</div>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}
+</div></div></div>

@@ -1,0 +1,97 @@
+{% extends 'custom_admin/base.html' %}
+{% block content %}
+<h1 class="dashboard-welcome">Welcome to the Admin Dashboard</h1>
+<div class="row g-4">
+<div class="col-md-4">
+<div class="card card-admin text-center h-100">
+<div class="card-body">
+<i class="bi bi-people"></i>
+<h5 class="card-title mt-2">User Management</h5>
+<p class="text-muted">Manage users and permissions</p>
+<a class="btn btn-admin-primary mt-2" href="{% url 'custom_admin:user_management' %}">Go</a>
+</div>
+</div>
+</div>
+<div class="col-md-4">
+<div class="card card-admin text-center h-100">
+<div class="card-body">
+<i class="bi bi-person-square"></i>
+<h5 class="card-title mt-2">Resident Management</h5>
+<p class="text-muted">Manage residents and their profiles</p>
+<a class="btn btn-admin-primary mt-2" href="{% url 'custom_admin:resident_management' %}">Go</a>
+</div>
+</div>
+</div>
+<div class="col-md-4">
+<div class="card card-admin text-center h-100">
+<div class="card-body">
+<i class="bi bi-archive"></i>
+<h5 class="card-title mt-2">Content &amp; Resources</h5>
+<p class="text-muted">Manage content and resources</p>
+<a class="btn btn-admin-primary mt-2" href="{% url 'custom_admin:content_management' %}">Go</a>
+</div>
+</div>
+</div>
+<div class="col-md-4">
+<div class="card card-admin text-center h-100">
+<div class="card-body">
+<i class="bi bi-bar-chart-line"></i>
+<h5 class="card-title mt-2">System Monitoring</h5>
+<p class="text-muted">View reports and analytics</p>
+<a class="btn btn-admin-primary mt-2" href="{% url 'custom_admin:reporting' %}">Go</a>
+</div>
+</div>
+</div>
+<div class="col-md-4">
+<div class="card card-admin text-center h-100">
+<div class="card-body">
+<i class="bi bi-chat-dots"></i>
+<h5 class="card-title mt-2">Communication Oversight</h5>
+<p class="text-muted">Oversee communication channels</p>
+<a class="btn btn-admin-primary mt-2" href="{% url 'custom_admin:communication_oversight' %}">Go</a>
+</div>
+</div>
+</div>
+<div class="col-md-4">
+<div class="card card-admin text-center h-100">
+<div class="card-body">
+<i class="bi bi-cash-coin"></i>
+<h5 class="card-title mt-2">Billing Controls</h5>
+<p class="text-muted">Manage financial and billing</p>
+<a class="btn btn-admin-primary mt-2" href="{% url 'custom_admin:billing_controls' %}">Go</a>
+</div>
+</div>
+</div>
+<div class="col-md-4">
+<div class="card card-admin text-center h-100">
+<div class="card-body">
+<i class="bi bi-shield-lock"></i>
+<h5 class="card-title mt-2">Security &amp; Compliance</h5>
+<p class="text-muted">Security settings and compliance</p>
+<a class="btn btn-admin-primary mt-2" href="{% url 'custom_admin:security_compliance' %}">Go</a>
+</div>
+</div>
+</div>
+<div class="col-md-4">
+<div class="card card-admin text-center h-100">
+<div class="card-body">
+<i class="bi bi-sliders"></i>
+<h5 class="card-title mt-2">Customization &amp; Settings</h5>
+<p class="text-muted">Branding and configuration</p>
+<a class="btn btn-admin-primary mt-2" href="{% url 'custom_admin:customization_settings' %}">Go</a>
+</div>
+</div>
+</div>
+<div class="col-md-4">
+<div class="card card-admin text-center h-100">
+<div class="card-body">
+<i class="bi bi-tools"></i>
+<h5 class="card-title mt-2">Integration &amp; Maintenance</h5>
+<p class="text-muted">Integrations and maintenance tools</p>
+<a class="btn btn-admin-primary mt-2 me-2" href="{% url 'custom_admin:integration_management' %}">Integrations</a>
+<a class="btn btn-admin-primary mt-2" href="{% url 'custom_admin:maintenance_management' %}">Maintenance</a>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}

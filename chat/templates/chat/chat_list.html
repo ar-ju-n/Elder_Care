@@ -1,0 +1,179 @@
+{% extends 'chat/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+{{ block.super }}
+
+{% endblock %}
+
+{% block content %}
+<div class="chat-container">
+<!-- Chat List Header -->
+<div class="chat-list-header">
+<h1 class="chat-list-title">Messages</h1>
+<button class="new-chat-btn" data-bs-target="#newChatModal" data-bs-toggle="modal" id="newChatBtn">
+<i class="bi bi-pencil"></i>
+</button>
+</div>
+<!-- Search Bar -->
+<div class="chat-search">
+<div class="input-group">
+<span class="input-group-text border-0 bg-transparent">
+<i class="bi bi-search"></i>
+</span>
+<input class="form-control border-0" id="searchInput" placeholder="Search messages..." type="text"/>
+</div>
+</div>
+<!-- Chat List -->
+<div class="chat-list-container">
+        {% if chats %}
+        <ul class="chat-list">
+            {% for chat in chats %}
+            <a class="chat-list-item {% if chat.unread_count > 0 %} unread{% endif %}" href="{% url 'chat:chat_room' chat.id %}">
+<img alt="{{ chat.other_user.get_full_name }}" class="chat-avatar" src="{{ chat.other_user.profile_picture.url|default:'/static/images/default-avatar.png' }}"/>
+<div class="chat-info">
+<div class="chat-header">
+<h6 class="chat-name">
+                            {{ chat.other_user.get_full_name|default:chat.other_user.username }}
+                            {% if chat.other_user.is_online %}
+                            <span class="text-success ms-1">•</span>
+                            {% endif %}
+                        </h6>
+<span class="chat-time">{{ chat.last_message.timestamp|timesince }} ago</span>
+</div>
+<div class="chat-preview">
+<p class="chat-message">
+                            {% if chat.last_message.sender == request.user %}
+                                <span class="text-muted">You:</span> 
+                            {% endif %}
+                            {% if chat.last_message.attachment %}
+                                {% if chat.last_message.attachment.name|lower|slice:'-4:' == '.jpg' or chat.last_message.attachment.name|lower|slice:'-5:' == '.jpeg' or chat.last_message.attachment.name|lower|slice:'-4:' == '.png' or chat.last_message.attachment.name|lower|slice:'-4:' == '.gif' %}
+                                    📷 Photo
+                                {% else %}
+                                    📎 {{ chat.last_message.attachment.name|slice:"6:"|truncatechars:15 }}
+                                {% endif %}
+                            {% else %}
+                                {{ chat.last_message.message|truncatechars:40 }}
+                            {% endif %}
+                        </p>
+                        {% if chat.unread_count > 0 %}
+                        <span class="unread-badge">{{ chat.unread_count }}</span>
+                        {% endif %}
+                    </div>
+</div>
+</a>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <div class="empty-state">
+<div class="empty-state-icon">
+<i class="bi bi-chat-square-text"></i>
+</div>
+<h3 class="empty-state-title">No conversations yet</h3>
+<p class="empty-state-text">Start a new conversation by clicking the button above.</p>
+<button class="btn btn-primary" data-bs-target="#newChatModal" data-bs-toggle="modal">
+<i class="bi bi-plus-lg me-2"></i>New Chat
+            </button>
+</div>
+        {% endif %}
+    </div>
+</div>
+<!-- New Chat Modal -->
+<div aria-hidden="true" aria-labelledby="newChatModalLabel" class="modal fade" id="newChatModal" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="newChatModalLabel">New Chat</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<div class="mb-3">
+<input class="form-control" id="userSearchInput" placeholder="Search users..." type="text"/>
+</div>
+<div class="list-group" id="userList">
+                    {% for user in available_users %}
+                    <a class="list-group-item list-group-item-action" href="{% url 'chat:start_chat' user.id %}">
+<div class="d-flex align-items-center">
+<img alt="{{ user.get_full_name }}" class="rounded-circle me-3" height="40" src="{{ user.profile_picture.url|default:'/static/images/default-avatar.png' }}" width="40"/>
+<div>
+<h6 class="mb-0">{{ user.get_full_name|default:user.username }}</h6>
+<small class="text-muted">{{ user.get_role_display }}</small>
+</div>
+</div>
+</a>
+                    {% empty %}
+                    <div class="text-center py-3 text-muted">
+                        No users available to chat
+                    </div>
+                    {% endfor %}
+                </div>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        const chatItems = document.querySelectorAll('.chat-list-item');
+        
+        if (searchInput && chatItems.length > 0) {
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                
+                chatItems.forEach(item => {
+                    const name = item.querySelector('.chat-name').textContent.toLowerCase();
+                    const message = item.querySelector('.chat-message').textContent.toLowerCase();
+                    
+                    if (name.includes(searchTerm) || message.includes(searchTerm)) {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        }
+        
+        // User search in modal
+        const userSearchInput = document.getElementById('userSearchInput');
+        const userList = document.getElementById('userList');
+        
+        if (userSearchInput && userList) {
+            userSearchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const users = userList.getElementsByClassName('list-group-item');
+                
+                Array.from(users).forEach(user => {
+                    const userName = user.textContent.toLowerCase();
+                    if (userName.includes(searchTerm)) {
+                        user.style.display = 'block';
+                    } else {
+                        user.style.display = 'none';
+                    }
+                });
+            });
+        }
+        
+        // Mark as read when clicking on a chat
+        document.querySelectorAll('.chat-list-item.unread').forEach(item => {
+            item.addEventListener('click', function() {
+                // In a real app, you would send a request to mark messages as read
+                const badge = this.querySelector('.unread-badge');
+                if (badge) {
+                    badge.remove();
+                    this.classList.remove('unread');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,223 @@
+{% extends 'custom_admin/base.html' %}
+{% block content %}
+{% if request.session.impersonate_original_id %}
+  <div class="alert alert-warning d-flex justify-content-between align-items-center">
+<div>
+<strong>Impersonation Active:</strong> You are currently impersonating another user.
+    </div>
+<a class="btn btn-sm btn-danger" href="{% url 'custom_admin:stop_impersonation' %}">Stop Impersonating</a>
+</div>
+{% endif %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+<h2><i class="bi bi-people me-2"></i>User Management</h2>
+<div>
+<form action="" class="d-inline-block me-2" method="get">
+<input class="form-control d-inline-block" name="search" placeholder="Search users..." type="text"/>
+</form>
+<a class="btn btn-admin-primary me-2" href="/custom_admin/users/add/"><i class="bi bi-plus-circle"></i> Add User</a>
+<a class="btn btn-outline-secondary" href="/custom_admin/users/export/"><i class="bi bi-download"></i> Export CSV</a>
+</div>
+</div>
+
+{% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+      <li class="{{ message.tags }}">{{ message }}</li>
+    {% endfor %}
+  </li{%></ul>
+{% endif %}
+
+<div class="card card-admin shadow-sm">
+<div class="card-body p-0">
+<table class="table table-hover align-middle mb-0">
+<thead class="table-light">
+<tr class="user-row">
+<th>ID</th>
+<th>Username</th>
+<th>Email</th>
+<th>Role</th>
+<th>Permissions</th>
+<th>Active</th>
+<th>Staff</th>
+<th>Superuser</th>
+<th>Caregiver Verified</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody>
+    {% for user in users_data %}
+    <tr class="user-row">
+<td>{{ user.obj.id }}</td>
+<td>
+<span class="avatar-circle me-1">
+    {% if user.obj.avatar %}
+      <img alt="Avatar" class="rounded-circle" src="{{ user.obj.avatar.url }}"/>
+    {% else %}
+      <span class="avatar-initials">{{ user.obj.username|slice:":1"|upper }}</span>
+    {% endif %}
+  </span>{{ user.obj.username }}
+</td>
+<td>{{ user.obj.email }}</td>
+<td>
+  {% if user.role == 'Admin' %}
+    <span class="badge bg-danger"><i class="bi bi-shield-lock"></i> Admin</span>
+  {% elif user.role == 'Staff' %}
+    <span class="badge bg-primary"><i class="bi bi-person-badge"></i> Staff</span>
+  {% elif user.role == 'Caregiver' %}
+    <span class="badge bg-success"><i class="bi bi-person-heart"></i> Caregiver</span>
+  {% else %}
+    <span class="badge bg-secondary"><i class="bi bi-person"></i> {{ user.role }}</span>
+  {% endif %}
+</td>
+<td>
+  {% if user.permissions %}
+    <button class="btn btn-outline-info btn-sm" onclick="showPermissionsModal({{ user.obj.id }})" type="button">
+<i class="bi bi-key"></i> View
+    </button>
+  {% else %}
+    <span class="text-muted">None</span>
+  {% endif %}
+</td>
+<td>
+  {% if user.obj.is_active %}
+    <span class="badge bg-success"><i class="bi bi-check-circle"></i> Active</span>
+  {% else %}
+    <span class="badge bg-secondary"><i class="bi bi-x-circle"></i> Inactive</span>
+  {% endif %}
+</td>
+<td>
+  {% if user.obj.is_staff %}
+    <span class="badge bg-info"><i class="bi bi-person-badge"></i> Staff</span>
+  {% else %}
+    <span class="badge bg-secondary">No</span>
+  {% endif %}
+</td>
+<td>
+  {% if user.obj.is_superuser %}
+    <span class="badge bg-danger"><i class="bi bi-shield-lock"></i> Yes</span>
+  {% else %}
+    <span class="badge bg-secondary">No</span>
+  {% endif %}
+</td>
+<td>
+  {% if user.obj.is_caregiver and user.obj.caregiver_verification %}
+    {% if user.obj.caregiver_verification.approved %}
+      <span class="badge bg-success"><i class="bi bi-check-circle"></i> Verified</span>
+    {% else %}
+      <span class="badge bg-warning text-dark"><i class="bi bi-exclamation-circle"></i> Pending</span>
+    {% endif %}
+  {% else %}
+    <span class="text-muted">N/A</span>
+  {% endif %}
+</td>
+<td>
+<a class="btn btn-outline-primary btn-sm me-1" href="?action=edit&amp;user_id={{ user.obj.id }}" title="Edit"><i class="bi bi-pencil"></i></a>
+<a class="btn btn-outline-danger btn-sm me-1" href="?action=delete&amp;user_id={{ user.obj.id }}" onclick="return confirm('Are you sure?')" title="Delete"><i class="bi bi-trash"></i></a>
+  {% if user.obj.is_caregiver and user.obj.caregiver_verification and not user.obj.caregiver_verification.approved %}
+    <a class="btn btn-outline-success btn-sm me-1" href="?action=approve_caregiver&amp;user_id={{ user.obj.id }}" title="Approve Caregiver"><i class="bi bi-person-check"></i></a>
+  {% endif %}
+  <a class="btn btn-outline-warning btn-sm me-1" href="?action=reset_password&amp;user_id={{ user.obj.id }}" onclick="return confirm('Reset password to NewTempPass123?')" title="Reset Password"><i class="bi bi-arrow-counterclockwise"></i></a>
+  {% if request.user.is_superuser or request.user.is_staff %}
+    {% if user.obj.id != request.user.id %}
+      <a class="btn btn-outline-secondary btn-sm me-1" href="{% url 'custom_admin:impersonate_user' user.obj.id %}" title="Impersonate"><i class="bi bi-person-bounding-box"></i></a>
+<a class="btn btn-outline-primary btn-sm me-1" href="{% url 'custom_admin:user_role_permission_edit' user.obj.id %}" title="Edit Role/Permissions"><i class="bi bi-sliders"></i></a>
+      {% if user.obj.is_caregiver and user.obj.caregiver_verification %}
+        <a class="btn btn-outline-success btn-sm me-1" href="/custom_admin/accounts/CaregiverVerification/?search={{ user.obj.email }}" target="_blank" title="View Verification"><i class="bi bi-eye"></i></a>
+      {% endif %}
+    {% endif %}
+  {% endif %}
+</td>
+</tr>
+    {% if edit_user and edit_user.id == user.obj.id %}
+    <tr class="user-row user-row-edit">
+<td colspan="10">
+  <div class="user-row-edit">
+    <form method="post">
+      {% csrf_token %}
+      <div class="row g-3">
+  <div class="col-md-6">
+    <label for="id_username" class="form-label">Username</label>
+    {{ edit_form.username }}
+    {% if edit_form.username.help_text %}<small class="form-text text-muted">{{ edit_form.username.help_text }}</small>{% endif %}
+    {% for error in edit_form.username.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+  </div>
+  <div class="col-md-6">
+    <label for="id_email" class="form-label">Email address</label>
+    {{ edit_form.email }}
+    {% if edit_form.email.help_text %}<small class="form-text text-muted">{{ edit_form.email.help_text }}</small>{% endif %}
+    {% for error in edit_form.email.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+  </div>
+  <div class="col-md-6">
+    <label for="id_full_name" class="form-label">Full name</label>
+    {{ edit_form.full_name }}
+    {% if edit_form.full_name.help_text %}<small class="form-text text-muted">{{ edit_form.full_name.help_text }}</small>{% endif %}
+    {% for error in edit_form.full_name.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+  </div>
+  <div class="col-md-6">
+    <label for="id_role" class="form-label">Role</label>
+    {{ edit_form.role }}
+    {% if edit_form.role.help_text %}<small class="form-text text-muted">{{ edit_form.role.help_text }}</small>{% endif %}
+    {% for error in edit_form.role.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+  </div>
+  <div class="col-md-4">
+    <div class="form-check mt-4">
+      {{ edit_form.is_active }}
+      <label for="id_is_active" class="form-check-label">Active</label>
+    </div>
+    {% if edit_form.is_active.help_text %}<small class="form-text text-muted">{{ edit_form.is_active.help_text }}</small>{% endif %}
+    {% for error in edit_form.is_active.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+  </div>
+  <div class="col-md-4">
+    <div class="form-check mt-4">
+      {{ edit_form.is_staff }}
+      <label for="id_is_staff" class="form-check-label">Staff status</label>
+    </div>
+    {% if edit_form.is_staff.help_text %}<small class="form-text text-muted">{{ edit_form.is_staff.help_text }}</small>{% endif %}
+    {% for error in edit_form.is_staff.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+  </div>
+  <div class="col-md-4">
+    <div class="form-check mt-4">
+      {{ edit_form.is_superuser }}
+      <label for="id_is_superuser" class="form-check-label">Superuser status</label>
+    </div>
+    {% if edit_form.is_superuser.help_text %}<small class="form-text text-muted">{{ edit_form.is_superuser.help_text }}</small>{% endif %}
+    {% for error in edit_form.is_superuser.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+  </div>
+</div>
+      <button class="btn btn-primary" type="submit">Save</button>
+      <a href="?">Cancel</a>
+    </form>
+  </div>
+</td>
+</tr>
+    {% endif %}
+    {% endfor %}
+  </tbody>
+</table>
+
+  {% for user in users_data %}
+    <div aria-hidden="true" aria-labelledby="permissionsModalLabel_{{ user.obj.id }}" class="modal fade" id="permissionsModal_{{ user.obj.id }}" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="permissionsModalLabel_{{ user.obj.id }}">Permissions for {{ user.obj.username }}</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+            {% if user.permissions_full %}
+              <ul>
+                {% for perm in user.permissions_full %}
+                  <li>{{ perm }}</li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <p>No permissions assigned.</p>
+            {% endif %}
+          </div>
+</div>
+</div>
+</div>
+  {% endfor %}
+  <script src="/static/custom_admin/permissions_modal.js"></script>
+{% endblock %}
+</div></div>

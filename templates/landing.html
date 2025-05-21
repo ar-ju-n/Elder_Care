@@ -2,116 +2,115 @@
 {% load static %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/landing.css' %}">
-    <link rel="stylesheet" href="{% static 'css/slider_feature.css' %}">
+    
+
 {% endblock %}
 
 {% block content %}
 <main role="main" tabindex="0">
-<section class="hero-section text-center py-5" role="banner" aria-label="Welcome Banner">
-    <div class="hero-overlay"></div>
-    <div class="hero-content">
-        <h1 class="display-3 fw-bold">Welcome to Elderly Care & Mindful Support Hub</h1>
-        <p class="lead">Empowering Nepal's elderly community with compassion, dignity, and support.</p>
-        <a href="/contact" class="btn btn-primary btn-lg mt-3" role="button" aria-label="Contact us button">Get in Touch</a>
-    </div>
+<section aria-label="Welcome Banner" class="hero-section text-center py-5" role="banner">
+<div class="hero-overlay"></div>
+<div class="hero-content">
+<h1 class="display-3 fw-bold">Welcome to Elderly Care &amp; Mindful Support Hub</h1>
+<p class="lead">Empowering Nepal's elderly community with compassion, dignity, and support.</p>
+<a aria-label="Contact us button" class="btn btn-primary btn-lg mt-3" href="/contact" role="button">Get in Touch</a>
+</div>
 </section>
-
 <!-- Services Highlights -->
 <section class="services-section py-5">
-    <div class="container">
-        <h2 class="text-center mb-4" id="services-heading">Our Services</h2>
-        <div class="row text-center" role="list" aria-label="Service Cards">
-            <div class="col-md-4 mb-4">
-                <div class="service-card p-4 shadow-sm rounded">
-                    <i class="bi bi-heart-pulse display-5 mb-3 text-primary"></i>
-                    <h5 id="service-1">Health & Wellness</h5>
-                    <p>Programs and resources to support physical and mental health for seniors.</p>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="service-card p-4 shadow-sm rounded">
-                    <i class="bi bi-people-fill display-5 mb-3 text-primary"></i>
-                    <h5 id="service-2">Community Events</h5>
-                    <p>Workshops, gatherings, and activities to build connections and joy.</p>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="service-card p-4 shadow-sm rounded">
-                    <i class="bi bi-journal-richtext display-5 mb-3 text-primary"></i>
-                    <h5 id="service-3">Caregiver Support</h5>
-                    <p>Guidance and training for families and caregivers of elderly individuals.</p>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="container">
+<h2 class="text-center mb-4" id="services-heading">Our Services</h2>
+<div aria-label="Service Cards" class="row text-center" role="list">
+<div class="col-md-4 mb-4">
+<div class="service-card p-4 shadow-sm rounded">
+<i class="bi bi-heart-pulse display-5 mb-3 text-primary"></i>
+<h5 id="service-1">Health &amp; Wellness</h5>
+<p>Programs and resources to support physical and mental health for seniors.</p>
+</div>
+</div>
+<div class="col-md-4 mb-4">
+<div class="service-card p-4 shadow-sm rounded">
+<i class="bi bi-people-fill display-5 mb-3 text-primary"></i>
+<h5 id="service-2">Community Events</h5>
+<p>Workshops, gatherings, and activities to build connections and joy.</p>
+</div>
+</div>
+<div class="col-md-4 mb-4">
+<div class="service-card p-4 shadow-sm rounded">
+<i class="bi bi-journal-richtext display-5 mb-3 text-primary"></i>
+<h5 id="service-3">Caregiver Support</h5>
+<p>Guidance and training for families and caregivers of elderly individuals.</p>
+</div>
+</div>
+</div>
+</div>
 </section>
-
 <!-- Call to Action -->
-<section class="cta-section text-center py-5" role="region" aria-label="Call to Action">
-    <div class="container">
-        <h2>Ready to Make a Difference?</h2>
-        <p>Join us as a volunteer, donor, or partner and help uplift Nepal's senior citizens.</p>
-        <a href="/contact" class="btn btn-light btn-lg" role="button" aria-label="Join us button">Join Us</a>
-    </div>
+<section aria-label="Call to Action" class="cta-section text-center py-5" role="region">
+<div class="container">
+<h2>Ready to Make a Difference?</h2>
+<p>Join us as a volunteer, donor, or partner and help uplift Nepal's senior citizens.</p>
+<a aria-label="Join us button" class="btn btn-light btn-lg" href="/contact" role="button">Join Us</a>
+</div>
 </section>
-
 <!-- Recent Articles Section -->
-<section class="recent-articles-section py-5" role="region" aria-label="Recent Articles">
-    <div class="container">
-        <h3 class="text-center mb-4 fw-bold">Recent Wellness Articles</h3>
-        <div class="row justify-content-center" role="list" aria-label="Article Cards">
+<section aria-label="Recent Articles" class="recent-articles-section py-5" role="region">
+<div class="container">
+<h3 class="text-center mb-4 fw-bold">Recent Wellness Articles</h3>
+<div aria-label="Article Cards" class="row justify-content-center" role="list">
             {% for article in articles|slice:":3" %}
                 <div class="col-md-4 mb-4">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title fw-bold" id="article-{{ forloop.counter }}">{{ article.title }}</h5>
-                            <p class="card-text">{{ article.body|truncatewords:20 }}</p>
-                            <a href="{% url 'content:article_detail' article.pk %}" class="btn btn-outline-primary mt-auto" role="button" aria-label="Read article {{ article.title }}">Read Article</a>
-                        </div>
-                    </div>
-                </div>
+<div class="card h-100 shadow-sm">
+<div class="card-body">
+<h5 class="card-title fw-bold" id="article-{{ forloop.counter }}">{{ article.title }}</h5>
+<p class="card-text">{{ article.body|truncatewords:20 }}</p>
+<a aria-label="Read article {{ article.title }}" class="btn btn-outline-primary mt-auto" href="{% url 'content:article_detail' article.pk %}" role="button">Read Article</a>
+</div>
+</div>
+</div>
             {% empty %}
                 <div class="col-12">
-                    <div class="alert alert-info text-center" role="alert" aria-label="No articles available">
-                        <i class="bi bi-info-circle-fill me-2"></i>No articles available at the moment.
+<div aria-label="No articles available" class="alert alert-info text-center" role="alert">
+<i class="bi bi-info-circle-fill me-2"></i>No articles available at the moment.
                     </div>
-                </div>
+</div>
             {% endfor %}
         </div>
-    </div>
+</div>
 </section>
-
+<!-- Debug: Show slides in context -->
+<p>Slides count: {{ slides|length }}</p>
+{% for slide in slides %}
+  <p>{{ slide.title }} - {% if slide.image %}{{ slide.image.url }}{% else %}(no image){% endif %}</p>
+{% endfor %}
 <!-- Slider Section -->
-<section class="slider-section py-4" role="region" aria-label="Feature Slider">
-  <div class="container">
-    <div id="homepageCarousel" class="carousel slide" data-bs-ride="carousel" role="region" aria-label="Feature Carousel">
-      <div class="carousel-inner" role="list" aria-label="Carousel Items">
+<section aria-label="Feature Slider" class="slider-section py-4" role="region">
+<div class="container">
+<div aria-label="Feature Carousel" class="carousel slide" data-bs-ride="carousel" id="homepageCarousel" role="region">
+<div aria-label="Carousel Items" class="carousel-inner" role="list">
         {% for slide in slides %}
         <div class="carousel-item{% if forloop.first %} active{% endif %}" role="listitem">
-          <div class="feature-section">
-  {% with img=slide.images.first %}
-    {% if img %}
-      <img src="{{ img.image.url }}" class="feature-image" alt="{{ slide.title }}" role="img">
-    {% endif %}
-  {% endwith %}
+<div class="feature-section">
+  {% if slide.image %}
+    <img alt="{{ slide.title }}" class="feature-image" role="img" src="{{ slide.image.url }}"/>
+  {% endif %}
   <div class="feature-card">
-    <h2>{{ slide.title }}</h2>
-    <p>{{ slide.text }}</p>
-  </div>
+<h2>{{ slide.title }}</h2>
+<p>{{ slide.text }}</p>
 </div>
-        </div>
+</div>
+</div>
         {% endfor %}
       </div>
-      <button class="carousel-control-prev" type="button" data-bs-target="#homepageCarousel" data-bs-slide="prev" aria-label="Previous slide">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-      </button>
-      <button class="carousel-control-next" type="button" data-bs-target="#homepageCarousel" data-bs-slide="next" aria-label="Next slide">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-      </button>
-    </div>
-  </div>
+<button aria-label="Previous slide" class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#homepageCarousel" type="button">
+<span aria-hidden="true" class="carousel-control-prev-icon"></span>
+<span class="visually-hidden">Previous</span>
+</button>
+<button aria-label="Next slide" class="carousel-control-next" data-bs-slide="next" data-bs-target="#homepageCarousel" type="button">
+<span aria-hidden="true" class="carousel-control-next-icon"></span>
+<span class="visually-hidden">Next</span>
+</button>
+</div>
+</div>
 </section>
-{% endblock %}
+{% endblock %}</main>

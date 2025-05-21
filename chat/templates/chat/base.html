@@ -1,0 +1,288 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+
+{% endblock %}
+
+{% block content %}
+<div class="chat-container">
+<!-- Sidebar -->
+<div class="chat-sidebar" id="chatSidebar">
+<div class="chat-sidebar-header">
+<h5 class="mb-0">Messages</h5>
+<button class="btn btn-sm btn-outline-light" id="newChatBtn">
+<i class="bi bi-pencil-square"></i>
+</button>
+</div>
+<div class="chat-search">
+<div class="input-group">
+<span class="input-group-text border-0 bg-transparent">
+<i class="bi bi-search"></i>
+</span>
+<input class="form-control border-0" placeholder="Search messages..." type="text"/>
+</div>
+</div>
+<div class="chat-list">
+            {% for chat in chat_list %}
+            <div class="chat-list-item {% if chat.unread_count > 0 %}unread{% endif %}{% if chat.id == active_chat.id %} active{% endif %}" data-chat-id="{{ chat.id }}" onclick="openChat('{{ chat.id }}')">
+<img alt="{{ chat.participant.get_full_name }}" class="chat-list-item-avatar" src="{{ chat.participant.profile_picture.url|default:'/static/images/default-avatar.png' }}"/>
+<div class="chat-list-item-content">
+<div class="chat-list-item-header">
+<h6 class="chat-list-item-name">{{ chat.participant.get_full_name|default:chat.participant.username }}</h6>
+<span class="chat-list-item-time">{{ chat.last_message.timestamp|timesince }} ago</span>
+</div>
+<p class="chat-list-item-message">
+                        {% if chat.last_message.sender == request.user %}
+                            You: 
+                        {% endif %}
+                        {{ chat.last_message.content|truncatechars:40 }}
+                    </p>
+</div>
+                {% if chat.unread_count > 0 %}
+                <span class="chat-list-item-badge">{{ chat.unread_count }}</span>
+                {% endif %}
+            </div>
+            {% empty %}
+            <div class="text-center py-5 text-muted">
+<i class="bi bi-chat-square-text"></i>
+<p class="mt-2 mb-0">No conversations yet</p>
+</div>
+            {% endfor %}
+        </div>
+</div>
+<!-- Chat Area -->
+<div class="chat-area">
+        {% if active_chat %}
+        <div class="chat-header">
+<div class="chat-header-info">
+<button class="btn btn-link p-0 me-2 chat-header-back d-none" id="backToChats">
+<i class="bi bi-arrow-left"></i>
+</button>
+<img alt="{{ active_chat.participant.get_full_name }}" class="chat-header-avatar" src="{{ active_chat.participant.profile_picture.url|default:'/static/images/default-avatar.png' }}"/>
+<div>
+<h6 class="chat-header-name mb-0">{{ active_chat.participant.get_full_name|default:active_chat.participant.username }}</h6>
+<span class="chat-header-status">Online</span>
+</div>
+</div>
+<div class="chat-header-actions">
+<button class="btn" data-bs-toggle="tooltip" title="Call">
+<i class="bi bi-telephone"></i>
+</button>
+<button class="btn" data-bs-toggle="tooltip" title="Video Call">
+<i class="bi bi-camera-video"></i>
+</button>
+<div class="dropdown d-inline-block">
+<button aria-expanded="false" class="btn" data-bs-toggle="dropdown" id="chatActionsDropdown" type="button">
+<i class="bi bi-three-dots-vertical"></i>
+</button>
+<ul aria-labelledby="chatActionsDropdown" class="dropdown-menu dropdown-menu-end">
+<li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>View Profile</a></li>
+<li><a class="dropdown-item" href="#"><i class="bi bi-archive me-2"></i>Archive Chat</a></li>
+<li><a class="dropdown-item" href="#"><i class="bi bi-mic-mute me-2"></i>Mute Notifications</a></li>
+<li><hr class="dropdown-divider"/></li>
+<li><a class="dropdown-item text-danger" href="#"><i class="bi bi-trash me-2"></i>Delete Chat</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="chat-messages" id="chatMessages">
+            {% for message in active_chat.messages %}
+            <div class="message {% if message.sender == request.user %}message-sent{% else %}message-received{% endif %}">
+<div class="message-bubble">
+                    {{ message.content }}
+                </div>
+<div class="message-time">
+                    {{ message.timestamp|time }}
+                    {% if message.sender == request.user %}
+                    <span class="message-status {% if message.read %}read{% endif %}">
+<i class="bi bi-{% if message.read %}check2-all{% else %}check2{% endif %}"></i>
+</span>
+                    {% endif %}
+                </div>
+</div>
+            {% endfor %}
+        </div>
+<div class="chat-input-container">
+<form action="{% url 'chat:send_message' active_chat.id %}" class="mb-0" id="messageForm" method="post">
+                {% csrf_token %}
+                <div class="chat-input-wrapper">
+<div class="chat-input-actions">
+<button class="btn" data-bs-toggle="tooltip" title="Add Emoji" type="button">
+<i class="bi bi-emoji-smile"></i>
+</button>
+<button class="btn" data-bs-toggle="tooltip" title="Attach File" type="button">
+<i class="bi bi-paperclip"></i>
+</button>
+</div>
+<textarea class="chat-input form-control" id="messageInput" placeholder="Type a message..." required="" rows="1"></textarea>
+<button class="chat-send-btn" id="sendMessageBtn" type="submit">
+<i class="bi bi-send"></i>
+</button>
+</div>
+</form>
+</div>
+        {% else %}
+        <div class="chat-empty-state">
+<div class="chat-empty-state-icon">
+<i class="bi bi-chat-square-text"></i>
+</div>
+<h4>No chat selected</h4>
+<p>Select a conversation or start a new one</p>
+<button class="btn btn-primary mt-2" id="startNewChatBtn">
+<i class="bi bi-plus-lg me-2"></i>New Chat
+            </button>
+</div>
+        {% endif %}
+    </div>
+</div>
+<!-- New Chat Modal -->
+<div aria-hidden="true" aria-labelledby="newChatModalLabel" class="modal fade" id="newChatModal" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="newChatModalLabel">New Chat</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<div class="mb-3">
+<input class="form-control" id="userSearchInput" placeholder="Search users..." type="text"/>
+</div>
+<div class="list-group" id="userList">
+                    {% for user in available_users %}
+                    <a class="list-group-item list-group-item-action" href="{% url 'chat:start_chat' user.id %}">
+<div class="d-flex align-items-center">
+<img alt="{{ user.get_full_name }}" class="rounded-circle me-3" height="40" src="{{ user.profile_picture.url|default:'/static/images/default-avatar.png' }}" width="40"/>
+<div>
+<h6 class="mb-0">{{ user.get_full_name|default:user.username }}</h6>
+<small class="text-muted">{{ user.get_role_display }}</small>
+</div>
+</div>
+</a>
+                    {% empty %}
+                    <div class="text-center py-3 text-muted">
+                        No users available to chat
+                    </div>
+                    {% endfor %}
+                </div>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize tooltips
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        // Toggle mobile sidebar
+        const backToChatsBtn = document.getElementById('backToChats');
+        const chatSidebar = document.getElementById('chatSidebar');
+        
+        if (backToChatsBtn) {
+            backToChatsBtn.addEventListener('click', function() {
+                chatSidebar.classList.remove('hidden');
+            });
+        }
+        
+        // Auto-resize textarea
+        const messageInput = document.getElementById('messageInput');
+        if (messageInput) {
+            messageInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+        }
+        
+        // Scroll to bottom of messages
+        const chatMessages = document.getElementById('chatMessages');
+        if (chatMessages) {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // New chat button
+        const newChatBtn = document.getElementById('newChatBtn');
+        const startNewChatBtn = document.getElementById('startNewChatBtn');
+        const newChatModal = new bootstrap.Modal(document.getElementById('newChatModal'));
+        
+        if (newChatBtn) {
+            newChatBtn.addEventListener('click', function() {
+                newChatModal.show();
+            });
+        }
+        
+        if (startNewChatBtn) {
+            startNewChatBtn.addEventListener('click', function() {
+                newChatModal.show();
+            });
+        }
+        
+        // User search
+        const userSearchInput = document.getElementById('userSearchInput');
+        const userList = document.getElementById('userList');
+        
+        if (userSearchInput && userList) {
+            userSearchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const users = userList.getElementsByClassName('list-group-item');
+                
+                Array.from(users).forEach(function(user) {
+                    const userName = user.textContent.toLowerCase();
+                    if (userName.includes(searchTerm)) {
+                        user.style.display = 'block';
+                    } else {
+                        user.style.display = 'none';
+                    }
+                });
+            });
+        }
+        
+        // Handle chat form submission
+        const messageForm = document.getElementById('messageForm');
+        if (messageForm) {
+            messageForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const messageInput = this.querySelector('textarea');
+                const message = messageInput.value.trim();
+                
+                if (message) {
+                    // Here you would typically send the message via AJAX
+                    console.log('Sending message:', message);
+                    
+                    // For demo purposes, just clear the input
+                    messageInput.value = '';
+                    messageInput.style.height = 'auto';
+                    
+                    // Scroll to bottom after sending
+                    if (chatMessages) {
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    }
+                }
+            });
+        }
+    });
+    
+    // Function to open a chat (for demo purposes)
+    function openChat(chatId) {
+        // In a real app, this would load the chat via AJAX or redirect
+        console.log('Opening chat:', chatId);
+        
+        // On mobile, hide the sidebar when a chat is opened
+        if (window.innerWidth < 768) {
+            document.getElementById('chatSidebar').classList.add('hidden');
+        }
+    }
+    
+    // Handle window resize
+    window.addEventListener('resize', function() {
+        if (window.innerWidth >= 768) {
+            document.getElementById('chatSidebar').classList.remove('hidden');
+        }
+    });
+</script>
+{% endblock %}

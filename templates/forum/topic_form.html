@@ -1,28 +1,28 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container py-4">
-  <h2>Start a New Topic</h2>
-  <form method="post">
+<h2>Start a New Topic</h2>
+<form method="post">
     {% csrf_token %}
     <div class="mb-3">
-      <label for="id_category" class="form-label">Category</label>
-      <select name="category" id="id_category" class="form-select" required>
-        <option value="">-- Select Category --</option>
+<label class="form-label" for="id_category">Category</label>
+<select class="form-select" id="id_category" name="category" required="">
+<option value="">-- Select Category --</option>
         {% for category in categories %}
-          <option value="{{ category.id }}" {% if topic and topic.category and topic.category.id == category.id %}selected{% endif %}>{{ category.name }}</option>
+          <option %}="" %}selected{%="" and="" endif="" if="" topic="" topic.category="" topic.category.id="category.id" value="{{ category.id }}" {%="">{{ category.name }}</option>
         {% endfor %}
       </select>
-    </div>
-    <div class="mb-3">
-      <label for="id_title" class="form-label">Title</label>
-      <input type="text" name="title" id="id_title" class="form-control" value="{% if topic %}{{ topic.title }}{% endif %}" required>
-    </div>
-    <div class="mb-3">
-      <label for="id_body" class="form-label">Message</label>
-      <textarea name="body" id="id_body" class="form-control" rows="5" required>{% if topic %}{{ topic.body }}{% endif %}</textarea>
-    </div>
-    <button type="submit" class="btn btn-primary">{% if edit_mode %}Save Changes{% else %}Post Topic{% endif %}</button>
-    <a href="{% url 'forum:topic_list' %}" class="btn btn-link">Cancel</a>
-  </form>
+</div>
+<div class="mb-3">
+<label class="form-label" for="id_title">Title</label>
+<input class="form-control" id="id_title" name="title" required="" type="text" value="{% if topic %}{{ topic.title }}{% endif %}"/>
+</div>
+<div class="mb-3">
+<label class="form-label" for="id_body">Message</label>
+<textarea class="form-control" id="id_body" name="body" required="" rows="5">{% if topic %}{{ topic.body }}{% endif %}</textarea>
+</div>
+<button class="btn btn-primary" type="submit">{% if edit_mode %}Save Changes{% else %}Post Topic{% endif %}</button>
+<a class="btn btn-link" href="{% url 'forum:topic_list' %}">Cancel</a>
+</form>
 </div>
 {% endblock %}

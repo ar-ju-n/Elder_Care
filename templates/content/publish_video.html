@@ -1,28 +1,28 @@
 {% extends 'base.html' %}
 {% load custom_filters %}
 {% block extra_head %}
-    <link rel="stylesheet" href="{% static 'css/admin_custom.css' %}">
+    
 {% endblock %}
 {% block content %}
-<link rel="stylesheet" href="{% static 'css/publish_section.css' %}">
-<link rel="stylesheet" href="{% static 'css/publish_video.css' %}">
+
+
 <div class="admin-form-section py-5">
-  <div class="row justify-content-center">
-    <div class="col-md-8 col-lg-7">
-      <div class="card shadow-lg mt-4 border-0 animate__animated animate__fadeInUp publish-card card-custom">
-        <div class="card-body p-5">
-          <h2 class="mb-4 fw-bold text-center text-primary animate__animated animate__fadeInDown"><i class="bi bi-camera-video-fill me-2"></i>Publish Video</h2>
-          <form method="post" class="contact-form">
+<div class="row justify-content-center">
+<div class="col-md-8 col-lg-7">
+<div class="card shadow-lg mt-4 border-0 animate__animated animate__fadeInUp publish-card card-custom">
+<div class="card-body p-5">
+<h2 class="mb-4 fw-bold text-center text-primary animate__animated animate__fadeInDown"><i class="bi bi-camera-video-fill me-2"></i>Publish Video</h2>
+<form class="contact-form" method="post">
             {% csrf_token %}
             {{ form.as_p }}
-            <input type="hidden" name="author" value="{{ user.username|slugify_dir }}">
-            <div class="d-grid gap-2 mt-4">
-              <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 fw-bold animate__animated animate__pulse animate__infinite"><i class="bi bi-upload me-2"></i>Publish</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
+            <input name="author" type="hidden" value="{{ user.username|slugify_dir }}"/>
+<div class="d-grid gap-2 mt-4">
+<button class="btn btn-primary rounded-pill px-4 py-2 fw-bold animate__animated animate__pulse animate__infinite" type="submit"><i class="bi bi-upload me-2"></i>Publish</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
 </div>
 {% endblock %}

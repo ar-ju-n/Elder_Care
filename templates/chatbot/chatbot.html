@@ -2,33 +2,32 @@
 {% load static %}
 
 {% block content %}
-<link rel="stylesheet" href="{% static 'css/chatbot.css' %}">
+
 <div class="chatbot-section py-5">
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-lg-7">
-        <div class="card shadow-lg border-0 animate__animated animate__fadeInUp chatbot-card">
-          <div class="card-header bg-primary text-white text-center animate__animated animate__fadeInDown chatbot-card-header">
-            <h2 class="mb-0 fw-bold chatbot-title">AI Assistant</h2>
-          </div>
-          <div class="card-body p-4">
-            <div id="chat-messages" class="mb-4 animate__animated animate__fadeIn chatbot-messages">
-              <div class="message bot-message animate__animated animate__fadeInLeft">
-                <div class="message-content">
+<div class="container">
+<div class="row justify-content-center">
+<div class="col-lg-7">
+<div class="card shadow-lg border-0 animate__animated animate__fadeInUp chatbot-card">
+<div class="card-header bg-primary text-white text-center animate__animated animate__fadeInDown chatbot-card-header">
+<h2 class="mb-0 fw-bold chatbot-title">AI Assistant</h2>
+</div>
+<div class="card-body p-4">
+<div class="mb-4 animate__animated animate__fadeIn chatbot-messages" id="chat-messages">
+<div class="message bot-message animate__animated animate__fadeInLeft">
+<div class="message-content">
                   Hello! I'm your AI assistant. How can I help you today?
                 </div>
-              </div>
-            </div>
-            <form id="chat-form" class="d-flex align-items-center">
-              <input type="text" id="user-input" class="form-control me-3 chatbot-input" placeholder="Type your message...">
-              <button type="submit" class="btn btn-primary px-4 py-2 animate__animated animate__pulse animate__infinite chatbot-send-btn">Send</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 </div>
-<link rel="stylesheet" href="{% static 'css/chatbot.css' %}">
+</div>
+<form class="d-flex align-items-center" id="chat-form">
+<input class="form-control me-3 chatbot-input" id="user-input" placeholder="Type your message..." type="text"/>
+<button class="btn btn-primary px-4 py-2 animate__animated animate__pulse animate__infinite chatbot-send-btn" type="submit">Send</button>
+</form>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
 <script src="{% static 'js/chatbot.js' %}"></script>
 {% endblock %}

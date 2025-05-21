@@ -1,0 +1,625 @@
+{% extends 'jobs/base.html' %}
+{% load static %}
+{% load url_utils %}
+
+{% block extra_css %}
+{{ block.super }}
+<style>
+    .filter-card {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 1.25rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .filter-section {
+        margin-bottom: 1.5rem;
+    }
+    .filter-section:last-child {
+        margin-bottom: 0;
+    }
+    .filter-section h6 {
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        color: #495057;
+        border-bottom: 1px solid #dee2e6;
+        padding-bottom: 0.5rem;
+    }
+    .filter-tag {
+        display: inline-flex;
+        align-items: center;
+        background: #e9ecef;
+        border-radius: 16px;
+        padding: 0.25rem 0.75rem;
+        margin: 0 0.5rem 0.5rem 0;
+        font-size: 0.875rem;
+    }
+    .filter-tag .close {
+        margin-left: 0.5rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        opacity: 0.7;
+    }
+    .filter-tag .close:hover {
+        opacity: 1;
+    }
+    .export-buttons .btn {
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    .sort-dropdown .dropdown-menu {
+        min-width: 200px;
+    }
+    .loading-spinner {
+        display: none;
+    }
+    .no-jobs {
+        display: none;
+    }
+    .no-jobs.visible {
+        display: block;
+    }
+    .job-meta-icon {
+        width: 20px;
+        margin-right: 0.5rem;
+    }
+    .job-card {
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    .job-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    .job-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    .job-meta .badge {
+        font-weight: 500;
+    }
+    .job-description {
+        color: #6c757d;
+        margin-bottom: 1rem;
+    }
+    .job-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    /* Saved Searches */
+    .saved-searches {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    .saved-searches a {
+        transition: all 0.2s ease;
+        border-left: 3px solid transparent;
+    }
+    .saved-searches a:hover {
+        background-color: #f8f9fa;
+        border-left-color: #0d6efd;
+        padding-left: 12px;
+        margin-left: -12px;
+    }
+    .saved-searches i {
+        width: 16px;
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">{{ title|default:'Available Jobs' }}</h1>
+                <div>
+                    {% if user.is_authenticated and user.is_family %}
+                    <a class="btn btn-primary me-2" href="{% url 'jobs:post_job' %}">
+                        <i class="fas fa-plus me-1"></i> Post a Job
+                    </a>
+                    {% endif %}
+                    <div class="btn-group sort-dropdown">
+                        <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-sort me-1"></i> Sort
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            {% for value, label in sort_options %}
+                            <li>
+                                <a class="dropdown-item{% if filters.order_by == value %} active{% endif %}" 
+                                   href="?{{ request.GET.urlencode }}&order_by={{ value }}">
+                                    {{ label }}
+                                    {% if filters.order_by == value %}
+                                    <i class="fas fa-check ms-2"></i>
+                                    {% endif %}
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Filters -->
+            <div class="active-filters mb-4">
+                {% if filters.search or filters.location or filters.pay or filters.status or filters.start_date or filters.end_date %}
+                <div class="d-flex align-items-center flex-wrap">
+                    <span class="me-2 text-muted">Active filters:</span>
+                    {% if filters.search %}
+                    <span class="filter-tag">
+                        Search: "{{ filters.search }}"
+                        <a href="?{{ request.GET.urlencode|remove_param:'search' }}" class="close">&times;</a>
+                    </span>
+                    {% endif %}
+                    {% if filters.location %}
+                    <span class="filter-tag">
+                        Location: {{ filters.location }}
+                        <a href="?{{ request.GET.urlencode|remove_param:'location' }}" class="close">&times;</a>
+                    </span>
+                    {% endif %}
+                    {% if filters.pay %}
+                    <span class="filter-tag">
+                        Min Pay: ${{ filters.pay }}/hr
+                        <a href="?{{ request.GET.urlencode|remove_param:'pay' }}" class="close">&times;</a>
+                    </span>
+                    {% endif %}
+                    {% if filters.status %}
+                    <span class="filter-tag">
+                        Status: {{ filters.status|title }}
+                        <a href="?{{ request.GET.urlencode|remove_param:'status' }}" class="close">&times;</a>
+                    </span>
+                    {% endif %}
+                    {% if filters.start_date or filters.end_date %}
+                    <span class="filter-tag">
+                        Date: {{ filters.start_date|default:"Start" }} - {{ filters.end_date|default:"End" }}
+                        <a href="?{{ request.GET.urlencode|remove_param:'start_date'|remove_param:'end_date' }}" class="close">&times;</a>
+                    </span>
+                    {% endif %}
+                    <a href="?" class="btn btn-sm btn-link text-decoration-none ms-2">Clear all</a>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="row">
+                <!-- Filters Sidebar -->
+                <div class="col-lg-3 mb-4">
+                    <div class="filter-card">
+                        <form id="job-filters">
+                            <!-- Search -->
+                            <div class="filter-section">
+                                <h6>Search</h6>
+                                <input type="text" class="form-control" name="search" placeholder="Job title or description" 
+                                       value="{{ filters.search }}">
+                            </div>
+
+                            <!-- Status -->
+                            <div class="filter-section">
+                                <h6>Status</h6>
+                                <select class="form-select" name="status">
+                                    <option value="">All Statuses</option>
+                                    {% for value, label in status_choices %}
+                                    <option value="{{ value }}" {% if filters.status == value %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Location -->
+                            <div class="filter-section">
+                                <h6>Location</h6>
+                                <input type="text" class="form-control" name="location" placeholder="City or state" 
+                                       value="{{ filters.location }}">
+                            </div>
+
+                            <!-- Pay Range -->
+                            <div class="filter-section">
+                                <h6>Pay Rate (min)</h6>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" name="pay" placeholder="e.g. 15" 
+                                           min="0" step="1" value="{{ filters.pay }}">
+                                    <span class="input-group-text">/hr</span>
+                                </div>
+                            </div>
+
+                            <!-- Date Range -->
+                            <div class="filter-section">
+                                <h6>Date Posted</h6>
+                                <div class="mb-2">
+                                    <label class="form-label small text-muted mb-1">From</label>
+                                    <input type="date" class="form-control" name="start_date" value="{{ filters.start_date }}">
+                                </div>
+                                <div>
+                                    <label class="form-label small text-muted mb-1">To</label>
+                                    <input type="date" class="form-control" name="end_date" value="{{ filters.end_date }}">
+                                </div>
+                            </div>
+
+                            <!-- User-specific filters -->
+                            {% if user.is_authenticated %}
+                            <div class="filter-section">
+                                <h6>My Content</h6>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="my_jobs" id="my_jobs" 
+                                           {% if my_jobs %}checked{% endif %}>
+                                    <label class="form-check-label" for="my_jobs">
+                                        My Posted Jobs
+                                    </label>
+                                </div>
+                                {% if user.is_caregiver %}
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="my_applications" id="my_applications"
+                                           {% if my_applications %}checked{% endif %}>
+                                    <label class="form-check-label" for="my_applications">
+                                        My Applications
+                                    </label>
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+
+                            <!-- Action Buttons -->
+                            <div class="d-grid gap-2 mt-4">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-filter me-1"></i> Apply Filters
+                                </button>
+                                <button type="reset" class="btn btn-outline-secondary" id="reset-filters">
+                                    <i class="fas fa-undo me-1"></i> Reset
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Saved Searches Section -->
+                    {% if saved_searches %}
+                    <div class="filter-card mt-3">
+                        <h6 class="mb-3">Saved Searches</h6>
+                        <div class="saved-searches">
+                            {% for search in saved_searches %}
+                            <a href="?{{ search.query_params|safe }}" 
+                               class="d-block text-decoration-none text-dark p-2 mb-1 rounded hover-bg-light"
+                               title="{{ search.name }}">
+                                <i class="fas fa-search me-2 text-muted"></i>
+                                {{ search.name }}
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Export Section -->
+                    <div class="filter-card mt-3">
+                        <h6 class="mb-3">Export Jobs</h6>
+                        <div class="export-buttons">
+                            <button type="button" class="btn btn-outline-secondary btn-sm export-btn" data-format="csv">
+                                <i class="fas fa-file-csv me-1"></i> Export to CSV
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm export-btn" data-format="pdf">
+                                <i class="fas fa-file-pdf me-1"></i> Export to PDF
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Saved Searches -->
+                    {% if user.is_authenticated and saved_searches %}
+                    <div class="filter-card mt-3">
+                        <h6 class="mb-3">Saved Searches</h6>
+                        <div class="list-group">
+                            {% for search in saved_searches %}
+                            <a href="{{ search.url }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                {{ search.name|default:"Untitled Search" }}
+                                <span class="badge bg-primary rounded-pill">{{ search.result_count }}</span>
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Job List -->
+                <div class="col-lg-9">
+    <!-- Job List Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="h5 mb-0">
+            {% if page_obj.paginator.count > 0 %}
+                {{ page_obj.paginator.count }} job{{ page_obj.paginator.count|pluralize }} found
+            {% else %}
+                No jobs found
+            {% endif %}
+        </h2>
+        <div class="d-flex align-items-center">
+            <div class="me-3 small text-muted">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </div>
+            {% if page_obj.has_other_pages %}
+            <nav aria-label="Job pagination">
+                <ul class="pagination pagination-sm mb-0">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?{% url_replace page=page_obj.previous_page_number %}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">&laquo;</span>
+                        </li>
+                    {% endif %}
+
+                    {% for i in page_obj.paginator.page_range %}
+                        {% if page_obj.number == i %}
+                            <li class="page-item active" aria-current="page">
+                                <span class="page-link">{{ i }}</span>
+                            </li>
+                        {% elif i > page_obj.number|add:'-3' and i < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?{% url_replace page=i %}">{{ i }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?{% url_replace page=page_obj.next_page_number %}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">&raquo;</span>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Job List -->
+    <div class="row row-cols-1 row-cols-md-2 g-4" id="job-list">
+        {% include 'jobs/partials/job_list_items.html' %}
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="loading-spinner text-center py-5" id="loading-spinner">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2 text-muted">Loading more jobs...</p>
+    </div>
+
+    <!-- No Jobs Message -->
+    <div class="no-jobs text-center py-5 {% if page_obj.paginator.count > 0 %}d-none{% endif %}" id="no-jobs">
+        <div class="mb-3">
+            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+            <h4 class="h5">No jobs found</h4>
+            <p class="text-muted">Try adjusting your search or filter criteria</p>
+        </div>
+        <a href="?" class="btn btn-outline-primary">
+            <i class="fas fa-undo me-1"></i> Clear all filters
+        </a>
+    </div>
+
+    <!-- Pagination (Bottom) -->
+    {% if page_obj.paginator.num_pages > 1 %}
+    <div class="d-flex justify-content-center mt-5">
+        <nav aria-label="Job pagination">
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?{% url_replace page=page_obj.previous_page_number %}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo; Previous</span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">&laquo; Previous</span>
+                    </li>
+                {% endif %}
+
+                {% for i in page_obj.paginator.page_range %}
+                    {% if page_obj.number == i %}
+                        <li class="page-item active" aria-current="page">
+                            <span class="page-link">{{ i }}</span>
+                        </li>
+                    {% elif i > page_obj.number|add:'-3' and i < page_obj.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?{% url_replace page=i %}">{{ i }}</a>
+                        </li>
+                    {% elif i == 1 or i == page_obj.paginator.num_pages %}
+                        <li class="page-item">
+                            <a class="page-link" href="?{% url_replace page=i %}">{{ i }}</a>
+                        </li>
+                    {% elif i == page_obj.number|add:'-4' or i == page_obj.number|add:'4' %}
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?{% url_replace page=page_obj.next_page_number %}" aria-label="Next">
+                            <span aria-hidden="true">Next &raquo;</span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">Next &raquo;</span>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+
+    // Handle filter form submission
+    const filterForm = document.getElementById('job-filters');
+    if (filterForm) {
+        filterForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(filterForm);
+            const params = new URLSearchParams(formData);
+            // Reset to first page when applying new filters
+            params.set('page', '1');
+            window.location.href = '?' + params.toString();
+        });
+    }
+        
+    // Handle reset button
+    const resetButton = document.getElementById('reset-filters');
+    if (resetButton) {
+        resetButton.addEventListener('click', function() {
+            window.location.href = window.location.pathname;
+        });
+    }
+
+    // Toggle advanced filters
+    const toggleAdvancedFilters = document.getElementById('toggle-advanced-filters');
+    const advancedFilters = document.getElementById('advanced-filters');
+    
+    if (toggleAdvancedFilters && advancedFilters) {
+        // Hide advanced filters by default
+        advancedFilters.style.display = 'none';
+        
+        toggleAdvancedFilters.addEventListener('click', function(e) {
+            e.preventDefault();
+            const isHidden = advancedFilters.style.display === 'none';
+            advancedFilters.style.display = isHidden ? 'block' : 'none';
+            toggleAdvancedFilters.innerHTML = isHidden ? 
+                '<i class="fas fa-chevron-up me-1"></i> Hide Advanced Filters' :
+                '<i class="fas fa-chevron-down me-1"></i> Show Advanced Filters';
+        });
+    }
+
+    // Handle infinite scroll
+    let isLoading = false;
+    let hasMore = document.getElementById('pagination-data')?.dataset.hasMore === 'true';
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const jobList = document.getElementById('job-list');
+    const noJobs = document.getElementById('no-jobs');
+    
+    // Function to load more jobs
+    async function loadMoreJobs() {
+        if (isLoading || !hasMore) return;
+        
+        const currentUrl = new URL(window.location.href);
+        const currentPage = parseInt(currentUrl.searchParams.get('page') || '1');
+        const nextPage = currentPage + 1;
+        
+        // Update URL without reloading the page
+        currentUrl.searchParams.set('page', nextPage);
+        
+        try {
+            isLoading = true;
+            loadingSpinner.style.display = 'block';
+            
+            // Fetch the next page
+            const response = await fetch(currentUrl.toString(), {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest', // For Django to detect AJAX
+                },
+            });
+            
+            if (!response.ok) throw new Error('Network response was not ok');
+            
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const newItems = doc.getElementById('job-list')?.innerHTML || '';
+            const newPaginationData = doc.getElementById('pagination-data');
+            
+            if (newItems) {
+                jobList.insertAdjacentHTML('beforeend', newItems);
+                hasMore = newPaginationData?.dataset.hasMore === 'true';
+                
+                // Initialize tooltips for new items
+                const newTooltips = [].slice.call(jobList.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                newTooltips.forEach(el => new bootstrap.Tooltip(el));
+            }
+            
+            // Update URL without page reload
+            window.history.pushState({}, '', currentUrl.toString());
+            
+        } catch (error) {
+            console.error('Error loading more jobs:', error);
+        } finally {
+            isLoading = false;
+            loadingSpinner.style.display = 'none';
+            
+            // Show/hide no-jobs message
+            if (jobList.children.length === 0) {
+                noJobs.style.display = 'block';
+            } else {
+                noJobs.style.display = 'none';
+            }
+        }
+    }
+    
+    // Set up intersection observer for infinite scroll
+    if (jobList && hasMore) {
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting) {
+                loadMoreJobs();
+            }
+        }, {
+            threshold: 0.1
+        });
+        
+        // Observe the loading spinner
+        if (loadingSpinner) {
+            observer.observe(loadingSpinner);
+        }
+    }
+    
+    // Handle browser back/forward buttons
+    window.addEventListener('popstate', function() {
+        window.location.reload();
+    });
+    
+    // Initialize date pickers
+    const dateInputs = document.querySelectorAll('input[type="date"]');
+    dateInputs.forEach(input => {
+        // Set min/max dates if needed
+        const today = new Date().toISOString().split('T')[0];
+        if (input.name === 'start_date' && !input.value) {
+            input.max = today;
+        } else if (input.name === 'end_date' && !input.value) {
+            input.min = document.querySelector('input[name="start_date"]')?.value || today;
+            input.max = today;
+        }
+        
+        // Update min date of end date when start date changes
+        if (input.name === 'start_date') {
+            input.addEventListener('change', function() {
+                const endDateInput = document.querySelector('input[name="end_date"]');
+                if (endDateInput) {
+                    endDateInput.min = this.value;
+                    if (endDateInput.value && endDateInput.value < this.value) {
+                        endDateInput.value = this.value;
+                    }
+                }
+            });
+        }
+    });
+});
+</script>
+{% endblock %}

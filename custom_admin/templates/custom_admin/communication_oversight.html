@@ -1,0 +1,37 @@
+{% extends 'custom_admin/base.html' %}
+{% block content %}
+<h2>Communication Oversight</h2>
+<div class="mb-3">
+<button class="btn btn-outline-primary moderation-tab-btn active" data-target="moderation-messages">Chat Messages</button>
+<button class="btn btn-outline-primary moderation-tab-btn" data-target="moderation-replies">Forum Replies</button>
+</div>
+<div class="moderation-tab" id="moderation-messages">
+<div class="mb-2">
+<button class="btn btn-sm btn-outline-secondary moderation-status-btn" data-status="pending" data-type="messages">Pending</button>
+<button class="btn btn-sm btn-outline-secondary moderation-status-btn" data-status="flagged" data-type="messages">Flagged</button>
+<button class="btn btn-sm btn-outline-secondary moderation-status-btn" data-status="all" data-type="messages">All</button>
+</div>
+<table class="table table-bordered table-sm" id="messagesTable">
+<thead><tr>
+<th>ID</th><th>Sender</th><th>Message</th><th>Timestamp</th><th>Approved</th><th>Flagged</th><th>Notes</th><th>Action</th>
+</tr></thead>
+<tbody></tbody>
+</table>
+</div>
+<div class="moderation-tab d-none" id="moderation-replies">
+<div class="mb-2">
+<button class="btn btn-sm btn-outline-secondary moderation-status-btn" data-status="pending" data-type="replies">Pending</button>
+<button class="btn btn-sm btn-outline-secondary moderation-status-btn" data-status="flagged" data-type="replies">Flagged</button>
+<button class="btn btn-sm btn-outline-secondary moderation-status-btn" data-status="all" data-type="replies">All</button>
+</div>
+<table class="table table-bordered table-sm" id="repliesTable">
+<thead><tr>
+<th>ID</th><th>Author</th><th>Body</th><th>Created</th><th>Approved</th><th>Flagged</th><th>Notes</th><th>Action</th>
+</tr></thead>
+<tbody></tbody>
+</table>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="/static/custom_admin/moderation.js"></script>
+{% endblock %}

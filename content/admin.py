@@ -32,3 +32,21 @@ class VideoAdmin(admin.ModelAdmin):
     filter_horizontal = ('tags',)
 
 admin.site.register(Video, VideoAdmin)
+
+from .models import HomepageSlide
+
+class HomepageSlideAdmin(admin.ModelAdmin):
+    list_display = ('title', 'ordering', 'image_tag', 'link')
+    list_editable = ('ordering',)
+    search_fields = ('title', 'description', 'link')
+    readonly_fields = ('image_tag',)
+    ordering = ('ordering', 'id')
+    
+    def image_tag(self, obj):
+        if obj.image:
+            return f'<img src="{obj.image.url}" style="max-height:60px; max-width:120px;" />'
+        return ''
+    image_tag.short_description = 'Image'
+    image_tag.allow_tags = True
+
+admin.site.register(HomepageSlide, HomepageSlideAdmin)

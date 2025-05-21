@@ -208,15 +208,42 @@ from .models import Notification
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 
+from core.models import Notification as CoreNotification
+from .models import Notification as ForumNotification
+
 @login_required
 def notifications_list(request):
-    notifications = Notification.objects.filter(user=request.user).order_by('-created_at')
-    paginator = Paginator(notifications, 20)
+    # Fetch both forum and core notifications for the logged-in user
+    forum_notifications = list(ForumNotification.objects.filter(user=request.user))
+    core_notifications = list(CoreNotification.objects.filter(recipient=request.user))
+
+    # Normalize both to a common dict format
+    def notif_to_dict(n, source):
+        return {
+            'id': n.id,
+            'message': getattr(n, 'message', getattr(n, 'subject', '')),
+            'url': getattr(n, 'url', '#'),
+            'is_read': n.is_read,
+            'created_at': n.created_at,
+            'notif_type': getattr(n, 'notif_type', source),
+            'source': source,
+            'obj': n,
+        }
+    all_notifications = [notif_to_dict(n, 'forum') for n in forum_notifications] + [notif_to_dict(n, 'core') for n in core_notifications]
+    # Sort by created_at descending
+    all_notifications.sort(key=lambda n: n['created_at'], reverse=True)
+
+    # Paginate
+    from django.core.paginator import Paginator
+    paginator = Paginator(all_notifications, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+
     # Mark all as read if requested
     if request.method == 'POST' and 'mark_all_read' in request.POST:
-        notifications.filter(is_read=False).update(is_read=True)
+        ForumNotification.objects.filter(user=request.user, is_read=False).update(is_read=True)
+        CoreNotification.objects.filter(recipient=request.user, is_read=False).update(is_read=True)
+
     return render(request, 'forum/notifications_list.html', {'page_obj': page_obj})
 
 from django.http import JsonResponse

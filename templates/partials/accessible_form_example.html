@@ -1,25 +1,25 @@
 <!-- Example of an accessible form -->
 <form aria-labelledby="contact-form-title">
-  <h2 id="contact-form-title">Contact Us</h2>
-  <div class="mb-3">
-    <label for="name" class="form-label">Name</label>
-    <input type="text" id="name" name="name" class="form-control" aria-required="true" required>
-  </div>
-  <div class="mb-3">
-    <label for="email" class="form-label">Email</label>
-    <input type="email" id="email" name="email" class="form-control" aria-required="true" required aria-describedby="emailHelp">
-    <div id="emailHelp" class="form-text">We'll never share your email.</div>
-  </div>
-  <fieldset class="mb-3">
-    <legend>Preferred Contact Method</legend>
-    <div class="form-check">
-      <input class="form-check-input" type="radio" name="contact_method" id="contactEmail" value="email" checked>
-      <label class="form-check-label" for="contactEmail">Email</label>
-    </div>
-    <div class="form-check">
-      <input class="form-check-input" type="radio" name="contact_method" id="contactPhone" value="phone">
-      <label class="form-check-label" for="contactPhone">Phone</label>
-    </div>
-  </fieldset>
-  <button type="submit" class="btn btn-primary">Submit</button>
+<h2 id="contact-form-title">Contact Us</h2>
+<div class="mb-3">
+<label class="form-label" for="name">Name</label>
+<input aria-required="true" class="form-control" id="name" name="name" required="" type="text"/>
+</div>
+<div class="mb-3">
+<label class="form-label" for="email">Email</label>
+<input aria-describedby="emailHelp" aria-required="true" class="form-control" id="email" name="email" required="" type="email"/>
+<div class="form-text" id="emailHelp">We'll never share your email.</div>
+</div>
+<fieldset class="mb-3">
+<legend>Preferred Contact Method</legend>
+<div class="form-check">
+<input checked="" class="form-check-input" id="contactEmail" name="contact_method" type="radio" value="email"/>
+<label class="form-check-label" for="contactEmail">Email</label>
+</div>
+<div class="form-check">
+<input class="form-check-input" id="contactPhone" name="contact_method" type="radio" value="phone"/>
+<label class="form-check-label" for="contactPhone">Phone</label>
+</div>
+</fieldset>
+<button class="btn btn-primary" type="submit">Submit</button>
 </form>

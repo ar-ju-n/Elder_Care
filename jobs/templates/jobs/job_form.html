@@ -1,0 +1,35 @@
+{% extends 'jobs/base.html' %}
+
+
+{% block job_content %}
+<div class="card">
+<div class="card-header">
+<h4 class="mb-0">{% if form.instance.id %}Edit Job{% else %}Post a New Job{% endif %}</h4>
+</div>
+<div class="card-body">
+<form enctype="multipart/form-data" method="post">
+    {% csrf_token %}
+    {% for field in form %}
+      <div class="mb-3">
+        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}
+          <div class="form-text">{{ field.help_text }}</div>
+        {% endif %}
+        {% for error in field.errors %}
+          <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+    <div class="d-flex justify-content-between mt-4">
+      <a class="btn btn-outline-secondary" href="{% if form.instance.id %}{% url 'jobs:job_detail' form.instance.id %}{% else %}{% url 'jobs:job_list' %}{% endif %}">
+        <i class="fas fa-arrow-left me-1"></i> Cancel
+      </a>
+      <button class="btn btn-primary" type="submit">
+        <i class="fas fa-save me-1"></i> {% if form.instance.id %}Update{% else %}Post{% endif %} Job
+      </button>
+    </div>
+</form>
+</div>
+</div>
+{% endblock %}

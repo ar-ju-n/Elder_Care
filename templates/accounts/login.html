@@ -1,49 +1,120 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/login_new.css' %}">
-{% endblock %}
-{% block extra_js %}
-<script src="{% static 'js/login_new.js' %}"></script>
-{% endblock %}
+
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow-lg">
-                <div class="card-header bg-primary ">
-                    <h4 class="mb-0">Login to Your Account</h4>
-                </div>
-                <div class="card-body">
-                    <form method="post" novalidate class="contact-form">
-                        {% csrf_token %}
-                        {% for field in form %}
-                            <div class="mb-3">
-                                {{ field.label_tag }}
-                                {{ field }}
-                                {% if field.help_text %}
-                                    <small class="form-text text-muted">{{ field.help_text }}</small>
-                                {% endif %}
-                                {% for error in field.errors %}
-                                    <div class="text-danger small">{{ error }}</div>
-                                {% endfor %}
-                            </div>
-                        {% endfor %}
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <a href="{% url 'accounts:password_reset' %}" class="small">Forgot password?</a>
-                            <button type="submit" class="btn btn-primary">Login</button>
-                        </div>
-                    </form>
-                    <div class="mt-3 text-center">
-                        <span class="login-register-hint">Don't have an account?</span>
-                        <div class="btn-group mt-2" role="group">
-                            <a href="{% url 'accounts:family_register' %}" class="btn btn-outline-secondary btn-sm">Register as Family</a>
-                            <a href="{% url 'accounts:caregiver_register' %}" class="btn btn-outline-secondary btn-sm">Register as Caregiver</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="auth-wrapper">
+<div class="container">
+<div class="auth-card">
+<div class="card">
+<div class="card-body p-5">
+<div class="auth-header mb-4 text-center">
+<h1 class="h3 mb-3">Welcome Back</h1>
+<p class="text-muted">Sign in to your account to continue</p>
 </div>
+          
+          {% if form.errors %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              Your username and password didn't match. Please try again.
+              <button aria-label="Close" class="btn-close" data-bs-dismiss="alert" type="button"></button>
+</div>
+          {% endif %}
+          
+          {% if next %}
+            {% if user.is_authenticated %}
+              <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                Your account doesn't have access to this page. To proceed, please login with an account that has access.
+                <button aria-label="Close" class="btn-close" data-bs-dismiss="alert" type="button"></button>
+</div>
+            {% else %}
+              <div class="alert alert-info alert-dismissible fade show" role="alert">
+                Please login to see this page.
+                <button aria-label="Close" class="btn-close" data-bs-dismiss="alert" type="button"></button>
+</div>
+            {% endif %}
+          {% endif %}
+          
+          <form action="{% url 'accounts:login' %}" class="needs-validation" method="post" novalidate="">
+            {% csrf_token %}
+            <input name="next" type="hidden" value="{{ next }}"/>
+<div class="mb-3">
+<label class="form-label" for="id_username">Username or Email</label>
+<input autofocus="" class="form-control form-control-lg" id="id_username" name="username" required="" type="text"/>
+<div class="invalid-feedback">
+                Please enter your username or email.
+              </div>
+</div>
+<div class="mb-3">
+<div class="d-flex justify-content-between">
+<label class="form-label" for="id_password">Password</label>
+<a class="text-decoration-none" href="{% url 'accounts:password_reset' %}">Forgot password?</a>
+</div>
+<div class="input-group">
+<input class="form-control form-control-lg" id="id_password" name="password" required="" type="password"/>
+<button class="btn btn-outline-secondary toggle-password" type="button">
+<i class="bi bi-eye"></i>
+</button>
+<div class="invalid-feedback">
+                  Please enter your password.
+                </div>
+</div>
+</div>
+<div class="form-check mb-4">
+<input class="form-check-input" id="remember_me" type="checkbox"/>
+<label class="form-check-label" for="remember_me">
+                Remember me
+              </label>
+</div>
+<button class="btn btn-primary btn-lg w-100 mb-3" type="submit">
+              Sign In
+            </button>
+<div class="text-center mt-4">
+<p class="mb-0">Don't have an account? 
+                <a class="text-decoration-none" href="{% url 'accounts:family_register' %}">
+                  Create an account
+                </a>
+</p>
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Form validation
+(function () {
+  'use strict'
+  
+  // Fetch all the forms we want to apply custom Bootstrap validation styles to
+  const forms = document.querySelectorAll('.needs-validation')
+  
+  // Loop over them and prevent submission
+  Array.from(forms).forEach(form => {
+    form.addEventListener('submit', event => {
+      if (!form.checkValidity()) {
+        event.preventDefault()
+        event.stopPropagation()
+      }
+      
+      form.classList.add('was-validated')
+    }, false)
+  })
+  
+  // Toggle password visibility
+  const togglePassword = document.querySelector('.toggle-password');
+  const password = document.querySelector('#id_password');
+  
+  if (togglePassword && password) {
+    togglePassword.addEventListener('click', function() {
+      const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+      password.setAttribute('type', type);
+      this.querySelector('i').classList.toggle('bi-eye');
+      this.querySelector('i').classList.toggle('bi-eye-slash');
+    });
+  }
+})()
+</script>
 {% endblock %}

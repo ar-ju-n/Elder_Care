@@ -1,0 +1,37 @@
+{% extends 'custom_admin/base.html' %}
+{% block content %}
+<div class="container py-4">
+  <h2 class="fw-bold mb-4">{{ action|title }} Job</h2>
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="title" class="form-label">Title</label>
+          <input class="form-control" type="text" id="title" name="title" required value="{{ job.title|default:'' }}">
+        </div>
+        <div class="mb-3">
+          <label for="description" class="form-label">Description</label>
+          <textarea class="form-control" id="description" name="description" rows="4">{{ job.description|default:'' }}</textarea>
+        </div>
+        <div class="mb-3">
+          <label for="schedule" class="form-label">Schedule</label>
+          <input class="form-control" type="text" id="schedule" name="schedule" value="{{ job.schedule|default:'' }}">
+        </div>
+        <div class="mb-3">
+          <label for="location" class="form-label">Location</label>
+          <input class="form-control" type="text" id="location" name="location" value="{{ job.location|default:'' }}">
+        </div>
+        <div class="mb-3">
+          <label for="pay" class="form-label">Pay</label>
+          <input class="form-control" type="number" step="0.01" id="pay" name="pay" value="{{ job.pay|default:'' }}">
+        </div>
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-success">Save</button>
+          <a href="{% url 'custom_admin:job_list' %}" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

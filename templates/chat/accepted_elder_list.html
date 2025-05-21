@@ -2,33 +2,33 @@
 {% load custom_filters %}
 {% block content %}
 <div class="container py-4">
-    <h2 class="mb-4">Accepted Elders</h2>
+<h2 class="mb-4">Accepted Elders</h2>
     {% if detailed_requests %}
     <div class="list-group">
         {% for item in detailed_requests %}
             <div class="list-group-item d-flex justify-content-between align-items-center" data-chat-request="{{ item.request.id }}">
-                <div class="d-flex align-items-center">
+<div class="d-flex align-items-center">
                     {% if item.profile_picture %}
-                        <img src="{{ item.profile_picture.url }}" class="rounded-circle me-2" width="48" height="48" alt="Profile Picture">
+                        <img alt="Profile Picture" class="rounded-circle me-2" height="48" src="{{ item.profile_picture.url }}" width="48"/>
                     {% else %}
                         <i class="bi bi-person-circle fs-2 me-2"></i>
                     {% endif %}
                     <div>
-                        <strong>{{ item.elder.get_full_name|default:item.username }}</strong>
-                        <span class="text-muted ms-2">({{ item.email }})</span><br>
-                        {% if item.bio %}<span class="text-secondary small">{{ item.bio }}</span><br>{% endif %}
+<strong>{{ item.elder.get_full_name|default:item.username }}</strong>
+<span class="text-muted ms-2">({{ item.email }})</span><br/>
+                        {% if item.bio %}<span class="text-secondary small">{{ item.bio }}</span><br/>{% endif %}
                         <span class="text-secondary small">Accepted: {{ item.accepted_at|date:'M d, Y H:i' }}</span>
-                    </div>
-                </div>
-                <div class="d-flex align-items-center">
-                    {% if item.unread_count and item.unread_count > 0 %}
+</div>
+</div>
+<div class="d-flex align-items-center">
+                    {% if item.unread_count and item.unread_count &gt; 0 %}
                         <span class="badge bg-danger me-2">{{ item.unread_count }} new</span>
                     {% endif %}
-                    <a href="{% url 'chat:chat_room' item.request.id|slugify_dir %}" class="btn btn-primary btn-sm">
-                        <i class="bi bi-chat-dots me-1"></i>Open Chat
+                    <a class="btn btn-primary btn-sm" href="{% url 'chat:chat_room' item.request.id|slugify_dir %}">
+<i class="bi bi-chat-dots me-1"></i>Open Chat
                     </a>
-                </div>
-            </div>
+</div>
+</div>
         {% endfor %}
     </div>
 {% else %}

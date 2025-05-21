@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+
+{% endblock %}
+
+{% block content %}
+<div class="forum-container">
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-4">
+<ol class="breadcrumb mb-0">
+<li class="breadcrumb-item"><a href="{% url 'forum:index' %}">Home</a></li>
+            {% block breadcrumb %}{% endblock %}
+        </ol>
+</nav>
+<div class="row">
+<!-- Main Content -->
+<div class="{% block main_content_class %}col-lg-8{% endblock %}">
+            {% block forum_content %}
+            <!-- Forum content will be inserted here -->
+            {% endblock %}
+        </div>
+<!-- Sidebar -->
+<div class="{% block sidebar_class %}col-lg-4{% endblock %}">
+<div class="forum-sidebar">
+                {% if user.is_authenticated %}
+                <!-- User Card -->
+<div class="sidebar-widget mb-4">
+<div class="d-flex align-items-center">
+<img alt="{{ user.get_full_name }}" class="rounded-circle me-3" height="60" src="{{ user.profile_picture.url|default:'/static/images/default-avatar.png' }}" width="60"/>
+<div>
+<h6 class="mb-0">{{ user.get_full_name|default:user.username }}</h6>
+<small class="text-muted">{{ user.get_role_display }}</small>
+</div>
+</div>
+<hr/>
+<div class="d-flex justify-content-between">
+<a class="text-decoration-none text-center" href="{% url 'forum:user_topics' user.username %}">
+<div class="text-primary fw-bold">{{ user.topic_set.count }}</div>
+<small class="text-muted">Topics</small>
+</a>
+<a class="text-decoration-none text-center" href="{% url 'forum:user_posts' user.username %}">
+<div class="text-primary fw-bold">{{ user.post_set.count }}</div>
+<small class="text-muted">Posts</small>
+</a>
+<a class="text-decoration-none text-center" href="#">
+<div class="text-primary fw-bold">{{ user.likes_received.count }}</div>
+<small class="text-muted">Likes</small>
+</a>
+</div>
+</div>
+                {% endif %}
+                
+                <!-- Categories -->
+<div class="sidebar-widget mb-4">
+<h6 class="widget-title">Categories</h6>
+<div class="widget-content">
+<div class="list-group list-group-flush">
+<a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center {% if not request.resolver_match.url_name == 'category' and not request.resolver_match.url_name == 'topic' %}active{% endif %}" href="{% url 'forum:index' %}">
+                                All Discussions
+                                <span class="badge bg-primary rounded-pill">{{ total_topics }}</span>
+</a>
+                            {% for category in categories %}
+                            <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center {% if category == current_category %}active{% endif %}" href="{{ category.get_absolute_url }}">
+                                {{ category.name }}
+                                <span class="badge bg-primary rounded-pill">{{ category.topic_count }}</span>
+</a>
+                            {% endfor %}
+                        </div>
+</div>
+</div>
+<!-- Popular Topics -->
+<div class="sidebar-widget mb-4">
+<h6 class="widget-title">Popular Topics</h6>
+<div class="widget-content">
+<div class="list-group list-group-flush">
+                            {% for topic in popular_topics %}
+                            <a class="list-group-item list-group-item-action" href="{{ topic.get_absolute_url }}">
+<div class="d-flex w-100 justify-content-between">
+<h6 class="mb-1">{{ topic.title|truncatechars:40 }}</h6>
+<small>{{ topic.views }} <i class="bi bi-eye"></i></small>
+</div>
+<small class="text-muted">By {{ topic.starter.username }} • {{ topic.created_at|timesince }} ago</small>
+</a>
+                            {% empty %}
+                            <div class="text-muted small">No popular topics yet.</div>
+                            {% endfor %}
+                        </div>
+</div>
+</div>
+<!-- Online Users -->
+<div class="sidebar-widget">
+<h6 class="widget-title">Online Users</h6>
+<div class="widget-content">
+<div class="d-flex flex-wrap gap-2">
+                            {% for user in online_users %}
+                            <a class="text-decoration-none" data-bs-toggle="tooltip" href="{% url 'accounts:profile' user.username %}" title="{{ user.get_full_name|default:user.username }}">
+<img alt="{{ user.get_full_name }}" class="rounded-circle" height="32" src="{{ user.profile_picture.url|default:'/static/images/default-avatar.png' }}" width="32"/>
+</a>
+                            {% empty %}
+                            <div class="text-muted small">No users online.</div>
+                            {% endfor %}
+                        </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize tooltips
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        // Handle like buttons
+        document.querySelectorAll('.like-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const postId = this.dataset.postId;
+                const likeCount = this.querySelector('.like-count') || this.nextElementSibling;
+                const isLiked = this.classList.contains('active');
+                
+                // Toggle like state
+                this.classList.toggle('active');
+                
+                // Update like count
+                if (likeCount) {
+                    let count = parseInt(likeCount.textContent) || 0;
+                    likeCount.textContent = isLiked ? count - 1 : count + 1;
+                }
+                
+                // In a real app, you would make an AJAX request here to save the like
+                console.log(isLiked ? 'Unliked' : 'Liked', 'post', postId);
+            });
+        });
+        
+        // Handle preview button in reply form
+        const previewBtn = document.getElementById('previewBtn');
+        const previewContent = document.getElementById('previewContent');
+        const replyTextarea = document.getElementById('replyTextarea');
+        
+        if (previewBtn && previewContent && replyTextarea) {
+            previewBtn.addEventListener('click', function() {
+                if (previewContent.style.display === 'none' || !previewContent.style.display) {
+                    // Show preview
+                    previewContent.innerHTML = replyTextarea.value;
+                    previewContent.style.display = 'block';
+                    this.textContent = 'Hide Preview';
+                } else {
+                    // Hide preview
+                    previewContent.style.display = 'none';
+                    this.textContent = 'Preview';
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

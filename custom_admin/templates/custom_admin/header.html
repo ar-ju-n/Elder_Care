@@ -1,0 +1,15 @@
+<header class="admin-header d-flex align-items-center justify-content-between">
+<span>{% block admin_header %}Elderly Care Admin{% endblock %}</span>
+<span>
+  <a href="{% url 'custom_admin:notification_list' %}" class="position-relative me-3" title="Notifications">
+    <i class="bi bi-bell" style="font-size: 1.5rem;"></i>
+    {% if unread_notifications > 0 %}
+  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+    {{ unread_notifications }}
+  </span>
+{% endif %}
+  </a>
+  <i class="bi bi-person-circle"></i> {{ request.user.get_full_name|default:request.user.username }}
+  <a class="btn btn-sm btn-light ms-3" href="{% url 'accounts:logout' %}">Logout</a>
+</span>
+</header>

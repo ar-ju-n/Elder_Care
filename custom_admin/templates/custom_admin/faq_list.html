@@ -1,0 +1,40 @@
+{% extends 'custom_admin/base.html' %}
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">FAQs</h2>
+        <a href="{% url 'custom_admin:faq_add' %}" class="btn btn-primary">Add FAQ</a>
+    </div>
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Question</th>
+                            <th>Tags</th>
+                            <th>Created At</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for faq in faqs %}
+                        <tr>
+                            <td>{{ faq.question }}</td>
+                            <td>{% for tag in faq.tags.all %}<span class="badge bg-info text-dark me-1">{{ tag.name }}</span>{% empty %}-{% endfor %}</td>
+                            <td>{{ faq.created_at|date:'Y-m-d H:i' }}</td>
+                            <td>
+                                <a href="{% url 'custom_admin:faq_edit' faq.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
+                                <a href="{% url 'custom_admin:faq_delete' faq.id %}" class="btn btn-sm btn-outline-danger ms-2">Delete</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="text-center">No FAQs found.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

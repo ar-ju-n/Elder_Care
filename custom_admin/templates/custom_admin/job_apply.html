@@ -1,0 +1,33 @@
+{% extends 'custom_admin/base.html' %}
+{% block content %}
+<div class="container py-4">
+  <h2 class="fw-bold mb-4">Apply for Job: {{ job.title }}</h2>
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="cover_letter" class="form-label">Cover Letter</label>
+          <textarea class="form-control" id="cover_letter" name="cover_letter" rows="4"></textarea>
+        </div>
+        <div class="mb-3">
+          <label for="resume" class="form-label">Resume</label>
+          <input type="file" class="form-control" id="resume" name="resume">
+        </div>
+        <div class="mb-3">
+          <label for="credentials" class="form-label">Credentials</label>
+          <input type="file" class="form-control" id="credentials" name="credentials">
+        </div>
+        <div class="mb-3">
+          <label for="reference_letter" class="form-label">Reference Letter</label>
+          <input type="file" class="form-control" id="reference_letter" name="reference_letter">
+        </div>
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-success">Submit Application</button>
+          <a href="{% url 'custom_admin:job_detail' job.id %}" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

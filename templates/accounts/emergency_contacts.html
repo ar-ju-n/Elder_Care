@@ -1,64 +1,64 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container py-4">
-  <h2 class="mb-4">My Emergency Contacts</h2>
-  <div class="mb-4">
-    <form method="post" class="row g-3">
+<h2 class="mb-4">My Emergency Contacts</h2>
+<div class="mb-4">
+<form class="row g-3" method="post">
       {% csrf_token %}
       {{ form.non_field_errors }}
       <div class="col-md-4">{{ form.name.label_tag }}{{ form.name }}</div>
-      <div class="col-md-3">{{ form.relationship.label_tag }}{{ form.relationship }}</div>
-      <div class="col-md-3">{{ form.phone.label_tag }}{{ form.phone }}</div>
-      <div class="col-md-2 d-flex align-items-end">{{ form.is_primary }} {{ form.is_primary.label_tag }}</div>
-      <div class="col-12">
-        <button type="submit" name="add_contact" class="btn btn-success">Add Contact</button>
-      </div>
-    </form>
-  </div>
-  <hr>
-  <h4>Saved Contacts</h4>
-  <table class="table table-bordered table-striped">
-    <thead><tr><th>Name</th><th>Relationship</th><th>Phone</th><th>Primary</th><th>Actions</th></tr></thead>
-    <tbody>
+<div class="col-md-3">{{ form.relationship.label_tag }}{{ form.relationship }}</div>
+<div class="col-md-3">{{ form.phone.label_tag }}{{ form.phone }}</div>
+<div class="col-md-2 d-flex align-items-end">{{ form.is_primary }} {{ form.is_primary.label_tag }}</div>
+<div class="col-12">
+<button class="btn btn-success" name="add_contact" type="submit">Add Contact</button>
+</div>
+</form>
+</div>
+<hr/>
+<h4>Saved Contacts</h4>
+<table class="table table-bordered table-striped">
+<thead><tr><th>Name</th><th>Relationship</th><th>Phone</th><th>Primary</th><th>Actions</th></tr></thead>
+<tbody>
       {% for c in contacts %}
-      <tr{% if c.is_primary %} class="table-success"{% endif %}>
-        <td>{{ c.name }}</td>
-        <td>{{ c.relationship }}</td>
-        <td><a href="tel:{{ c.phone }}">{{ c.phone }}</a></td>
-        <td>{% if c.is_primary %}<span class="badge bg-success">Primary</span>{% endif %}</td>
-        <td>
-          <form method="post" style="display:inline;">
+      <tr{% %}="" c.is_primary="" class="table-success" endif="" if="" {%="">
+<td>{{ c.name }}</td>
+<td>{{ c.relationship }}</td>
+<td><a href="tel:{{ c.phone }}">{{ c.phone }}</a></td>
+<td>{% if c.is_primary %}<span class="badge bg-success">Primary</span>{% endif %}</td>
+<td>
+<form method="post">
             {% csrf_token %}
-            <input type="hidden" name="edit_id" value="{{ c.id }}">
-            <button type="submit" name="edit_contact" class="btn btn-sm btn-warning">Edit</button>
-          </form>
-          <form method="post" style="display:inline;">
+            <input name="edit_id" type="hidden" value="{{ c.id }}"/>
+<button class="btn btn-sm btn-warning" name="edit_contact" type="submit">Edit</button>
+</form>
+<form method="post">
             {% csrf_token %}
-            <input type="hidden" name="delete_id" value="{{ c.id }}">
-            <button type="submit" name="delete_contact" class="btn btn-sm btn-danger" onclick="return confirm('Delete this contact?')">Delete</button>
-          </form>
-        </td>
-      </tr>
+            <input name="delete_id" type="hidden" value="{{ c.id }}"/>
+<button class="btn btn-sm btn-danger" name="delete_contact" onclick="return confirm('Delete this contact?')" type="submit">Delete</button>
+</form>
+</td>
+
       {% endfor %}
-    </tbody>
-  </table>
+    </tr{%></tbody>
+</table>
   {% if edit_form %}
   <div class="mt-4">
-    <h4>Edit Contact</h4>
-    <form method="post" class="row g-3">
+<h4>Edit Contact</h4>
+<form class="row g-3" method="post">
       {% csrf_token %}
-      <input type="hidden" name="edit_id" value="{{ edit_id }}">
+      <input name="edit_id" type="hidden" value="{{ edit_id }}"/>
       {{ edit_form.non_field_errors }}
       <div class="col-md-4">{{ edit_form.name.label_tag }}{{ edit_form.name }}</div>
-      <div class="col-md-3">{{ edit_form.relationship.label_tag }}{{ edit_form.relationship }}</div>
-      <div class="col-md-3">{{ edit_form.phone.label_tag }}{{ edit_form.phone }}</div>
-      <div class="col-md-2 d-flex align-items-end">{{ edit_form.is_primary }} {{ edit_form.is_primary.label_tag }}</div>
-      <div class="col-12">
-        <button type="submit" name="edit_contact" class="btn btn-primary">Save Changes</button>
-        <a href="{% url 'accounts:emergency_contacts' %}" class="btn btn-secondary">Cancel</a>
-      </div>
-    </form>
-  </div>
+<div class="col-md-3">{{ edit_form.relationship.label_tag }}{{ edit_form.relationship }}</div>
+<div class="col-md-3">{{ edit_form.phone.label_tag }}{{ edit_form.phone }}</div>
+<div class="col-md-2 d-flex align-items-end">{{ edit_form.is_primary }} {{ edit_form.is_primary.label_tag }}</div>
+<div class="col-12">
+<button class="btn btn-primary" name="edit_contact" type="submit">Save Changes</button>
+<a class="btn btn-secondary" href="{% url 'accounts:emergency_contacts' %}">Cancel</a>
+</div>
+</form>
+</div>
   {% endif %}
 </div>
 {% endblock %}

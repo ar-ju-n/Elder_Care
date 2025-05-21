@@ -2,19 +2,19 @@
 
 {% block content %}
 <div class="container py-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header bg-danger text-white">
-                    <h3 class="mb-0">Access Denied</h3>
-                </div>
-                <div class="card-body">
-                    <p class="lead">{{ error }}</p>
-                    <p>The AI Assistant is a feature specifically designed for elderly users.</p>
-                    <a href="{% url 'landing' %}" class="btn btn-primary">Return to Home</a>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="row justify-content-center">
+<div class="col-md-8">
+<div class="card">
+<div class="card-header bg-danger text-white">
+<h3 class="mb-0">Access Denied</h3>
+</div>
+<div class="card-body">
+<p class="lead">{{ error }}</p>
+<p>The AI Assistant is a feature specifically designed for elderly users.</p>
+<a class="btn btn-primary" href="{% url 'landing' %}">Return to Home</a>
+</div>
+</div>
+</div>
+</div>
 </div>
 {% endblock %}

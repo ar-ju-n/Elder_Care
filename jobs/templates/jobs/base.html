@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+<div class="row">
+<!-- Sidebar -->
+<div class="col-md-3">
+<div class="card mb-4">
+<div class="card-header">
+<h5>Job Portal</h5>
+</div>
+<ul class="list-group list-group-flush">
+<li class="list-group-item">
+<a class="text-decoration-none" href="{% url 'jobs:job_list' %}">
+<i class="fas fa-briefcase me-2"></i>All Jobs
+                        </a>
+</li>
+                    {% if user.is_authenticated and user.is_family %}
+                    <li class="list-group-item">
+<a class="text-decoration-none" href="{% url 'jobs:post_job' %}">
+<i class="fas fa-plus-circle me-2"></i>Post a Job
+                        </a>
+</li>
+<li class="list-group-item">
+<a class="text-decoration-none" href="{% url 'jobs:job_list' %}?my_jobs=1">
+<i class="fas fa-list-ul me-2"></i>My Job Posts
+                        </a>
+</li>
+                    {% endif %}
+                    {% if user.is_authenticated and user.is_caregiver %}
+                    <li class="list-group-item">
+<a class="text-decoration-none" href="{% url 'jobs:job_list' %}?my_applications=1">
+<i class="fas fa-file-alt me-2"></i>My Applications
+                        </a>
+</li>
+                    {% endif %}
+                </ul>
+</div>
+</div>
+<!-- Main Content -->
+<div class="col-md-9">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button aria-label="Close" class="btn-close" data-bs-dismiss="alert" type="button"></button>
+</div>
+                {% endfor %}
+            {% endif %}
+            
+            {% block job_content %}
+            {% endblock %}
+        </div>
+</div>
+</div>
+{% endblock %}

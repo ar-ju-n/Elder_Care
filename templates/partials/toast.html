@@ -1,10 +1,122 @@
-<div aria-live="polite" aria-atomic="true" class="position-fixed bottom-0 end-0 p-3 toast-container">
-    <div id="notification-toast" class="toast align-items-center text-bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="6000">
+<!-- Toast Container -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" id="toast-container" style="z-index: 1100">
+    <!-- Toasts will be dynamically inserted here -->
+</div>
+
+<!-- Toast Template (hidden, used as a template) -->
+<template id="toast-template">
+    <div class="toast align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
         <div class="d-flex">
-            <div class="toast-body" id="notification-toast-body">
-                <!-- Notification message will be inserted here -->
+            <div class="toast-icon me-2 d-flex align-items-center">
+                <i class="bi"></i>
             </div>
+            <div class="toast-body"></div>
             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
     </div>
-</div>
+</template>
+
+<style>
+    .toast {
+        background-color: #4e73df;
+        border-left: 4px solid #224abe;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        margin-bottom: 1rem;
+    }
+    
+    .toast.success {
+        background-color: #1cc88a;
+        border-left-color: #13855c;
+    }
+    
+    .toast.error {
+        background-color: #e74a3b;
+        border-left-color: #be2617;
+    }
+    
+    .toast.warning {
+        background-color: #f6c23e;
+        border-left-color: #d1a10d;
+        color: #1f2d3d;
+    }
+    
+    .toast.info {
+        background-color: #36b9cc;
+        border-left-color: #258391;
+    }
+    
+    .toast .toast-icon {
+        font-size: 1.5rem;
+        padding-left: 1rem;
+    }
+    
+    .toast .btn-close {
+        opacity: 0.8;
+    }
+    
+    .toast .btn-close:hover {
+        opacity: 1;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize all toasts
+        const toastElList = [].slice.call(document.querySelectorAll('.toast'));
+        const toastList = toastElList.map(function(toastEl) {
+            const toast = new bootstrap.Toast(toastEl);
+            toast.show();
+            return toast;
+        });
+    });
+    
+    /**
+     * Show a toast notification
+     * @param {string} message - The message to display
+     * @param {string} type - The type of toast (success, error, warning, info)
+     * @param {number} [delay=5000] - Time in milliseconds to show the toast
+     */
+    window.showToast = function(message, type = 'info', delay = 5000) {
+        const container = document.getElementById('toast-container');
+        const template = document.getElementById('toast-template');
+        const toastEl = template.content.cloneNode(true).querySelector('.toast');
+        
+        // Set toast content and styling based on type
+        const toastBody = toastEl.querySelector('.toast-body');
+        const toastIcon = toastEl.querySelector('.toast-icon i');
+        
+        toastBody.textContent = message;
+        toastEl.classList.add(type);
+        
+        // Set appropriate icon based on type
+        switch(type) {
+            case 'success':
+                toastIcon.classList.add('bi-check-circle-fill');
+                break;
+            case 'error':
+                toastIcon.classList.add('bi-x-circle-fill');
+                break;
+            case 'warning':
+                toastIcon.classList.add('bi-exclamation-triangle-fill');
+                break;
+            case 'info':
+            default:
+                toastIcon.classList.add('bi-info-circle-fill');
+        }
+        
+        // Set auto-hide delay
+        toastEl.setAttribute('data-bs-delay', delay);
+        
+        // Add to DOM and show
+        container.appendChild(toastEl);
+        const toast = new bootstrap.Toast(toastEl);
+        toast.show();
+        
+        // Remove from DOM after hiding
+        toastEl.addEventListener('hidden.bs.toast', function() {
+            toastEl.remove();
+        });
+        
+        return toast;
+    };
+</script>

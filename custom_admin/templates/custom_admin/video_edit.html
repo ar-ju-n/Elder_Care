@@ -1,0 +1,74 @@
+{% extends 'custom_admin/base.html' %}
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-md-9">
+            <div class="card shadow-lg p-4">
+                <h2 class="fw-bold mb-4 text-center">Edit Video</h2>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <div class="d-grid gap-2 mt-3">
+                        <button type="submit" class="btn btn-success btn-lg">Save Changes</button>
+                        <a href="{% url 'custom_admin:video_list' %}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block content %}
+<div class="row">
+<div class="col-md-2">
+<div class="list-group mb-4">
+<a class="list-group-item list-group-item-action" href="{% url 'custom_admin:dashboard' %}">Dashboard</a>
+<a class="list-group-item list-group-item-action active" href="{% url 'custom_admin:video_list' %}">Videos</a>
+<a class="list-group-item list-group-item-action" href="{% url 'custom_admin:content_management' %}">Content Management (Legacy)</a>
+<a class="list-group-item list-group-item-action" href="{% url 'custom_admin:user_management' %}">Users</a>
+<a class="list-group-item list-group-item-action" href="{% url 'custom_admin:event_management' %}">Events</a>
+<a class="list-group-item list-group-item-action" href="{% url 'custom_admin:notification_management' %}">Notifications</a>
+</div>
+</div>
+<div class="col-md-10">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button aria-label="Close" class="btn-close" data-bs-dismiss="alert" type="button"></button>
+</div>
+      {% endfor %}
+    {% endif %}
+    <h2>Edit Video</h2>
+<h2>Edit Video</h2>
+<form enctype="multipart/form-data" method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+<label class="form-label" for="id_title">Title</label>
+<input class="form-control" id="id_title" name="title" required="" type="text" value="{{ video.title }}"/>
+</div>
+<div class="mb-3">
+<label class="form-label" for="id_url">Video URL (optional)</label>
+<input class="form-control" id="id_url" name="url" type="url" value="{{ video.url }}"/>
+</div>
+<div class="mb-3">
+<label class="form-label" for="id_file">File (optional)</label>
+      {% if video.file %}
+      <a href="{{ video.file.url }}" target="_blank">Current File</a><br/>
+      {% endif %}
+      <input class="form-control" id="id_file" name="file" type="file"/>
+</div>
+<div class="mb-3">
+<label class="form-label" for="id_tags">Tags</label>
+<select class="form-control" id="id_tags" multiple="" name="tags">
+        {% for tag in tags %}
+        <option %}="" %}selected{%="" endif="" if="" in="" tag="" value="{{ tag.id }}" video.tags.all="" {%="">{{ tag.name }}</option>
+        {% endfor %}
+      </select>
+</div>
+<button class="btn btn-success" type="submit">Update Video</button>
+<a class="btn btn-secondary ms-2" href="{% url 'custom_admin:video_list' %}">Cancel</a>
+</form>
+</div>
+{% endblock %}
+</div>

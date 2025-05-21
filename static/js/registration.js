@@ -1,168 +1,146 @@
-// registration.js - Enhanced UX for registration forms with live validation, tooltips, accessibility, mobile tweaks
-
 document.addEventListener('DOMContentLoaded', function() {
-    // Password visibility toggle
-    document.querySelectorAll('.toggle-password').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            const targetId = btn.getAttribute('data-target');
-            const input = document.getElementById(targetId);
-            if (input) {
-                if (input.type === 'password') {
-                    input.type = 'text';
-                    btn.innerHTML = '<i class="bi bi-eye-slash-fill" aria-label="Hide password"></i>';
-                } else {
-                    input.type = 'password';
-                    btn.innerHTML = '<i class="bi bi-eye-fill" aria-label="Show password"></i>';
-                }
+    // Initialize tooltips
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+
+    // Toggle password visibility
+    const togglePasswordButtons = document.querySelectorAll('.toggle-password');
+    togglePasswordButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-target');
+            const passwordInput = targetId ? document.getElementById(targetId) : 
+                this.closest('.input-group').querySelector('input');
+            
+            if (passwordInput) {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                this.querySelector('i').classList.toggle('bi-eye');
+                this.querySelector('i').classList.toggle('bi-eye-slash');
             }
         });
     });
 
-    // Real-time password match feedback
-    const pwd1 = document.getElementById('id_password1');
-    const pwd2 = document.getElementById('id_password2');
-    if (pwd1 && pwd2) {
-        let feedback = document.getElementById('pwd-match-feedback');
-        if (!feedback) {
-            feedback = document.createElement('div');
-            feedback.id = 'pwd-match-feedback';
-            feedback.className = 'form-text';
-            pwd2.parentNode.appendChild(feedback);
-        }
-        function checkMatch() {
-            if (pwd2.value.length > 0) {
-                if (pwd1.value === pwd2.value) {
-                    feedback.textContent = 'Passwords match!';
-                    feedback.style.color = 'green';
-                } else {
-                    feedback.textContent = 'Passwords do not match.';
-                    feedback.style.color = 'red';
+    // Profile picture preview and upload
+    const profilePictureInput = document.getElementById('id_profile_picture');
+    const profilePreview = document.getElementById('profile-preview');
+    const profileUploadBtn = document.querySelector('.profile-upload-btn');
+    const profilePictureContainer = document.querySelector('.profile-picture-container');
+    
+    if (profilePictureContainer && profilePictureInput) {
+        // Make the entire profile picture area clickable
+        profilePictureContainer.addEventListener('click', function(e) {
+            // If clicking on the camera icon, let the button's click handler handle it
+            if (e.target.closest('.profile-upload-btn')) {
+                return;
+            }
+            // Otherwise, trigger file input
+            profilePictureInput.click();
+        });
+        
+        // Handle file selection
+        profilePictureInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Check file type
+                const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                if (!validTypes.includes(file.type)) {
+                    alert('Please select a valid image file (JPEG, PNG, or GIF)');
+                    return;
                 }
-            } else {
-                feedback.textContent = '';
+                
+                // Check file size (max 2MB)
+                const maxSize = 2 * 1024 * 1024; // 2MB
+                if (file.size > maxSize) {
+                    alert('Image size should be less than 2MB');
+                    return;
+                }
+                
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    if (profilePreview) {
+                        profilePreview.src = e.target.result;
+                        profilePreview.classList.add('uploaded');
+                    }
+                };
+                reader.readAsDataURL(file);
             }
+        });
+        
+        // Handle camera icon click
+        if (profileUploadBtn) {
+            profileUploadBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                profilePictureInput.click();
+            });
         }
-        pwd1.addEventListener('input', checkMatch);
-        pwd2.addEventListener('input', checkMatch);
     }
 
-    // Live username/email validation (AJAX)
-    function debounce(fn, ms) {
-        let timer;
-        return function(...args) {
-            clearTimeout(timer);
-            timer = setTimeout(() => fn.apply(this, args), ms);
-        };
+    // Password strength indicator
+    const passwordInput = document.getElementById('id_password1');
+    const passwordStrengthBar = document.getElementById('password-strength-bar');
+    const passwordStrengthBarInner = passwordStrengthBar ? passwordStrengthBar.querySelector('.progress-bar') : null;
+    
+    if (passwordInput && passwordStrengthBar && passwordStrengthBarInner) {
+        passwordInput.addEventListener('input', function() {
+            const password = this.value;
+            const strength = calculatePasswordStrength(password);
+            updatePasswordStrengthBar(strength);
+        });
     }
-    function showValidation(input, isValid, message) {
-        let feedback = input.nextElementSibling;
-        if (!feedback || !feedback.classList.contains('live-feedback')) {
-            feedback = document.createElement('div');
-            feedback.className = 'live-feedback form-text';
-            input.parentNode.insertBefore(feedback, input.nextSibling);
-        }
-        feedback.textContent = message;
-        feedback.classList.remove('valid-feedback', 'invalid-feedback');
-        if (isValid) {
-            feedback.classList.add('valid-feedback');
+
+    function calculatePasswordStrength(password) {
+        let strength = 0;
+        
+        // Length check
+        if (password.length >= 8) strength += 20;
+        if (password.length >= 12) strength += 10;
+        
+        // Contains lowercase
+        if (/[a-z]/.test(password)) strength += 10;
+        
+        // Contains uppercase
+        if (/[A-Z]/.test(password)) strength += 10;
+        
+        // Contains numbers
+        if (/[0-9]/.test(password)) strength += 10;
+        
+        // Contains special characters
+        if (/[^A-Za-z0-9]/.test(password)) strength += 20;
+        
+        // Contains common patterns (deduct points)
+        if (/(.)\1{2,}/.test(password)) strength = Math.max(0, strength - 10);
+        
+        return Math.min(100, Math.max(0, strength));
+    }
+
+    function updatePasswordStrengthBar(strength) {
+        if (!passwordStrengthBar || !passwordStrengthBarInner) return;
+        
+        passwordStrengthBar.style.display = 'block';
+        passwordStrengthBarInner.style.width = strength + '%';
+        
+        // Update color based on strength
+        if (strength < 30) {
+            passwordStrengthBarInner.className = 'progress-bar bg-danger';
+        } else if (strength < 70) {
+            passwordStrengthBarInner.className = 'progress-bar bg-warning';
         } else {
-            feedback.classList.add('invalid-feedback');
+            passwordStrengthBarInner.className = 'progress-bar bg-success';
         }
     }
-    // Username
-    const usernameInput = document.getElementById('id_username');
-    if (usernameInput) {
-        usernameInput.setAttribute('aria-describedby', 'username-hint');
-        usernameInput.setAttribute('autocomplete', 'username');
-        usernameInput.setAttribute('title', 'Username must be unique. Letters, digits, @/./+/-/_ only.');
-        usernameInput.insertAdjacentHTML('afterend', '<span id="username-hint" class="form-text">Letters, digits and @/./+/-/_ only. Must be unique.</span>');
-        usernameInput.addEventListener('input', debounce(function() {
-            const value = usernameInput.value.trim();
-            if (value.length < 3) {
-                showValidation(usernameInput, false, 'Username too short.');
-                return;
+
+    // Form validation
+    const form = document.querySelector('.needs-validation');
+    if (form) {
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
             }
-            fetch(`/accounts/api/check_username/?username=${encodeURIComponent(value)}`)
-                .then(r => r.json())
-                .then(data => {
-                    if (data.available) {
-                        showValidation(usernameInput, true, 'Username is available.');
-                    } else {
-                        showValidation(usernameInput, false, 'Username is taken.');
-                    }
-                })
-                .catch(() => showValidation(usernameInput, false, 'Error checking username.'));
-        }, 400));
-    }
-    // Email
-    const emailInput = document.getElementById('id_email');
-    if (emailInput) {
-        emailInput.setAttribute('aria-describedby', 'email-hint');
-        emailInput.setAttribute('autocomplete', 'email');
-        emailInput.setAttribute('title', 'Enter a valid and unique email address.');
-        emailInput.insertAdjacentHTML('afterend', '<span id="email-hint" class="form-text">A valid and unique email is required.</span>');
-        emailInput.addEventListener('input', debounce(function() {
-            const value = emailInput.value.trim();
-            if (!value.match(/^[^@\s]+@[^@\s]+\.[^@\s]+$/)) {
-                showValidation(emailInput, false, 'Invalid email format.');
-                return;
-            }
-            fetch(`/accounts/api/check_email/?email=${encodeURIComponent(value)}`)
-                .then(r => r.json())
-                .then(data => {
-                    if (data.available) {
-                        showValidation(emailInput, true, 'Email is available.');
-                    } else {
-                        showValidation(emailInput, false, 'Email is already registered.');
-                    }
-                })
-                .catch(() => showValidation(emailInput, false, 'Error checking email.'));
-        }, 400));
-    }
-    // Password hints
-    if (pwd1) {
-        pwd1.setAttribute('aria-describedby', 'password-hint');
-        pwd1.setAttribute('title', 'Password must be at least 8 characters and not too common.');
-        pwd1.insertAdjacentHTML('afterend', '<span id="password-hint" class="form-text">At least 8 characters, not too common.</span>');
-    }
-
-    // Show/hide 'rate_per_hour' based on role
-    const roleField = document.querySelector('select[name="role"]');
-    const rateFieldDiv = document.getElementById('field-rate_per_hour');
-    function toggleRateField() {
-        if (roleField && rateFieldDiv) {
-            if (roleField.value === "caregiver") {
-                rateFieldDiv.style.display = "";
-            } else {
-                rateFieldDiv.style.display = "none";
-            }
-        }
-    }
-    if (roleField) {
-        roleField.addEventListener('change', toggleRateField);
-        toggleRateField(); // Initial check
-    }
-
-    // Accessibility: ensure all form controls have labels and ARIA attributes
-    document.querySelectorAll('input,select,textarea').forEach(function(input) {
-        if (!input.getAttribute('aria-label') && input.labels && input.labels.length > 0) {
-            input.setAttribute('aria-label', input.labels[0].textContent);
-        }
-    });
-
-
-    // Success message improvements
-    const successDiv = document.querySelector('.registration-success');
-    if (successDiv) {
-        successDiv.setAttribute('role', 'alert');
-        setTimeout(() => {
-            successDiv.classList.add('animate__fadeOut');
-        }, 4000);
-    }
-
-    // Auto-focus first input
-    const firstInput = document.querySelector('.registration-card input[type="text"], .registration-card input[type="email"]');
-    if (firstInput) {
-        firstInput.focus();
+            form.classList.add('was-validated');
+        }, false);
     }
 });

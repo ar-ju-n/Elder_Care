@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from content.models import Article
+from content.models import Article, HomepageSlide
 
 def contact_view(request):
     success = False

@@ -1,0 +1,94 @@
+{% extends 'custom_admin/base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+<h2>Event Management</h2>
+<a class="btn btn-outline-secondary" href="/custom_admin/events/export/">Export CSV</a>
+</div>
+
+{% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+      <li class="{{ message.tags }}">{{ message }}</li>
+    {% endfor %}
+  </li{%></ul>
+{% endif %}
+
+<div class="card card-admin shadow-sm mb-4">
+<div class="card-body">
+<h3 class="card-title mb-3"><i class="bi bi-calendar-event me-2"></i>Add/Edit Event</h3>
+<form class="row g-3" method="post">
+      {% csrf_token %}
+      {% if edit_event %}
+        <input name="edit_event_id" type="hidden" value="{{ edit_event.id }}"/>
+      {% endif %}
+      <div class="mb-3">
+<label class="form-label text-light" for="id_title">Title</label>
+  {{ form.title }}
+</div>
+<div class="mb-3">
+<label class="form-label text-light" for="id_description">Description</label>
+  {{ form.description }}
+</div>
+<div class="mb-3">
+<label class="form-label text-light" for="id_start_time">Start Time</label>
+  {{ form.start_time }}
+</div>
+<div class="mb-3">
+<label class="form-label text-light" for="id_end_time">End Time</label>
+  {{ form.end_time }}
+</div>
+<div class="mb-3">
+<label class="form-label text-light" for="id_location">Location</label>
+  {{ form.location }}
+</div>
+<div class="col-12 d-flex justify-content-between">
+<button class="btn btn-admin-primary" name="{% if edit_event %}edit_event{% else %}add_event{% endif %}" type="submit">
+<i class="bi bi-check-circle"></i> {% if edit_event %}Update{% else %}Add{% endif %} Event
+        </button>
+        {% if edit_event %}
+          <a class="btn btn-outline-secondary" href="?"><i class="bi bi-x-circle"></i> Cancel</a>
+        {% endif %}
+      </div>
+</form>
+</div>
+</div>
+<h3 class="mt-4 mb-3"><i class="bi bi-list-ul me-2"></i>All Events</h3>
+<table class="table table-striped align-middle shadow-sm">
+<thead>
+<tr class="event-row">
+<th>ID</th>
+<th>Title</th>
+<th>Description</th>
+<th>Start</th>
+<th>End</th>
+<th>Location</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody>
+    {% for event in events %}
+    <tr class="event-row">
+<td>{{ event.id }}</td>
+<td>
+<!-- Avatar/Initials for event creator if available -->
+  {% if event.creator and event.creator.avatar %}
+    <img alt="Avatar" class="rounded-circle me-1" src="{{ event.creator.avatar.url }}"/>
+  {% elif event.creator %}
+    <span class="avatar-initials me-1">{{ event.creator.username|slice:":1"|upper }}</span>
+  {% endif %}
+  {{ event.title }}
+</td>
+<td>{{ event.description|truncatechars:40 }}</td>
+<td>{{ event.start_time }}</td>
+<td>{{ event.end_time }}</td>
+<td>{{ event.location }}</td>
+<td>
+<a class="btn btn-outline-info btn-sm me-1" href="/custom_admin/events/{{ event.id }}/view/" title="View"><i class="bi bi-eye"></i></a>
+<a class="btn btn-outline-primary btn-sm me-1" href="?action=edit&amp;event_id={{ event.id }}" title="Edit"><i class="bi bi-pencil"></i></a>
+<a class="btn btn-outline-danger btn-sm" href="?action=delete&amp;event_id={{ event.id }}" onclick="return confirm('Are you sure?')" title="Delete"><i class="bi bi-trash"></i></a>
+</td>
+</tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Backup Codes for Two-Factor Authentication{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Backup Codes</h2>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <h5><i class="bi bi-exclamation-triangle-fill me-2"></i>Save These Codes</h5>
+                        <p class="mb-0">These codes can be used to access your account if you lose access to your authenticator app. 
+                        Each code can only be used once. Store them in a safe place!</p>
+                    </div>
+                    
+                    <div class="row row-cols-1 row-cols-md-2 g-4 mb-4">
+                        {% for code in backup_codes %}
+                            <div class="col">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center py-3">
+                                        <code class="h5 mb-0">{{ code }}</code>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button onclick="window.print()" class="btn btn-outline-secondary me-md-2">
+                            <i class="bi bi-printer me-1"></i> Print
+                        </button>
+                        <a href="{% url 'accounts:profile' user_id=request.user.id %}" class="btn btn-primary">
+                            I've Saved My Codes
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5>What are backup codes?</h5>
+                    <p>Backup codes are one-time use codes that can be used to access your account if you lose access to your authenticator app. Each code can only be used once.</p>
+                    
+                    <h5>How to use backup codes</h5>
+                    <ol>
+                        <li>When signing in, after entering your password, click "Having trouble with your authenticator app?"</li>
+                        <li>Select "Use a backup code"</li>
+                        <li>Enter one of your unused backup codes</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -7,6 +7,12 @@ class User(AbstractUser):
     FAMILY = 'family'
     ADMIN = 'admin'
 
+    # New fields for family/caregiver registration
+    date_of_birth = models.DateField(null=True, blank=True)
+    gender = models.CharField(max_length=20, choices=[('male', 'Male'), ('female', 'Female'), ('other', 'Other')], blank=True)
+    city = models.CharField(max_length=100, blank=True)
+    country = models.CharField(max_length=100, blank=True)
+
     @property
     def upvotes_received(self):
         # Import here to avoid circular import
@@ -47,7 +53,20 @@ class User(AbstractUser):
     bio = models.TextField(blank=True)
     full_name = models.CharField(max_length=150)  # Required for both family and caregiver
     address = models.CharField(max_length=255)    # Required for both family and caregiver
-    rate_per_hour = models.PositiveIntegerField(null=True, blank=True, help_text="Caregiver's rate per hour in NPR. Only required for caregivers.")
+    rate_per_hour = models.PositiveIntegerField(null=True, blank=True, help_text="Caregiver's rate per hour in NPR. Only required for caregivers.")  # Already correct: null=True, blank=True
+    email_verified = models.BooleanField(default=False, help_text="Whether the user has verified their email address")
+    
+    # 2FA fields
+    two_factor_enabled = models.BooleanField(
+        default=False,
+        help_text="Whether 2FA is enabled for this user"
+    )
+    totp_secret = models.CharField(
+        max_length=32,
+        blank=True,
+        null=True,
+        help_text="TOTP secret for 2FA"
+    )
     
     # Settings fields
     email_notifications = models.BooleanField(default=True)
@@ -90,6 +109,13 @@ class User(AbstractUser):
         choices=PROFILE_VISIBILITY_CHOICES,
         default=PUBLIC,
     )
+    
+    phone_number = models.CharField(
+        max_length=20,
+        blank=True,
+        null=True,
+        help_text='Phone number (e.g., +977 98XXXXXXXX)'
+    )
 
 CERTIFICATION_CHOICES = [
     ('nursing', 'Nursing Certificate'),
@@ -109,6 +135,20 @@ class CaregiverVerification(models.Model):
     approved = models.BooleanField(default=False)
     reviewed_at = models.DateTimeField(blank=True, null=True)
     admin_comment = models.TextField(blank=True)
+
+    def save(self, *args, **kwargs):
+        # Sync user.is_verified with verification status
+        if self.approved:
+            if not self.user.is_verified:
+                self.user.is_verified = True
+                from django.utils import timezone
+                self.user.verified_at = timezone.now()
+                self.user.save()
+        else:
+            if self.user.is_verified:
+                self.user.is_verified = False
+                self.user.save()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"Verification for {self.user.username} (Approved: {self.approved})"
@@ -165,3 +205,13 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"Notification for {self.recipient.username}: {self.message[:40]}..."
+
+class Message(models.Model):
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='accounts_sent_messages')
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='accounts_received_messages')
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Message from {self.sender.username} to {self.recipient.username}: {self.content[:40]}..."

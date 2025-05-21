@@ -5,9 +5,9 @@
 <h2>Feedback &amp; Ratings</h2>
 <ul>
   {% for rating in ratings %}
-    <li>{{ rating.caregiver }} - {{ rating.stars }} stars<br>{{ rating.review_text }}
-    <a href="{% url 'feedback:feedback_detail' rating.id|slugify_dir %}" class="btn btn-outline-info">View</a>
-    </li>
+    <li>{{ rating.caregiver }} - {{ rating.stars }} stars<br/>{{ rating.review_text }}
+    <a class="btn btn-outline-info" href="{% url 'feedback:feedback_detail' rating.id|slugify_dir %}">View</a>
+</li>
   {% endfor %}
 </ul>
 <script src="{% static 'js/feedback/feedback_list.js' %}"></script>

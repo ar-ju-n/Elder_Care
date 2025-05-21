@@ -1,94 +1,370 @@
 {% extends 'base.html' %}
-{% load slugify_extras %}
 {% load static %}
 {% load content_extras %}
+
 {% block extra_head %}
-    <link rel="stylesheet" href="{% static 'css/video_list_dynamic.css' %}">
+    <link as="style" href="{% static 'css/content.css' %}" onload="this.onload=null;this.rel='stylesheet'" rel="preload"/>
+<link as="style" href="{% static 'css/video.css' %}" onload="this.onload=null;this.rel='stylesheet'" rel="preload"/>
+<noscript>
+</noscript>
 {% endblock %}
+
 {% block content %}
-<section class="video-list-section py-5">
-    <div class="container">
-        <h1 class="mb-4">Videos</h1>
-        <!-- Featured Video -->
-        {% if videos and videos|length > 0 %}
-            <div id="featured-video-container" class="featured-video card mb-5 p-4 shadow-sm bg-light">
-    <h2 id="featured-title" class="h4">Featured: {{ videos.0.title }}</h2>
-    <div id="featured-meta" class="mb-2 text-muted small">
-        <i class="bi bi-calendar3 me-1"></i> <span id="featured-date">{{ videos.0.published_at|date:"F j, Y" }}</span>
-        {% if videos.0.author %} | <i class="bi bi-person"></i> <span id="featured-author">{{ videos.0.author }}</span>{% endif %}
-    </div>
-    <p id="featured-description">{{ videos.0.description|truncatewords:30 }}</p>
-    <video id="featured-video" class="w-100 mb-3" controls>
-        <source id="featured-source" src="{% if videos.0.file %}{{ videos.0.file.url }}{% elif videos.0.url %}{{ videos.0.url }}{% endif %}">
-        Your browser does not support the video tag.
-    </video>
+<main class="video-page">
+<div class="container">
+<!-- Page Header -->
+<div class="content-management-header">
+<div class="page-header">
+<h1 class="page-title">
+<i class="bi bi-play-circle me-2"></i>Video Library
+                </h1>
+<p class="page-subtitle">Watch and manage educational and entertainment videos</p>
+</div>
+<div class="content-actions">
+<a class="btn btn-primary" href="{% url 'content:publish_video' %}">
+<i class="bi bi-plus-lg me-2"></i>Add New Video
+                </a>
+</div>
+</div>
+<!-- Featured Video -->
+        {% if videos and videos|length &gt; 0 %}
+        <div class="featured-video-container mb-5">
+<div class="card shadow-sm border-0 overflow-hidden">
+<div class="row g-0">
+<div class="col-lg-8">
+<div class="video-player-wrapper">
+<video class="video-js vjs-big-play-centered" controls="" data-setup='{"fluid": true}' id="featured-video" preload="auto">
+<source id="featured-source" src="{% if videos.0.file %}{{ videos.0.file.url }}{% elif videos.0.url %}{{ videos.0.url }}{% endif %}" type="video/mp4"/>
+<p class="vjs-no-js">
+                                    To view this video please enable JavaScript, and consider upgrading to a
+                                    web browser that
+                                    <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+</p>
+</video>
+</div>
+</div>
+<div class="col-lg-4">
+<div class="p-4 h-100 d-flex flex-column">
+<div class="mb-3">
+<span class="badge bg-primary">Featured</span>
+</div>
+<h2 class="h4 mb-3" id="featured-title">{{ videos.0.title }}</h2>
+<div class="text-muted small mb-3" id="featured-meta">
+<span class="d-inline-flex align-items-center me-3">
+<i class="bi bi-calendar3 me-1"></i>
+<span id="featured-date">{{ videos.0.published_at|date:"F j, Y" }}</span>
+</span>
+                                {% if videos.0.author %}
+                                <span class="d-inline-flex align-items-center">
+<i class="bi bi-person me-1"></i>
+<span id="featured-author">{{ videos.0.author.get_full_name|default:videos.0.author.username }}</span>
+</span>
+                                {% endif %}
+                            </div>
+<p class="text-muted flex-grow-1" id="featured-description">
+                                {{ videos.0.description|truncatewords:40|striptags }}
+                            </p>
+<div class="mt-3">
+                                {% for tag in videos.0.tags.all %}
+                                    <span class="badge bg-light text-dark border me-1 mb-1">{{ tag.name }}</span>
+                                {% endfor %}
+                            </div>
+</div>
+</div>
+</div>
+</div>
 </div>
         {% endif %}
-        <!-- Filter/Tags -->
-        <div class="mb-3">
-            <span class="me-2">Categories:</span>
-            {% if videos %}
-                {% for video in videos %}
-                    {% for tag in video.tags.all %}
-                        <span class="badge bg-secondary me-1">{{ tag.name }}</span>
-                    {% endfor %}
+
+        <!-- Video Filters -->
+<div class="content-filters mb-4">
+<div class="row g-3">
+<div class="col-md-8">
+<div class="search-box">
+<i class="bi bi-search"></i>
+<input class="form-control" id="video-search" placeholder="Search videos..." type="text"/>
+</div>
+</div>
+<div class="col-md-4">
+<select class="form-select" id="video-category">
+<option selected="" value="">All Categories</option>
+                        {% for tag in all_tags %}
+                            <option value="{{ tag.slug }}">{{ tag.name }}</option>
+                        {% endfor %}
+                    </select>
+</div>
+</div>
+</div>
+<!-- Active Filters -->
+        {% if request.GET %}
+        <div class="active-filters mb-4">
+<div class="d-flex flex-wrap gap-2">
+                {% for key, value in request.GET.items %}
+                    {% if key != 'page' %}
+                    <span class="badge bg-light text-dark border">
+                        {{ key|title }}: {{ value }}
+                        <a class="ms-2 text-dark" href="?{% for k, v in request.GET.items %}{% if k != key %}&amp;{{ k }}={{ v }}{% endif %}{% endfor %}">
+<i class="bi bi-x"></i>
+</a>
+</span>
+                    {% endif %}
                 {% endfor %}
-            {% else %}
-                <span class="text-muted">No categories available.</span>
-            {% endif %}
-        </div>
-        <!-- Video Cards -->
-        <div class="row g-4">
-            {% for video in videos %}
-                {% if not forloop.first %}
-                <div class="col-md-4">
-    <div class="card h-100 shadow border-0 video-card-js"
-         data-url="{% if video.file %}{{ video.file.url }}{% elif video.url %}{{ video.url }}{% endif %}"
-         data-title="{{ video.title }}"
-         data-description="{{ video.description|truncatewords:30 }}"
-         data-date="{{ video.published_at|date:'F j, Y' }}"
-         data-author="{{ video.author }}">
-        <div class="card-body d-flex flex-column">
+                {% if request.GET %}
+                    <a class="ms-2 small align-self-center" href="?">Clear all</a>
+                {% endif %}
+            </div>
+</div>
+        {% endif %}
+
+        <!-- Videos Grid -->
+<div class="videos-grid">
+<div class="row g-4" id="videos-container">
+                {% for video in videos %}
+                    {% if not forloop.first or not videos.0 %}
+                    <div class="col-md-6 col-lg-4 col-xl-3 video-card-wrapper">
+<div class="video-card card h-100 border-0 shadow-sm" data-category="{% for tag in video.tags.all %}{{ tag.slug }} {% endfor %}" data-title="{{ video.title|lower }}">
+<div class="video-thumbnail">
+                                {% if video.thumbnail %}
+                                    <img alt="{{ video.title }}" class="card-img-top" src="{{ video.thumbnail.url }}"/>
+                                {% else %}
+                                    <div class="video-thumbnail-placeholder">
+<i class="bi bi-play-circle"></i>
+</div>
+                                {% endif %}
+                                <div class="video-duration">{{ video.duration|default:"" }}</div>
+<button class="video-play-btn" data-video-src="{% if video.file %}{{ video.file.url }}{% elif video.url %}{{ video.url }}{% endif %}" data-video-title="{{ video.title }}">
+<i class="bi bi-play-fill"></i>
+</button>
+</div>
+<div class="card-body">
+<h3 class="h6 mb-2">
+<a class="text-decoration-none text-dark" href="{% url 'content:video_detail' video.id %}">
+                                        {{ video.title|truncatechars:60 }}
+                                    </a>
+</h3>
+<div class="d-flex align-items-center text-muted small mb-2">
+<span class="me-2">
+<i class="bi bi-eye me-1"></i> {{ video.views|default:0 }}
+                                    </span>
+<span>
+<i class="bi bi-calendar3 me-1"></i> {{ video.published_at|date:"M j, Y" }}
+                                    </span>
+</div>
+<div class="video-tags">
+                                    {% for tag in video.tags.all|slice:":3" %}
+                                        <span class="badge bg-light text-dark border me-1 mb-1">{{ tag.name }}</span>
+                                    {% endfor %}
+                                </div>
+</div>
+</div>
+</div>
+                    {% endif %}
+                {% empty %}
+                    <div class="col-12">
+<div class="empty-state">
+<i class="bi bi-camera-video-off empty-state-icon"></i>
+<h4>No Videos Found</h4>
+<p>There are no videos to display at the moment. Check back later or add a new video.</p>
+<a class="btn btn-primary" href="{% url 'content:publish_video' %}">
+<i class="bi bi-plus-lg me-2"></i>Add Video
+                            </a>
+</div>
+</div>
+                {% endfor %}
+            </div>
+</div>
+<!-- Pagination -->
+        {% if is_paginated %}
+        <nav aria-label="Page navigation" class="mt-5">
+<ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+<a aria-label="First" class="page-link" href="?page=1">
+<span aria-hidden="true">««</span>
+</a>
+</li>
+<li class="page-item">
+<a aria-label="Previous" class="page-link" href="?page={{ page_obj.previous_page_number }}">
+<span aria-hidden="true">«</span>
+</a>
+</li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active">
+<span class="page-link">{{ num }}</span>
+</li>
+                    {% elif num &gt; page_obj.number|add:'-3' and num &lt; page_obj.number|add:'3' %}
+                        <li class="page-item">
+<a class="page-link" href="?page={{ num }}">{{ num }}</a>
+</li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+<a aria-label="Next" class="page-link" href="?page={{ page_obj.next_page_number }}">
+<span aria-hidden="true">»</span>
+</a>
+</li>
+<li class="page-item">
+<a aria-label="Last" class="page-link" href="?page={{ page_obj.paginator.num_pages }}">
+<span aria-hidden="true">»»</span>
+</a>
+</li>
+                {% endif %}
+            </ul>
+</nav>
+        {% endif %}
+    </div>
+</main>
+<!-- Video Modal -->
+<div aria-hidden="true" class="modal fade" id="videoModal" tabindex="-1">
+<div class="modal-dialog modal-xl modal-dialog-centered">
+<div class="modal-content bg-transparent border-0">
+<div class="modal-header border-0">
+<button aria-label="Close" class="btn-close btn-close-white" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body p-0">
+<div class="ratio ratio-16x9">
+<video class="video-js" controls="" data-setup='{"fluid": true, "autoplay": true}' id="modal-video" preload="auto">
+<p class="vjs-no-js">
+                            To view this video please enable JavaScript, and consider upgrading to a
+                            web browser that
+                            <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+</p>
+</video>
+</div>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Video.js -->
+<script src="https://vjs.zencdn.net/8.5.2/video.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Video.js
+    const featuredPlayer = videojs('featured-video');
+    
+    // Handle video card clicks
+    document.querySelectorAll('.video-play-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const videoSrc = this.getAttribute('data-video-src');
+            const videoTitle = this.getAttribute('data-video-title');
+            
+            // Update modal title
+            document.querySelector('#videoModalLabel').textContent = videoTitle;
+            
+            // Set up the video source
+            const modalVideo = document.querySelector('#modal-video');
+            const source = document.createElement('source');
+            source.src = videoSrc;
+            source.type = 'video/mp4';
+            
+            // Clear previous source and add new one
+            while (modalVideo.firstChild) {
+                modalVideo.removeChild(modalVideo.firstChild);
+            }
+            modalVideo.appendChild(source);
+            
+            // Initialize or update the modal video player
+            const player = videojs(modalVideo);
+            player.src({ src: videoSrc, type: 'video/mp4' });
+            
+            // Show the modal
+            const videoModal = new bootstrap.Modal(document.getElementById('videoModal'));
+            videoModal.show();
+            
+            // Play the video when modal is shown
+            videoModal._element.addEventListener('shown.bs.modal', function() {
+                player.play();
+            });
+            
+            // Clean up when modal is closed
+            videoModal._element.addEventListener('hidden.bs.modal', function() {
+                player.pause();
+                player.currentTime(0);
+            });
+        });
+    });
+    
+    // Search functionality
+    const searchInput = document.getElementById('video-search');
+    if (searchInput) {
+        searchInput.addEventListener('input', filterVideos);
+    }
+    
+    // Category filter
+    const categorySelect = document.getElementById('video-category');
+    if (categorySelect) {
+        categorySelect.addEventListener('change', filterVideos);
+    }
+    
+    function filterVideos() {
+        const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+        const selectedCategory = categorySelect ? categorySelect.value : '';
+        
+        document.querySelectorAll('.video-card-wrapper').forEach(card => {
+            const title = card.querySelector('.video-card').getAttribute('data-title');
+            const categories = card.querySelector('.video-card').getAttribute('data-category');
+            
+            const matchesSearch = title.includes(searchTerm);
+            const matchesCategory = !selectedCategory || categories.includes(selectedCategory);
+            
+            if (matchesSearch && matchesCategory) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
             <h5 class="card-title">{{ video.title }}</h5>
-            <div class="mb-2 small text-muted">
-                <i class="bi bi-calendar3 me-1"></i> {{ video.published_at|date:"F j, Y" }}
+<div class="mb-2 small text-muted">
+<i class="bi bi-calendar3 me-1"></i> {{ video.published_at|date:"F j, Y" }}
                 {% if video.author %} | <i class="bi bi-person"></i> {{ video.author }}{% endif %}
             </div>
-            <p class="card-text">{{ video.description|truncatewords:15 }}</p>
-            <div class="mb-2">
+<p class="card-text">{{ video.description|truncatewords:15 }}</p>
+<div class="mb-2">
                 {% for tag in video.tags.all %}
                     <span class="badge bg-secondary me-1">{{ tag.name }}</span>
                 {% endfor %}
             </div>
             {% if video.file %}
-<video class="w-100 mb-2" controls>
-    <source src="{{ video.file.url }}">
+<video class="w-100 mb-2" controls="">
+<source src="{{ video.file.url }}"/>
     Your browser does not support the video tag.
 </video>
 {% elif 'youtube.com' in video.url or 'youtu.be' in video.url %}
 <div class="ratio ratio-16x9 mb-2">
-    <iframe src="{{ video.url|youtube_embed }}" frameborder="0" allowfullscreen></iframe>
+<iframe allowfullscreen="" frameborder="0" src="{{ video.url|youtube_embed }}"></iframe>
 </div>
 {% elif video.url %}
-<video class="w-100 mb-2" controls>
-    <source src="{{ video.url }}">
+<video class="w-100 mb-2" controls="">
+<source src="{{ video.url }}"/>
     Your browser does not support the video tag.
 </video>
 {% endif %}
-        </div>
-    </div>
-</div>
+        
+
+
                 {% endif %}
             {% empty %}
                 <div class="col-12">
-                    <div class="alert alert-info text-center">
-                        <i class="bi bi-info-circle-fill me-2"></i>No videos available at the moment.
+<div class="alert alert-info text-center">
+<i class="bi bi-info-circle-fill me-2"></i>No videos available at the moment.
                     </div>
-                </div>
+</div>
             {% endfor %}
-        </div>
-    </div>
-</section>
+        
+
+
 {% endblock %}
 {% block extra_js %}
 <script src="{% static 'js/video_featured.js' %}"></script>

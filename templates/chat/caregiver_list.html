@@ -2,75 +2,72 @@
 {% load custom_filters %}
 {% load static %}
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/chat_caregiver_list.css' %}">
+
 <script src="{% static 'js/chat_caregiver_cooldown.js' %}"></script>
 {% endblock %}
 
 {% block content %}
 <div class="container py-4">
-  <h4 class="mb-4 text-primary">Verified Caregivers</h4>
+<h4 class="mb-4 text-primary">Verified Caregivers</h4>
       {% if messages %}
         {% for message in messages %}
           <div class="alert alert-success alert-dismissible fade show">
             {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>
+            <button aria-label="Close" class="btn-close" data-bs-dismiss="alert" type="button"></button>
+</div>
         {% endfor %}
       {% endif %}
            {% if caregivers %}
         <div class="caregiver-list">
           {% for caregiver in caregivers %}
             <div class="caregiver-list-item d-flex align-items-center p-3 mb-3 rounded shadow-sm bg-white">
-              <div class="profile-img-wrapper flex-shrink-0 me-3">
+<div class="profile-img-wrapper flex-shrink-0 me-3">
                 {% if caregiver.obj.profile_picture %}
-                  <img src="{{ caregiver.obj.profile_picture.url }}" alt="{{ caregiver.obj.username }}" class="profile-img rounded-circle" style="width:64px;height:64px;object-fit:cover;">
+                  <img alt="{{ caregiver.obj.username }}" class="profile-img rounded-circle" src="{{ caregiver.obj.profile_picture.url }}"/>
                 {% else %}
-                  <div class="profile-img d-flex align-items-center justify-content-center bg-secondary text-white fs-3 rounded-circle" style="width:64px;height:64px;">
+                  <div class="profile-img d-flex align-items-center justify-content-center bg-secondary text-white fs-3 rounded-circle">
                     {{ caregiver.obj.get_full_name|first|default:caregiver.obj.username|first }}
                   </div>
                 {% endif %}
               </div>
-              <div class="flex-grow-1 ms-2">
-                <div class="d-flex align-items-center mb-1">
-                  <span class="fw-semibold me-2">{{ caregiver.obj.get_full_name|default:caregiver.obj.username }}</span>
-                  <span class="verified-badge badge bg-success text-white ms-1"><i class="bi bi-check-circle-fill me-1"></i> Verified</span>
-                </div>
-                <div class="text-muted small mb-1">Caregiver</div>
-                <div class="text-muted small">{{ caregiver.obj.bio|default:"No bio provided"|truncatechars:100 }}</div>
-              </div>
-              <div class="ms-auto">
+<div class="flex-grow-1 ms-2">
+<div class="d-flex align-items-center mb-1">
+<span class="fw-semibold me-2">{{ caregiver.obj.get_full_name|default:caregiver.obj.username }}</span>
+<span class="verified-badge badge bg-success text-white ms-1"><i class="bi bi-check-circle-fill me-1"></i> Verified</span>
+</div>
+<div class="text-muted small mb-1">Caregiver</div>
+<div class="text-muted small">{{ caregiver.obj.bio|default:"No bio provided"|truncatechars:100 }}</div>
+</div>
+<div class="ms-auto">
                 {% if caregiver.status == 'accepted' and caregiver.request_id %}
-                  <a href="{% url 'chat:chat_room' caregiver.request_id %}" class="btn btn-success">
-                    <i class="bi bi-chat-fill me-1"></i> Open Chat
+                  <a class="btn btn-success" href="{% url 'chat:chat_room' caregiver.request_id %}">
+<i class="bi bi-chat-fill me-1"></i> Open Chat
                   </a>
-                {% elif caregiver.cooldown_seconds > 0 %}
-                  <button class="btn btn-secondary" disabled id="cooldown-btn-{{ caregiver.obj.id }}">
-                    <i class="bi bi-clock me-1"></i>
-                    <span class="cooldown-timer" data-seconds="{{ caregiver.cooldown_seconds }}"></span>
-                  </button>
+                {% elif caregiver.cooldown_seconds &gt; 0 %}
+                  <button class="btn btn-secondary" disabled="" id="cooldown-btn-{{ caregiver.obj.id }}">
+<i class="bi bi-clock me-1"></i>
+<span class="cooldown-timer" data-seconds="{{ caregiver.cooldown_seconds }}"></span>
+</button>
                 {% else %}
-                  <a href="{% url 'chat:send_request' caregiver.obj.id %}" class="btn btn-primary">
-                    <i class="bi bi-chat-dots me-1"></i> Send Chat Request
+                  <a class="btn btn-primary" href="{% url 'chat:send_request' caregiver.obj.id %}">
+<i class="bi bi-chat-dots me-1"></i> Send Chat Request
                   </a>
                 {% endif %}
               </div>
-            </div>
+</div>
           {% endfor %}
         </div>
       {% else %}
         <div class="alert alert-info">
-          <i class="bi bi-info-circle me-2"></i>
+<i class="bi bi-info-circle me-2"></i>
           No verified caregivers available at the moment.
         </div>
       {% endif %}
     </div>
-  </div>
-  
-  <div class="text-center mt-4">
-    <a href="{% url 'chat:request_list' %}" class="btn btn-outline-primary">
-      <i class="bi bi-arrow-left me-2"></i>Back to Chat Requests
+<div class="text-center mt-4">
+<a class="btn btn-outline-primary" href="{% url 'chat:request_list' %}">
+<i class="bi bi-arrow-left me-2"></i>Back to Chat Requests
     </a>
-  </div>
 </div>
 <script src="{% static 'js/chat_caregiver_cooldown.js' %}"></script>
 {% endblock %}

@@ -7,8 +7,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import TemplateView
 from elderly_care_hub.views import contact_view, landing
-
-
+from jobs.views import admin_approve_jobs
 
 urlpatterns = [
     path('events/', include(('events.urls', 'events'), namespace='events')),
@@ -23,8 +22,12 @@ urlpatterns = [
     path('content/', include('content.urls', namespace='content')),
     path('feedback/', include('feedback.urls', namespace='feedback')),
     path('chatbot/', include('chatbot.urls', namespace='chatbot')),
+    path('custom_admin/', include(('custom_admin.urls', 'custom_admin'), namespace='custom_admin')),
+    path('custom_admin/jobs/approve/', admin_approve_jobs, name='admin_approve_jobs'),
+    path('test/', TemplateView.as_view(template_name='test.html'), name='test'),
 ]
 
-# Add this to serve media files during development
+# Serve static and media files during development
 if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

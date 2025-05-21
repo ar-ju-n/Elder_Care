@@ -1,0 +1,121 @@
+{% load static %}
+<!DOCTYPE html>
+
+<html data-bs-theme="{{ request.session.theme|default:'light' }}" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>{% block title %}Elderly Care &amp; Mindful Support Hub{% endblock %}</title>
+<!-- Favicon -->
+<link href="{% static 'images/favicon.svg' %}" rel="icon" type="image/svg+xml"/>
+<!-- Preload critical CSS -->
+<link as="style" href="{% static 'dist/css/vendor.css' %}" rel="preload"/>
+<link as="style" href="{% static 'dist/css/main.css' %}" rel="preload"/>
+<!-- Critical CSS (above the fold) -->
+<!-- Defer non-critical CSS -->
+<noscript>
+</noscript>
+<!-- Preconnect to external domains -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<!-- Preload fonts -->
+<link as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" onload="this.onload=null;this.rel='stylesheet'" rel="preload"/>
+<link as="style" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" onload="this.onload=null;this.rel='stylesheet'" rel="preload"/>
+<!-- Canonical URL -->
+<link href="{{ request.build_absolute_uri }}" rel="canonical"/>
+<!-- Meta tags -->
+<meta content="{% block meta_description %}Elderly Care &amp; Mindful Support Hub - Providing compassionate care and support for the elderly and their families.{% endblock %}" name="description"/>
+<meta content="elderly care, caregiver, senior care, family support, healthcare" name="keywords"/>
+<meta content="Elderly Care Team" name="author"/>
+<!-- Open Graph / Facebook -->
+<meta content="website" property="og:type"/>
+<meta content="{{ request.build_absolute_uri }}" property="og:url"/>
+<meta content="{% block og_title %}Elderly Care &amp; Mindful Support Hub{% endblock %}" property="og:title"/>
+<meta content="{% block og_description %}Providing compassionate care and support for the elderly and their families.{% endblock %}" property="og:description"/>
+<meta content="{% static 'images/og-image.jpg' %}" property="og:image"/>
+<!-- Twitter -->
+<meta content="summary_large_image" name="twitter:card"/>
+<meta content="{{ request.build_absolute_uri }}" name="twitter:url"/>
+<meta content="{% block twitter_title %}Elderly Care &amp; Mindful Support Hub{% endblock %}" name="twitter:title"/>
+<meta content="{% block twitter_description %}Providing compassionate care and support for the elderly and their families.{% endblock %}" name="twitter:description"/>
+<meta content="{% static 'images/twitter-card.jpg' %}" name="twitter:image"/>
+    
+    {% block extra_head %}{% endblock %}
+    
+    <!-- Theme initialization -->
+<script>
+        // Initialize theme before page load to prevent flash
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-bs-theme', theme);
+            
+            // Store theme in session for server-side rendering
+            document.cookie = `theme=${theme}; path=/; samesite=lax`;
+        })();
+    </script>
+</head>
+<body class="d-flex flex-column min-vh-100">
+<!-- Skip to main content -->
+<a class="visually-hidden-focusable skip-link" href="#main-content">Skip to main content</a>
+<!-- Impersonation banner -->
+    {% if request.session.impersonate_original_id %}
+    <div class="impersonation-banner" role="alert">
+<div class="container d-flex justify-content-between align-items-center">
+<div>
+<i class="bi bi-person-fill-lock me-2"></i>
+<strong>Impersonation Active:</strong>
+                You are currently viewing as {{ user.get_full_name|default:user.username }}
+            </div>
+<a class="btn btn-light btn-sm" href="{% url 'custom_admin:stop_impersonation' %}">
+<i class="bi bi-x-circle me-1"></i> Stop Impersonating
+            </a>
+</div>
+</div>
+    {% endif %}
+    
+    <!-- Header -->
+    {% include 'includes/header.html' %}
+    
+    <!-- Main content -->
+<main class="flex-grow-1" id="main-content">
+        {% block messages %}
+            {% if messages %}
+            <div class="container mt-3">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button aria-label="Close" class="btn-close" data-bs-dismiss="alert" type="button"></button>
+</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        {% endblock %}
+        
+        {% block content %}
+        <!-- Page content will be inserted here -->
+        {% endblock %}
+    </main>
+<!-- Footer -->
+    {% include 'includes/footer.html' %}
+    
+    <!-- Modals -->
+    {% include 'includes/modals/emergency_contacts.html' %}
+    
+    <!-- JavaScript -->
+<script defer="" src="{% static 'dist/js/vendor.js' %}"></script>
+<script defer="" src="{% static 'dist/js/main.js' %}"></script>
+    
+    {% block extra_js %}{% endblock %}
+    
+    <!-- Google Analytics -->
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=YOUR-GA-ID"></script>
+<script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'YOUR-GA-ID');
+    </script>
+</body>
+</html>

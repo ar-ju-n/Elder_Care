@@ -1,0 +1,20 @@
+{% extends 'custom_admin/base.html' %}
+{% block content %}
+<h2>Bulk Import Events from CSV</h2>
+<form class="mb-3" enctype="multipart/form-data" method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button class="btn btn-primary" type="submit">Import Events</button>
+</form>
+{% if result %}
+  <div class="alert alert-success">{{ result.created }} events imported. {{ result.failed }} failed.</div>
+{% endif %}
+{% if errors %}
+  <div class="alert alert-danger">
+<ul>
+      {% for err in errors %}<li>{{ err }}</li>{% endfor %}
+    </ul>
+</div>
+{% endif %}
+<p>CSV columns: title, description, start_time, end_time, location</p>
+{% endblock %}

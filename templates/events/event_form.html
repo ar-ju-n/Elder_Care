@@ -3,57 +3,57 @@
 
 {% block content %}
 <div class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-md-8 col-lg-6">
-      <div class="card shadow-lg border-0 animate__animated animate__fadeInUp">
-        <div class="card-body p-4">
-          <h2 class="card-title mb-4 text-center text-primary fw-bold">
-            <i class="bi bi-calendar-plus me-2"></i>Create New Event
+<div class="row justify-content-center">
+<div class="col-md-8 col-lg-6">
+<div class="card shadow-lg border-0 animate__animated animate__fadeInUp">
+<div class="card-body p-4">
+<h2 class="card-title mb-4 text-center text-primary fw-bold">
+<i class="bi bi-calendar-plus me-2"></i>Create New Event
           </h2>
           {% if error %}
             <div class="alert alert-danger">{{ error }}</div>
           {% endif %}
-          <form method="post" autocomplete="off">
+          <form autocomplete="off" method="post">
             {% csrf_token %}
             <div class="mb-3">
-              <label for="title" class="form-label fw-semibold"><i class="bi bi-type me-1"></i>Title</label>
-              <input type="text" class="form-control" id="title" name="title" placeholder="e.g. Community Yoga Class" required maxlength="200" aria-describedby="titleHelp">
-              <small id="titleHelp" class="form-text text-muted">Give your event a clear, descriptive name.</small>
-            </div>
-            <div class="mb-3">
-              <label for="description" class="form-label fw-semibold"><i class="bi bi-card-text me-1"></i>Description</label>
-              <textarea class="form-control" id="description" name="description" rows="4" placeholder="What is this event about? Who should attend?" aria-describedby="descHelp"></textarea>
-              <small id="descHelp" class="form-text text-muted">Optional: add details, agenda, or requirements.</small>
-            </div>
-            <div class="row g-3 align-items-end mb-3">
-              <div class="col-sm-6">
-                <label for="start_time" class="form-label fw-semibold"><i class="bi bi-clock me-1"></i>Start Time</label>
-                <input type="datetime-local" class="form-control" id="start_time" name="start_time" required aria-describedby="startHelp">
-                <small id="startHelp" class="form-text text-muted">When does the event begin?</small>
-              </div>
-              <div class="col-sm-6">
-                <label for="end_time" class="form-label fw-semibold"><i class="bi bi-clock-history me-1"></i>End Time</label>
-                <input type="datetime-local" class="form-control" id="end_time" name="end_time" aria-describedby="endHelp">
-                <small id="endHelp" class="form-text text-muted">Optional: Leave blank if open-ended.</small>
-              </div>
-            </div>
-            <div class="mb-4">
-              <label for="location" class="form-label fw-semibold"><i class="bi bi-geo-alt me-1"></i>Location</label>
-              <input type="text" class="form-control" id="location" name="location" placeholder="e.g. Main Hall, Online, Park" required aria-describedby="locationHelp">
-              <small id="locationHelp" class="form-text text-muted">Where will the event take place?</small>
-            </div>
-            <div class="d-flex justify-content-between align-items-center">
-              <button type="submit" class="btn btn-primary rounded-pill px-4">
-                <i class="bi bi-check-circle me-1"></i> Create Event
+<label class="form-label fw-semibold" for="title"><i class="bi bi-type me-1"></i>Title</label>
+<input aria-describedby="titleHelp" class="form-control" id="title" maxlength="200" name="title" placeholder="e.g. Community Yoga Class" required="" type="text"/>
+<small class="form-text text-muted" id="titleHelp">Give your event a clear, descriptive name.</small>
+</div>
+<div class="mb-3">
+<label class="form-label fw-semibold" for="description"><i class="bi bi-card-text me-1"></i>Description</label>
+<textarea aria-describedby="descHelp" class="form-control" id="description" name="description" placeholder="What is this event about? Who should attend?" rows="4"></textarea>
+<small class="form-text text-muted" id="descHelp">Optional: add details, agenda, or requirements.</small>
+</div>
+<div class="row g-3 align-items-end mb-3">
+<div class="col-sm-6">
+<label class="form-label fw-semibold" for="start_time"><i class="bi bi-clock me-1"></i>Start Time</label>
+<input aria-describedby="startHelp" class="form-control" id="start_time" name="start_time" required="" type="datetime-local"/>
+<small class="form-text text-muted" id="startHelp">When does the event begin?</small>
+</div>
+<div class="col-sm-6">
+<label class="form-label fw-semibold" for="end_time"><i class="bi bi-clock-history me-1"></i>End Time</label>
+<input aria-describedby="endHelp" class="form-control" id="end_time" name="end_time" type="datetime-local"/>
+<small class="form-text text-muted" id="endHelp">Optional: Leave blank if open-ended.</small>
+</div>
+</div>
+<div class="mb-4">
+<label class="form-label fw-semibold" for="location"><i class="bi bi-geo-alt me-1"></i>Location</label>
+<input aria-describedby="locationHelp" class="form-control" id="location" name="location" placeholder="e.g. Main Hall, Online, Park" required="" type="text"/>
+<small class="form-text text-muted" id="locationHelp">Where will the event take place?</small>
+</div>
+<div class="d-flex justify-content-between align-items-center">
+<button class="btn btn-primary rounded-pill px-4" type="submit">
+<i class="bi bi-check-circle me-1"></i> Create Event
               </button>
-              <a href="{% url 'events:event_list' %}" class="btn btn-outline-secondary rounded-pill px-4">
-                <i class="bi bi-x-circle me-1"></i> Cancel
+<a class="btn btn-outline-secondary rounded-pill px-4" href="{% url 'events:event_list' %}">
+<i class="bi bi-x-circle me-1"></i> Cancel
               </a>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
 </div>
 {% endblock %}

@@ -1,70 +1,70 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container py-4">
-  <h2 class="mb-4">My Medication Reminders</h2>
-  <div class="mb-4">
-    <form method="post" class="row g-3">
+<h2 class="mb-4">My Medication Reminders</h2>
+<div class="mb-4">
+<form class="row g-3" method="post">
       {% csrf_token %}
       {{ form.non_field_errors }}
       <div class="col-md-3">{{ form.medication_name.label_tag }}{{ form.medication_name }}</div>
-      <div class="col-md-2">{{ form.dosage.label_tag }}{{ form.dosage }}</div>
-      <div class="col-md-3">{{ form.notes.label_tag }}{{ form.notes }}</div>
-      <div class="col-md-2">{{ form.time_of_day.label_tag }}{{ form.time_of_day }}</div>
-      <div class="col-md-1">{{ form.notification_method.label_tag }}{{ form.notification_method }}</div>
-      <div class="col-md-1 d-flex align-items-end">{{ form.active }} {{ form.active.label_tag }}</div>
-      <div class="col-12">
-        <button type="submit" name="add_reminder" class="btn btn-success">Add Reminder</button>
-      </div>
-    </form>
-  </div>
-  <hr>
-  <h4>Current Reminders</h4>
-  <table class="table table-bordered table-striped">
-    <thead><tr><th>Medication</th><th>Dosage</th><th>Notes</th><th>Time</th><th>Notify</th><th>Active</th><th>Actions</th></tr></thead>
-    <tbody>
+<div class="col-md-2">{{ form.dosage.label_tag }}{{ form.dosage }}</div>
+<div class="col-md-3">{{ form.notes.label_tag }}{{ form.notes }}</div>
+<div class="col-md-2">{{ form.time_of_day.label_tag }}{{ form.time_of_day }}</div>
+<div class="col-md-1">{{ form.notification_method.label_tag }}{{ form.notification_method }}</div>
+<div class="col-md-1 d-flex align-items-end">{{ form.active }} {{ form.active.label_tag }}</div>
+<div class="col-12">
+<button class="btn btn-success" name="add_reminder" type="submit">Add Reminder</button>
+</div>
+</form>
+</div>
+<hr/>
+<h4>Current Reminders</h4>
+<table class="table table-bordered table-striped">
+<thead><tr><th>Medication</th><th>Dosage</th><th>Notes</th><th>Time</th><th>Notify</th><th>Active</th><th>Actions</th></tr></thead>
+<tbody>
       {% for r in reminders %}
-      <tr{% if not r.active %} class="table-secondary"{% endif %}>
-        <td>{{ r.medication_name }}</td>
-        <td>{{ r.dosage }}</td>
-        <td>{{ r.notes }}</td>
-        <td>{{ r.time_of_day|time:"H:i" }}</td>
-        <td>{{ r.get_notification_method_display }}</td>
-        <td>{% if r.active %}<span class="badge bg-success">Active</span>{% else %}<span class="badge bg-secondary">Inactive</span>{% endif %}</td>
-        <td>
-          <form method="post" style="display:inline;">
+      <tr{% %}="" class="table-secondary" endif="" if="" not="" r.active="" {%="">
+<td>{{ r.medication_name }}</td>
+<td>{{ r.dosage }}</td>
+<td>{{ r.notes }}</td>
+<td>{{ r.time_of_day|time:"H:i" }}</td>
+<td>{{ r.get_notification_method_display }}</td>
+<td>{% if r.active %}<span class="badge bg-success">Active</span>{% else %}<span class="badge bg-secondary">Inactive</span>{% endif %}</td>
+<td>
+<form method="post">
             {% csrf_token %}
-            <input type="hidden" name="edit_id" value="{{ r.id }}">
-            <button type="submit" name="edit_reminder" class="btn btn-sm btn-warning">Edit</button>
-          </form>
-          <form method="post" style="display:inline;">
+            <input name="edit_id" type="hidden" value="{{ r.id }}"/>
+<button class="btn btn-sm btn-warning" name="edit_reminder" type="submit">Edit</button>
+</form>
+<form method="post">
             {% csrf_token %}
-            <input type="hidden" name="delete_id" value="{{ r.id }}">
-            <button type="submit" name="delete_reminder" class="btn btn-sm btn-danger" onclick="return confirm('Delete this reminder?')">Delete</button>
-          </form>
-        </td>
-      </tr>
+            <input name="delete_id" type="hidden" value="{{ r.id }}"/>
+<button class="btn btn-sm btn-danger" name="delete_reminder" onclick="return confirm('Delete this reminder?')" type="submit">Delete</button>
+</form>
+</td>
+
       {% endfor %}
-    </tbody>
-  </table>
+    </tr{%></tbody>
+</table>
   {% if edit_form %}
   <div class="mt-4">
-    <h4>Edit Reminder</h4>
-    <form method="post" class="row g-3">
+<h4>Edit Reminder</h4>
+<form class="row g-3" method="post">
       {% csrf_token %}
-      <input type="hidden" name="edit_id" value="{{ edit_id }}">
+      <input name="edit_id" type="hidden" value="{{ edit_id }}"/>
       {{ edit_form.non_field_errors }}
       <div class="col-md-3">{{ edit_form.medication_name.label_tag }}{{ edit_form.medication_name }}</div>
-      <div class="col-md-2">{{ edit_form.dosage.label_tag }}{{ edit_form.dosage }}</div>
-      <div class="col-md-3">{{ edit_form.notes.label_tag }}{{ edit_form.notes }}</div>
-      <div class="col-md-2">{{ edit_form.time_of_day.label_tag }}{{ edit_form.time_of_day }}</div>
-      <div class="col-md-1">{{ edit_form.notification_method.label_tag }}{{ edit_form.notification_method }}</div>
-      <div class="col-md-1 d-flex align-items-end">{{ edit_form.active }} {{ edit_form.active.label_tag }}</div>
-      <div class="col-12">
-        <button type="submit" name="edit_reminder" class="btn btn-primary">Save Changes</button>
-        <a href="{% url 'accounts:medication_reminders' %}" class="btn btn-secondary">Cancel</a>
-      </div>
-    </form>
-  </div>
+<div class="col-md-2">{{ edit_form.dosage.label_tag }}{{ edit_form.dosage }}</div>
+<div class="col-md-3">{{ edit_form.notes.label_tag }}{{ edit_form.notes }}</div>
+<div class="col-md-2">{{ edit_form.time_of_day.label_tag }}{{ edit_form.time_of_day }}</div>
+<div class="col-md-1">{{ edit_form.notification_method.label_tag }}{{ edit_form.notification_method }}</div>
+<div class="col-md-1 d-flex align-items-end">{{ edit_form.active }} {{ edit_form.active.label_tag }}</div>
+<div class="col-12">
+<button class="btn btn-primary" name="edit_reminder" type="submit">Save Changes</button>
+<a class="btn btn-secondary" href="{% url 'accounts:medication_reminders' %}">Cancel</a>
+</div>
+</form>
+</div>
   {% endif %}
 </div>
 <script>

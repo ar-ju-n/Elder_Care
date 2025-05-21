@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Set Up Two-Factor Authentication{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Set Up Two-Factor Authentication</h2>
+                </div>
+                <div class="card-body">
+                    <ol class="mb-4">
+                        <li>Install an authenticator app like Google Authenticator or Authy on your phone.</li>
+                        <li>Scan the QR code below with your authenticator app:</li>
+                    </ol>
+                    
+                    <div class="text-center mb-4">
+                        {{ qr_code_svg|safe }}
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <p>Can't scan the QR code? Enter this secret key manually:</p>
+                        <code class="d-block text-center p-2 bg-light rounded">{{ secret_key }}</code>
+                    </div>
+                    
+                    <p class="mb-4">After scanning, enter the 6-digit code from your authenticator app below:</p>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="verification_code" class="form-label">Verification Code</label>
+                            <input type="text" class="form-control" id="verification_code" name="verification_code" 
+                                   placeholder="Enter 6-digit code" pattern="\d{6}" required>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Verify and Enable 2FA</button>
+                            <a href="{% url 'accounts:profile' user_id=request.user.id %}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

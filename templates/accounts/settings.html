@@ -1,78 +1,201 @@
 {% extends 'base.html' %}
-{% load custom_filters %}
+{% load static custom_filters %}
+
+{% block extra_css %}
+
+{% endblock %}
 
 {% block content %}
-<div class="container py-4">
-  <div class="row">
-    <div class="col-md-3">
-      {% include 'accounts/partials/sidebar.html' %}
-    </div>
-    <div class="col-md-9">
-      <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
-          <h4 class="mb-0"><i class="bi bi-gear-fill me-2"></i>Account Settings</h4>
-        </div>
-        <div class="card-body">
-          {% if messages %}
-            {% for message in messages %}
-              <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-              </div>
-            {% endfor %}
-          {% endif %}
-          
-          <form method="post">
-            {% csrf_token %}
-            
-            <div class="mb-4">
-              <h5>Preferences</h5>
-              <hr>
-              
-              <div class="row mb-3">
-                <div class="col-md-6">
-                  <label for="id_language_preference" class="form-label">Language</label>
-                  <select name="language_preference" id="id_language_preference" class="form-select">
-                    <option value="en" {% if user.language_preference == 'en' %}selected{% endif %}>English</option>
-                    <option value="ne" {% if user.language_preference == 'ne' %}selected{% endif %}>Nepali</option>
-                    <option value="hi" {% if user.language_preference == 'hi' %}selected{% endif %}>Hindi</option>
-                  </select>
-                </div>
-                
-                <div class="col-md-6">
-                  <label for="id_timezone" class="form-label">Timezone</label>
-                  <select name="timezone" id="id_timezone" class="form-select">
-                    <option value="UTC" {% if user.timezone == 'UTC' %}selected{% endif %}>UTC</option>
-                    <option value="Asia/Kathmandu" {% if user.timezone == 'Asia/Kathmandu' %}selected{% endif %}>Nepal Time</option>
-                    <option value="Asia/Kolkata" {% if user.timezone == 'Asia/Kolkata' %}selected{% endif %}>India Time</option>
-                    <option value="US/Eastern" {% if user.timezone == 'US/Eastern' %}selected{% endif %}>US Eastern Time</option>
-                    <option value="US/Pacific" {% if user.timezone == 'US/Pacific' %}selected{% endif %}>US Pacific Time</option>
-                    <option value="Europe/London" {% if user.timezone == 'Europe/London' %}selected{% endif %}>UK Time</option>
-                  </select>
-                </div>
-              </div>
-              
-              <div class="mb-3 form-check">
-                {% load slugify_extras %}
-                <input type="hidden" name="username" value="{{ user.username|slugify_dir }}">
-                <input type="checkbox" name="email_notifications" id="id_email_notifications" class="form-check-input" {% if user.email_notifications %}checked{% endif %}>
-                <label class="form-check-label" for="id_email_notifications">
-                  Receive email notifications
-                </label>
-              </div>
-            </div>
-            
-            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-              <button type="submit" class="btn btn-primary">
-                <i class="bi bi-save me-2"></i>Save Changes
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="settings-container py-5">
+<div class="container">
+<div class="row">
+<!-- Sidebar Navigation -->
+<div class="col-lg-3 mb-4">
+<div class="settings-sidebar">
+<div class="card settings-card">
+<div class="card-body p-0">
+<div class="p-4 border-bottom">
+<h5 class="mb-0 fw-bold">Settings</h5>
 </div>
+<div class="list-group list-group-flush">
+<a class="list-group-item list-group-item-action active" data-bs-toggle="pill" href="#preferences">
+<i class="bi bi-sliders settings-icon"></i>Preferences
+                </a>
+<a class="list-group-item list-group-item-action" data-bs-toggle="pill" href="#notifications">
+<i class="bi bi-bell settings-icon"></i>Notifications
+                </a>
+<a class="list-group-item list-group-item-action" data-bs-toggle="pill" href="#security">
+<i class="bi bi-shield-lock settings-icon"></i>Security
+                </a>
+<a class="list-group-item list-group-item-action" data-bs-toggle="pill" href="#privacy">
+<i class="bi bi-lock settings-icon"></i>Privacy
+                </a>
+<a class="list-group-item list-group-item-action" data-bs-toggle="pill" href="#billing">
+<i class="bi bi-credit-card settings-icon"></i>Billing
+                </a>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Content -->
+<div class="col-lg-9">
+<div class="tab-content" id="settingsTabContent">
+<!-- Preferences Tab -->
+<div class="tab-pane fade show active" id="preferences" role="tabpanel">
+<div class="card settings-card">
+<div class="card-header">
+<h4 class="mb-0 text-white"><i class="bi bi-sliders me-2"></i>Preferences</h4>
+</div>
+<div class="card-body">
+                {% if messages %}
+                  {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+<i class="bi {% if message.tags == 'success' %}bi-check-circle-fill{% else %}bi-exclamation-triangle-fill{% endif %} me-2"></i>
+                      {{ message }}
+                      <button aria-label="Close" class="btn-close" data-bs-dismiss="alert" type="button"></button>
+</div>
+                  {% endfor %}
+                {% endif %}
+                
+                <form class="needs-validation" method="post" novalidate="">
+                  {% csrf_token %}
+                  
+                  <div class="mb-4">
+<h5 class="section-title">Language &amp; Region</h5>
+<div class="row g-3">
+<div class="col-md-6">
+<label class="form-label" for="id_language_preference">Language</label>
+<select class="form-select" id="id_language_preference" name="language_preference" required="">
+<option disabled="" value="">Select language</option>
+<option %}="" %}selected{%="" endif="" if="" user.language_preference="en" value="en" {%="">English</option>
+<option %}="" %}selected{%="" endif="" if="" user.language_preference="ne" value="ne" {%="">नेपाली (Nepali)</option>
+<option %}="" %}selected{%="" endif="" if="" user.language_preference="hi" value="hi" {%="">हिंदी (Hindi)</option>
+</select>
+<div class="invalid-feedback">
+                          Please select your preferred language.
+                        </div>
+</div>
+<div class="col-md-6">
+<label class="form-label" for="id_timezone">Timezone</label>
+<select class="form-select" id="id_timezone" name="timezone">
+<option disabled="" value="">Select timezone</option>
+<option %}="" %}selected{%="" endif="" if="" user.timezone="Asia/Kathmandu" value="Asia/Kathmandu" {%="">(UTC+05:45) Kathmandu</option>
+<option %}="" %}selected{%="" endif="" if="" user.timezone="Asia/Kolkata" value="Asia/Kolkata" {%="">(UTC+05:30) India</option>
+<option %}="" %}selected{%="" endif="" if="" not="" or="" user.timezone="" value="UTC" {%="">(UTC+00:00) UTC</option>
+<option %}="" %}selected{%="" endif="" if="" user.timezone="US/Eastern" value="US/Eastern" {%="">(UTC-05:00) Eastern Time</option>
+<option %}="" %}selected{%="" endif="" if="" user.timezone="US/Pacific" value="US/Pacific" {%="">(UTC-08:00) Pacific Time</option>
+<option %}="" %}selected{%="" endif="" if="" user.timezone="Europe/London" value="Europe/London" {%="">(UTC+00:00) London</option>
+</select>
+</div>
+<div class="col-12">
+<div class="form-check form-switch">
+<input %}="" %}checked{%="" class="form-check-input" endif="" id="id_email_notifications" if="" name="email_notifications" type="checkbox" user.email_notifications="" {%=""/>
+<label class="form-check-label" for="id_email_notifications">
+                            Receive email notifications
+                          </label>
+<small class="form-text text-muted d-block mt-1">Get important updates and notifications via email</small>
+</div>
+</div>
+</div>
+</div>
+<div class="d-flex justify-content-end pt-3 border-top">
+<button class="btn btn-primary btn-save" type="submit">
+<i class="bi bi-save me-2"></i>Save Changes
+                    </button>
+</div>
+</form>
+</div>
+</div>
+</div>
+<!-- Other Tabs (Placeholder Content) -->
+<div class="tab-pane fade" id="notifications" role="tabpanel">
+<div class="card settings-card">
+<div class="card-header">
+<h4 class="mb-0 text-white"><i class="bi bi-bell me-2"></i>Notification Settings</h4>
+</div>
+<div class="card-body">
+<p class="text-muted">Customize how you receive notifications from Elder Care.</p>
+<!-- Notification settings content will go here -->
+<div class="alert alert-info">
+<i class="bi bi-info-circle me-2"></i>Notification settings will be available soon.
+                </div>
+</div>
+</div>
+</div>
+<div class="tab-pane fade" id="security" role="tabpanel">
+<div class="card settings-card">
+<div class="card-header">
+<h4 class="mb-0 text-white"><i class="bi bi-shield-lock me-2"></i>Security Settings</h4>
+</div>
+<div class="card-body">
+<p class="text-muted">Manage your account security settings.</p>
+<!-- Security settings content will go here -->
+<div class="alert alert-info">
+<i class="bi bi-info-circle me-2"></i>Security settings will be available soon.
+                </div>
+</div>
+</div>
+</div>
+<div class="tab-pane fade" id="privacy" role="tabpanel">
+<div class="card settings-card">
+<div class="card-header">
+<h4 class="mb-0 text-white"><i class="bi bi-lock me-2"></i>Privacy Settings</h4>
+</div>
+<div class="card-body">
+<p class="text-muted">Control your privacy settings and data sharing preferences.</p>
+<!-- Privacy settings content will go here -->
+<div class="alert alert-info">
+<i class="bi bi-info-circle me-2"></i>Privacy settings will be available soon.
+                </div>
+</div>
+</div>
+</div>
+<div class="tab-pane fade" id="billing" role="tabpanel">
+<div class="card settings-card">
+<div class="card-header">
+<h4 class="mb-0 text-white"><i class="bi bi-credit-card me-2"></i>Billing Information</h4>
+</div>
+<div class="card-body">
+<p class="text-muted">View and manage your subscription and payment methods.</p>
+<!-- Billing content will go here -->
+<div class="alert alert-info">
+<i class="bi bi-info-circle me-2"></i>Billing information will be available soon.
+                </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Enable Bootstrap tooltips
+  document.addEventListener('DOMContentLoaded', function() {
+    // Form validation
+    var forms = document.querySelectorAll('.needs-validation');
+    
+    Array.prototype.slice.call(forms).forEach(function(form) {
+      form.addEventListener('submit', function(event) {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+    
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+  });
+</script>
 {% endblock %}
 
 

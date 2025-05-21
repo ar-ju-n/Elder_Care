@@ -1,9 +1,10 @@
 <!DOCTYPE html>
+
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>You've been selected for a job</title>
-    <link rel="stylesheet" href="{% static 'css/job_filled_caregiver.css' %}">
+<meta charset="utf-8"/>
+<title>You've been selected for a job</title>
+
         body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
@@ -45,53 +46,45 @@
             padding: 15px;
             margin: 15px 0;
         }
-    </style>
+    
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h2>Congratulations! You've Been Selected</h2>
-        </div>
-        <div class="content">
-            <p>Dear {{ caregiver.get_full_name }},</p>
-            
-            <p>Congratulations! You have been selected for the job <strong>"{{ job.title }}"</strong>.</p>
-            
-            <div class="job-details">
-                <h3>Job Details:</h3>
-                <p><strong>Title:</strong> {{ job.title }}</p>
-                <p><strong>Location:</strong> {{ job.location }}</p>
-                <p><strong>Type:</strong> {{ job.get_job_type_display }}</p>
-                <p><strong>Salary Range:</strong> {{ job.salary_range }}</p>
-                <p><strong>Start Date:</strong> {{ job.start_date|date:"F j, Y" }}</p>
-                <p><strong>Duration:</strong> {{ job.duration }}</p>
-                <p><strong>Working Hours:</strong> {{ job.working_hours }}</p>
-            </div>
-            
-            <p><strong>Employer Details:</strong></p>
-            <ul>
-                <li><strong>Name:</strong> {{ posted_by.get_full_name }}</li>
-                <li><strong>Email:</strong> {{ posted_by.email }}</li>
-                <li><strong>Phone:</strong> {{ posted_by.phone_number|default:"Not provided" }}</li>
-            </ul>
-            
-            <p>Please contact the employer as soon as possible to discuss further details and arrangements.</p>
-            
-            <p>You can view the complete job details by clicking the button below:</p>
-            
-            <p style="text-align: center;">
-                <a href="{{ site_url }}{% url 'jobs:job_detail' job.id %}" class="button">View Job Details</a>
-            </p>
-            
-            <p>Thank you for using our platform, and congratulations again on your new position!</p>
-            
-            <p>Best regards,<br>
-            The Elderly Care & Mindful Support Hub Team</p>
-        </div>
-        <div class="footer">
-            <p>© {% now "Y" %} Elderly Care & Mindful Support Hub. All rights reserved.</p>
-            <p>If you have any questions, please contact us at support@elderlycarehubnp.com</p>
-        </div>
-    </div>
+<div class="container">
+<div class="header">
+<h2>Congratulations! You've Been Selected</h2>
+</div>
+<div class="content">
+<p>Dear {{ caregiver.get_full_name }},</p>
+<p>Congratulations! You have been selected for the job <strong>"{{ job.title }}"</strong>.</p>
+<div class="job-details">
+<h3>Job Details:</h3>
+<p><strong>Title:</strong> {{ job.title }}</p>
+<p><strong>Location:</strong> {{ job.location }}</p>
+<p><strong>Type:</strong> {{ job.get_job_type_display }}</p>
+<p><strong>Salary Range:</strong> {{ job.salary_range }}</p>
+<p><strong>Start Date:</strong> {{ job.start_date|date:"F j, Y" }}</p>
+<p><strong>Duration:</strong> {{ job.duration }}</p>
+<p><strong>Working Hours:</strong> {{ job.working_hours }}</p>
+</div>
+<p><strong>Employer Details:</strong></p>
+<ul>
+<li><strong>Name:</strong> {{ posted_by.get_full_name }}</li>
+<li><strong>Email:</strong> {{ posted_by.email }}</li>
+<li><strong>Phone:</strong> {{ posted_by.phone_number|default:"Not provided" }}</li>
+</ul>
+<p>Please contact the employer as soon as possible to discuss further details and arrangements.</p>
+<p>You can view the complete job details by clicking the button below:</p>
+<p>
+<a class="button" href="{{ site_url }}{% url 'jobs:job_detail' job.id %}">View Job Details</a>
+</p>
+<p>Thank you for using our platform, and congratulations again on your new position!</p>
+<p>Best regards,<br/>
+            The Elderly Care &amp; Mindful Support Hub Team</p>
+</div>
+<div class="footer">
+<p>© {% now "Y" %} Elderly Care &amp; Mindful Support Hub. All rights reserved.</p>
+<p>If you have any questions, please contact us at support@elderlycarehubnp.com</p>
+</div>
+</div>
 </body>
 </html>

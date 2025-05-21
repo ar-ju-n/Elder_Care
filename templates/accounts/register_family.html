@@ -1,54 +1,614 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block extra_css %}
+{{ block.super }}
 <link rel="stylesheet" href="{% static 'css/registration.css' %}">
 {% endblock %}
-{% block extra_js %}
-<script src="{% static 'js/registration.js' %}"></script>
-{% endblock %}
+
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow-lg">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">Family Member Registration</h4>
-                </div>
-                <div class="card-body">
-                    <form method="post" enctype="multipart/form-data" novalidate>
-                        {% csrf_token %}
-                        {% for field in form %}
-                            <div class="mb-3" id="field-{{ field.name }}">
-    {{ field.label_tag }}
-    {% if field.name == 'password1' or field.name == 'password2' %}
-        <div class="input-group align-items-center">
-            {{ field }}
-            <button type="button" class="btn btn-outline-secondary toggle-password" data-target="{{ field.auto_id }}" tabindex="-1" aria-label="Show/hide password">
-                <i class="bi bi-eye-fill"></i>
-            </button>
-        </div>
-        {% if field.help_text %}
-            <small class="form-text text-muted d-block mt-1">{{ field.help_text }}</small>
-        {% endif %}
-    {% else %}
-        {{ field }}
-        {% if field.help_text %}
-            <small class="form-text text-muted">{{ field.help_text }}</small>
-        {% endif %}
-    {% endif %}
-    {% for error in field.errors %}
-        <div class="text-danger small">{{ error }}</div>
-    {% endfor %}
+<div class="registration-page">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="registration-card">
+                    <!-- Registration Header -->
+                    <div class="registration-header">
+                        <h1>Create Your Family Account</h1>
+                        <p>Join our community to find the best care for your loved ones</p>
+                        <!-- Progress Steps -->
+                        <div class="registration-steps">
+                            <div class="step active" id="step-1">
+                                <div class="step-number">1</div>
+                                <div class="step-label">Account Info</div>
                             </div>
-                        {% endfor %}
-                        <button type="submit" class="btn btn-primary w-100">Register</button>
-                    </form>
-                </div>
-                <div class="card-footer text-center">
-                    <a href="{% url 'accounts:login' %}">Already have an account? Login</a>
+                            <div class="step" id="step-2">
+                                <div class="step-number">2</div>
+                                <div class="step-label">Personal Details</div>
+                            </div>
+                            <div class="step" id="step-3">
+                                <div class="step-number">3</div>
+                                <div class="step-label">Terms</div>
+                            </div>
+                            <div class="step" id="step-4">
+                                <div class="step-number">4</div>
+                                <div class="step-label">Complete</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Registration Form -->
+                    <div class="registration-body">
+                        <form autocomplete="off" enctype="multipart/form-data" id="registrationForm" method="post" novalidate>
+                            {% csrf_token %}
+                            {% if form.non_field_errors %}
+                              <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                  <div>{{ error }}</div>
+                                {% endfor %}
+                              </div>
+                            {% endif %}
+                            {% if form.errors %}
+                            <script>
+                              document.addEventListener('DOMContentLoaded', function() {
+                                document.querySelectorAll('.form-section').forEach(function(section) {
+                                  section.style.display = 'block';
+                                  section.classList.add('active');
+                                });
+                                document.querySelectorAll('.step').forEach(function(step) {
+                                  step.classList.add('active');
+                                });
+                              });
+                            </script>
+                            {% endif %}
+                            <input type="hidden" name="step" value="1">
+                            <input type="hidden" name="rate_per_hour" value="">
+                            
+                            <!-- Step 1: Account Information -->
+                            <div class="form-section active" id="section-1">
+                                <h3 class="form-title">Account Information</h3>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+    <label class="form-label" for="{{ form.full_name.id_for_label }}">Full Name *</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                            <input type="text" 
+                                                   class="form-control {% if form.full_name.errors %}is-invalid{% endif %}" 
+                                                   id="{{ form.full_name.id_for_label }}" 
+                                                   name="{{ form.full_name.name }}" 
+                                                   value="{{ form.full_name.value|default:'' }}" 
+                                                   required>
+                                        </div>
+                                        {% if form.full_name.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.full_name.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label" for="{{ form.email.id_for_label }}">Email Address *</label>
+                                        <div class="input-group email-wrapper">
+                                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                            <input type="email" 
+                                                   class="form-control {% if form.email.errors %}is-invalid{% endif %}" 
+                                                   id="{{ form.email.id_for_label }}" 
+                                                   name="{{ form.email.name }}" 
+                                                   value="{{ form.email.value|default:'' }}" 
+                                                   required>
+                                        </div>
+                                        {% if form.email.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.email.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label" for="{{ form.phone_number.id_for_label }}">Phone Number *</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
+                                            <input type="tel"
+                                                   class="form-control {% if form.phone_number.errors %}is-invalid{% endif %}"
+                                                   id="{{ form.phone_number.id_for_label }}"
+                                                   name="{{ form.phone_number.name }}"
+                                                   value="{{ form.phone_number.value|default:'' }}"
+                                                   placeholder="e.g., +9779812345678, +1 5551234567, +44 2071234567"
+                                                   pattern="^\+[1-9]\d{0,3} ?\d{6,14}$"
+                                                   required>
+                                        </div>
+                                        {% if form.phone_number.help_text %}
+                                            <small class="form-text text-muted">{{ form.phone_number.help_text }}</small>
+                                        {% endif %}
+                                        {% if form.phone_number.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.phone_number.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label" for="{{ form.username.id_for_label }}">Username *</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-person-badge"></i></span>
+                                            <input type="text" 
+                                                   class="form-control {% if form.username.errors %}is-invalid{% endif %}" 
+                                                   id="{{ form.username.id_for_label }}" 
+                                                   name="{{ form.username.name }}" 
+                                                   value="{{ form.username.value|default:'' }}" 
+                                                   required
+                                                   pattern="[A-Za-z0-9_@+.-]+"
+                                                   title="Username can only contain letters, numbers, and @/./+/-/_ characters.">
+                                        </div>
+                                        {% if form.username.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.username.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                        <small class="form-text text-muted">This will be your unique identifier on our platform. Letters, digits and @/./+/-/_ only.</small>
+                                    </div>
+                                    
+                                    <!-- <div class="col-md-6 mb-3">
+                                        <label class="form-label" for="{{ form.phone_number.id_for_label }}">Phone Number</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                                            {{ form.phone_number }}
+                                        </div>
+                                        {% if form.phone_number.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.phone_number.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div> -->
+                                </div>
+                                <div class="row">
+                                    <!-- This row is intentionally left with just the password fields -->
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label" for="{{ form.password1.id_for_label }}">Password *</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                            <input aria-describedby="passwordHelpBlock" autocomplete="new-password" 
+                                                   class="form-control" id="{{ form.password1.id_for_label }}" 
+                                                   name="{{ form.password1.name }}" required type="password"/>
+                                            <button class="btn btn-outline-secondary toggle-password" 
+                                                    data-target="{{ form.password1.id_for_label }}" 
+                                                    type="button">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </div>
+                                        <div class="password-strength mt-2">
+                                            <div class="progress">
+                                                <div class="progress-bar" id="passwordStrengthBar" role="progressbar"></div>
+                                            </div>
+                                        </div>
+                                        <div class="password-requirements">
+                                            <small class="form-text d-block mb-1">Password must contain:</small>
+                                            <ul class="list-unstyled small text-muted">
+                                                <li class="invalid" id="req-length">At least 8 characters</li>
+                                                <li class="invalid" id="req-uppercase">At least one uppercase letter</li>
+                                                <li class="invalid" id="req-lowercase">At least one lowercase letter</li>
+                                                <li class="invalid" id="req-number">At least one number</li>
+                                                <li class="invalid" id="req-special">At least one special character</li>
+                                            </ul>
+                                        </div>
+                                        {% if form.password1.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.password1.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label" for="{{ form.password2.id_for_label }}">Confirm Password *</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                            <input autocomplete="new-password" class="form-control" id="{{ form.password2.id_for_label }}" name="{{ form.password2.name }}" required="" type="password"/>
+                                            <button class="btn btn-outline-secondary toggle-password" data-target="{{ form.password2.id_for_label }}" type="button">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </div>
+                                        <div class="mt-2 small" id="passwordMatch"></div>
+                                        {% if form.password2.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.password2.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="form-navigation">
+                                    <div></div> <!-- Empty div for flex spacing -->
+                                    <button class="btn btn-next" onclick="nextStep(1, 2)" type="button">
+                                        Next <i class="bi bi-arrow-right ms-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- Step 2: Personal Details -->
+                            <div class="form-section" id="section-2">
+                                <h3 class="form-title">Personal Details</h3>
+                                <div class="profile-picture-upload text-center mb-4">
+                                    <div class="profile-picture-preview" id="profilePicturePreview">
+                                        <img alt="Profile Preview" id="profileImagePreview" src=""/>
+                                    </div>
+                                    <label class="btn btn-outline-primary btn-sm mt-2" for="{{ form.profile_picture.id_for_label }}">
+                                        <i class="bi bi-camera me-1"></i> Upload Photo
+                                    </label>
+                                    {{ form.profile_picture }}
+                                    {% if form.profile_picture.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.profile_picture.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                    <div class="form-text small">JPG or PNG, max 2MB</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label" for="{{ form.address.id_for_label }}">Address</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                                        {{ form.address }}
+                                    </div>
+                                    {% if form.address.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.address.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label" for="{{ form.city.id_for_label }}">City</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-building"></i></span>
+                                            {{ form.city }}
+                                        </div>
+                                        {% if form.city.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.city.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label" for="{{ form.country.id_for_label }}">Country</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-globe"></i></span>
+                                            {{ form.country }}
+                                        </div>
+                                        {% if form.country.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.country.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label" for="{{ form.date_of_birth.id_for_label }}">Date of Birth</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-calendar-date"></i></span>
+                                            {{ form.date_of_birth }}
+                                        </div>
+                                        {% if form.date_of_birth.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.date_of_birth.errors|striptags }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label" for="{{ form.gender.id_for_label }}">Gender</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-gender-ambiguous"></i></span>
+                                            {{ form.gender }}
+                                        </div>
+                                        {% if form.gender.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.gender.errors|striptags }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <!-- Terms and Conditions -->
+                                <div class="form-check mb-4">
+                                    <input class="form-check-input" id="termsCheck" name="terms_accepted" required type="checkbox">
+                                    <label class="form-check-label" for="termsCheck">
+                                        I have read and agree to the <a href="#" target="_blank">Terms of Service</a> and <a href="#" target="_blank">Privacy Policy</a> *
+                                    </label>
+                                    <div class="invalid-feedback">
+                                        You must agree to the terms and conditions to continue.
+                                    </div>
+                                </div>
+                                
+                                <!-- Form Navigation -->
+                                <div class="form-navigation">
+                                    <button class="btn btn-prev" onclick="prevStep(3, 2)" type="button">
+                                        <i class="bi bi-arrow-left me-2"></i> Back
+                                    </button>
+                                    <button class="btn btn-submit" type="submit">
+                                        <i class="bi bi-check-lg me-2"></i> Complete Registration
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- Step 4: Registration Complete -->
+                            <div class="form-section text-center py-5" id="section-4">
+                                <div class="registration-success">
+                                    <div class="registration-success-icon">
+                                        <i class="bi bi-check-lg"></i>
+                                    </div>
+                                    <h2>Registration Successful!</h2>
+                                    <p>Thank you for joining Elder Care. Your account has been created successfully. A verification email has been sent to your registered email address. Please verify your email to complete the registration process.</p>
+                                    <a class="btn btn-login" href="{% url 'accounts:login' %}">
+                                        <i class="bi bi-box-arrow-in-right me-2"></i> Proceed to Login
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="text-center mt-4">
+                            <p class="mb-0">Already have an account? <a href="{% url 'accounts:login' %}">Sign In</a></p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+
+
+    // Toggle password visibility
+    const togglePassword = document.querySelectorAll('.toggle-password');
+    togglePassword.forEach(button => {
+      button.addEventListener('click', function() {
+        const targetId = this.getAttribute('data-target');
+        const passwordField = document.getElementById(targetId);
+        const icon = this.querySelector('i');
+        
+        if (passwordField.type === 'password') {
+          passwordField.type = 'text';
+          icon.classList.remove('bi-eye');
+          icon.classList.add('bi-eye-slash');
+        } else {
+          passwordField.type = 'password';
+          icon.classList.remove('bi-eye-slash');
+          icon.classList.add('bi-eye');
+        }
+      });
+    });
+    
+    // Password strength checker
+    const passwordField = document.getElementById('{{ form.password1.id_for_label }}');
+    const confirmPasswordField = document.getElementById('{{ form.password2.id_for_label }}');
+    const strengthBar = document.getElementById('passwordStrengthBar');
+    const requirements = {
+      length: document.getElementById('req-length'),
+      uppercase: document.getElementById('req-uppercase'),
+      lowercase: document.getElementById('req-lowercase'),
+      number: document.getElementById('req-number'),
+      special: document.getElementById('req-special')
+    };
+    
+    if (passwordField) {
+      passwordField.addEventListener('input', function() {
+        const password = this.value;
+        let strength = 0;
+        
+        // Check length
+        if (password.length >= 8) {
+          requirements.length.classList.remove('invalid');
+          requirements.length.classList.add('valid');
+          strength += 20;
+        } else {
+          requirements.length.classList.remove('valid');
+          requirements.length.classList.add('invalid');
+        }
+        
+        // Check uppercase
+        if (/[A-Z]/.test(password)) {
+          requirements.uppercase.classList.remove('invalid');
+          requirements.uppercase.classList.add('valid');
+          strength += 20;
+        } else {
+          requirements.uppercase.classList.remove('valid');
+          requirements.uppercase.classList.add('invalid');
+        }
+        
+        // Check lowercase
+        if (/[a-z]/.test(password)) {
+          requirements.lowercase.classList.remove('invalid');
+          requirements.lowercase.classList.add('valid');
+          strength += 20;
+        } else {
+          requirements.lowercase.classList.remove('valid');
+          requirements.lowercase.classList.add('invalid');
+        }
+        
+        // Check number
+        if (/[0-9]/.test(password)) {
+          requirements.number.classList.remove('invalid');
+          requirements.number.classList.add('valid');
+          strength += 20;
+        } else {
+          requirements.number.classList.remove('valid');
+          requirements.number.classList.add('invalid');
+        }
+        
+        // Check special character
+        if (/[^A-Za-z0-9]/.test(password)) {
+          requirements.special.classList.remove('invalid');
+          requirements.special.classList.add('valid');
+          strength += 20;
+        } else {
+          requirements.special.classList.remove('valid');
+          requirements.special.classList.add('invalid');
+        }
+        
+        // Update strength bar
+        strengthBar.style.width = strength + '%';
+        
+        // Update strength bar color
+        if (strength < 40) {
+          strengthBar.className = 'progress-bar bg-danger';
+        } else if (strength < 80) {
+          strengthBar.className = 'progress-bar bg-warning';
+        } else {
+          strengthBar.className = 'progress-bar bg-success';
+        }
+        
+        // Check password match
+        if (confirmPasswordField && confirmPasswordField.value) {
+          checkPasswordMatch();
+        }
+      });
+    }
+    
+    // Confirm password match
+    if (confirmPasswordField) {
+      confirmPasswordField.addEventListener('input', checkPasswordMatch);
+    }
+    
+    function checkPasswordMatch() {
+      const confirmPassword = confirmPasswordField.value;
+      const password = passwordField.value;
+      const matchMessage = document.getElementById('passwordMatch');
+      
+      if (!confirmPassword) return;
+      
+      if (password === confirmPassword) {
+        matchMessage.innerHTML = '<span class="text-success"><i class="bi bi-check-circle-fill me-1"></i> Passwords match</span>';
+      } else {
+        matchMessage.innerHTML = '<span class="text-danger"><i class="bi bi-x-circle-fill me-1"></i> Passwords do not match</span>';
+      }
+    }
+    
+    // Profile picture preview
+    const profilePicInput = document.getElementById('{{ form.profile_picture.id_for_label }}');
+    const profilePicPreview = document.getElementById('profileImagePreview');
+    
+    if (profilePicInput) {
+      profilePicInput.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            profilePicPreview.src = e.target.result;
+            profilePicPreview.style.display = 'block';
+            document.getElementById('profilePicturePreview').style.backgroundImage = 'none';
+          }
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+    
+    // Form validation
+    const form = document.getElementById('registrationForm');
+    if (form) {
+      form.addEventListener('submit', function(event) {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    }
+  });
+  
+  // Form navigation
+  function nextStep(current, next) {
+    // Validate current step before proceeding
+    let isValid = true;
+    const currentSection = document.getElementById('section-' + current);
+    const inputs = currentSection.querySelectorAll('input[required], select[required]');
+    
+    inputs.forEach(input => {
+      if (!input.value) {
+        isValid = false;
+        input.classList.add('is-invalid');
+      } else {
+        input.classList.remove('is-invalid');
+      }
+    });
+    
+    // Special validation for terms checkbox on step 3
+    if (current === 3) {
+      const termsCheck = document.getElementById('termsCheck');
+      if (!termsCheck.checked) {
+        isValid = false;
+        termsCheck.classList.add('is-invalid');
+      } else {
+        termsCheck.classList.remove('is-invalid');
+      }
+    }
+    
+    if (!isValid) {
+      return;
+    }
+    
+    // If this is the last step, submit the form
+    if (next === 4) {
+      document.getElementById('registrationForm').submit();
+      return;
+    }
+    
+    // Update active step
+    document.getElementById('section-' + current).classList.remove('active');
+    document.getElementById('section-' + next).classList.add('active');
+    document.getElementById('step-' + current).classList.remove('active');
+    document.getElementById('step-' + current).classList.add('completed');
+    document.getElementById('step-' + next).classList.add('active');
+    
+    // Scroll to top of form
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  
+  function prevStep(current, prev) {
+    // Update active step
+    document.getElementById('section-' + current).classList.remove('active');
+    document.getElementById('section-' + prev).classList.add('active');
+    document.getElementById('step-' + current).classList.remove('active');
+    document.getElementById('step-' + prev).classList.add('active');
+    document.getElementById('step-' + prev).classList.remove('completed');
+    
+    // Scroll to top of form
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  
+  // Show success message if registration was successful
+  {% if messages %}
+  (function() {
+    var succe
+    
+    sMessages = [];
+    {% for message in messages %}
+      {% if message.tags == 'success' %}
+        successMessages[successMessages.length] = '{{ message|escapejs }}';
+      {% endif %}
+    {% endfor %}
+    
+    if (successMessages.length > 0) {
+      document.addEventListener('DOMContentLoaded', function() {
+        // Hide all sections
+        var sections = document.querySelectorAll('.form-section');
+        for (var i = 0; i < sections.length; i++) {
+          sections[i].style.display = 'none';
+        }
+        
+        // Show success section if it exists
+        var successSection = document.getElementById('section-4');
+        if (successSection) {
+          successSection.style.display = 'block';
+        }
+        
+        // Update steps
+        var steps = document.querySelectorAll('.step');
+        for (var j = 0; j < steps.length; j++) {
+          steps[j].classList.remove('active');
+          steps[j].classList.add('completed');
+        }
+      });
+    }
+  })();
+  {% endif %}
+</script>
 {% endblock %}

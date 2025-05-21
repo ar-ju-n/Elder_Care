@@ -1,121 +1,170 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="light">
+<html lang="en" data-bs-theme="{{ branding_setting.theme|default:'light' }}">
 <head>
-    {% load static %}
-   
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Elderly Care & Mindful Support Hub</title>
+    <title>{% block title %}Elderly Care & Mindful Support Hub{% endblock %}</title>
     
-    <!-- Theme CSS -->
-    <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+    <!-- Preload critical resources -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap">
     
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Favicon -->
+    <link href="{% static 'images/admin-logo.svg' %}" rel="icon" type="image/svg+xml">
     
-    <!-- Other CSS (only if needed globally) -->
-    <link rel="stylesheet" href="{% static 'css/chat_modern.css' %}">
-    <link rel="stylesheet" href="{% static 'css/chat_request_list.css' %}">
-    <link rel="stylesheet" href="{% static 'css/chat_request_list_dark.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- CSS -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="{% static 'css/main.css' %}" rel="stylesheet">
+    
 
+    
     {% block extra_css %}{% endblock %}
     
-    <!-- Theme initialization script -->
-    <script>
-        // Initialize theme before page load to prevent flash
-        (function() {
-            const savedTheme = localStorage.getItem('theme');
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const theme = savedTheme || (prefersDark ? 'dark' : 'light');
-            document.documentElement.setAttribute('data-bs-theme', theme);
-        })();
-    </script>
-    <link rel="icon" type="image/svg+xml" href="{% static 'images/admin-logo.svg' %}">
+
+<style>
+body {
+    padding-top: 70px; /* Prevents navbar overlap */
+}
+</style>
 </head>
-<body role="document">
- 
+<body>
+    <!-- Impersonation Banner -->
+    {% if request.session.impersonate_original_id %}
+    <div class="bg-danger text-white py-2 px-3 d-flex justify-content-between align-items-center">
+        <div>
+            <strong>Impersonation Active:</strong>
+            You are currently impersonating another user.
+            {% if user and user.username %} (as <b>{{ user.username }}</b>){% endif %}
+        </div>
+        <a class="btn btn-light btn-sm" href="{% url 'custom_admin:stop_impersonation' %}">
+            <i class="bi bi-person-x me-1"></i>Stop Impersonating
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Navigation -->
     {% include "partials/navbar.html" %}
+    <!-- Dark/Light Mode Toggle Button -->
+    <!-- Theme toggle is now in the navbar dropdown -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-bs-theme', theme);
+            localStorage.setItem('theme', theme);
+            var icon = document.getElementById('themeToggleIconDropdown');
+            if (icon) icon.className = theme === 'dark' ? 'bi bi-sun' : 'bi bi-moon';
+        }
+        function getPreferredTheme() {
+            return localStorage.getItem('theme') ||
+                (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        }
+        // Set initial theme and icon
+        setTheme(getPreferredTheme());
+        // Toggle on click in navbar dropdown
+        var dropdownToggle = document.getElementById('themeToggleDropdown');
+        if (dropdownToggle) {
+            dropdownToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                var current = document.documentElement.getAttribute('data-bs-theme');
+                setTheme(current === 'dark' ? 'light' : 'dark');
+            });
+        }
+    });
+    </script>
     
-    <main id="main-content" class="py-4" role="main">
-        {% block content %}{% endblock %}
+    <!-- Main Content -->
+    <main class="py-4" id="main-content">
+        <div class="container">
+            {% block breadcrumbs %}{% endblock %}
+            {% include 'partials/messages.html' %}
+            {% block content %}{% endblock %}
+        </div>
     </main>
     
-    <!-- Bootstrap JS Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{% static 'js/navbar.js' %}"></script>
-    <!-- Custom JavaScript -->
-    <script src="{% static 'js/main.js' %}"></script>
-    <!-- Notification Bell JS -->
-    <script src="{% static 'js/navbar_medication_notifications.js' %}"></script>
-    <script src="{% static 'js/theme_toggle.js' %}"></script>
-    <script src="{% static 'js/clock.js' %}"></script>
+    <!-- Footer -->
+    {% include "partials/footer.html" %}
     
-    <script>
-        window.CURRENT_USER_ID = "{{ user.id|default:'null' }}";
-        if (window.CURRENT_USER_ID === "null" || window.CURRENT_USER_ID === "") {
-            window.CURRENT_USER_ID = null;
-        } else {
-            window.CURRENT_USER_ID = parseInt(window.CURRENT_USER_ID, 10);
-        }
-    </script>
-    
-    <script src="{% static 'js/notification_system.js' %}"></script>
-    <script src="{% static 'js/notification_ws.js' %}"></script>
-    
-    <!-- Notification Toast Container -->
+    <!-- Toast Container -->
     {% include "partials/toast.html" %}
     
-    {% include "partials/user_vars.html" %}
-    <script src="{% static 'js/notifications.js' %}"></script>
-    <script src="{% static 'js/forum_notification_badge.js' %}"></script>
-    <script src="{% static 'js/password_toggle.js' %}"></script>
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     
+    <!-- Global JS Variables -->
+    <script>
+        (function() {
+            // Set current user ID
+            window.CURRENT_USER_ID = '{{ user.id|default:"null" }}';
+            if (window.CURRENT_USER_ID === "null" || window.CURRENT_USER_ID === "") {
+                window.CURRENT_USER_ID = null;
+            } else {
+                window.CURRENT_USER_ID = parseInt(window.CURRENT_USER_ID, 10);
+            }
+            
+            // CSRF Token for AJAX requests
+            const csrfElement = document.querySelector('[name=csrfmiddlewaretoken]');
+            if (csrfElement) {
+                window.csrftoken = csrfElement.value;
+            }
+        })();
+    </script>
+    
+    <!-- Core JS -->
+    <script src="{% static 'js/main.js' %}"></script>
+    
+    <!-- Page-specific JS -->
     {% block extra_js %}{% endblock %}
     
-    {% include "partials/footer.html" %}
+    <!-- App-specific JS -->
+    {% if request.resolver_match.app_name %}
+        {% with 'js/'|add:request.resolver_match.app_name|add:'/' as app_js %}
+            {% if request.resolver_match.url_name %}
+                <script src="{% static app_js|add:request.resolver_match.url_name|add:'.js' %}" defer></script>
+            {% endif %}
+        {% endwith %}
+    {% endif %}
 
 <!-- Emergency Contacts Modal -->
-<div class="modal fade" id="emergencyContactsModal" tabindex="-1" aria-labelledby="emergencyContactsModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header bg-danger text-white">
-        <h5 class="modal-title" id="emergencyContactsModalLabel"><i class="bi bi-telephone-fill me-2"></i>Emergency Contacts</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
+<div aria-hidden="true" aria-labelledby="emergencyContactsModalLabel" class="modal fade" id="emergencyContactsModal" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content">
+<div class="modal-header bg-danger text-white">
+<h5 class="modal-title" id="emergencyContactsModalLabel"><i class="bi bi-telephone-fill me-2"></i>Emergency Contacts</h5>
+<button aria-label="Close" class="btn-close btn-close-white" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
         {% if user.is_authenticated and emergency_contacts %}
           <ul class="list-group">
             {% for c in emergency_contacts %}
               <li class="list-group-item d-flex justify-content-between align-items-center">
-                <div>
-                  <strong>{{ c.name }}</strong><br>
-                  <small class="text-muted">{{ c.relationship }}</small>
-                </div>
-                <a href="tel:{{ c.phone }}" class="btn btn-outline-success btn-sm">
-                  <i class="bi bi-telephone"></i> {{ c.phone }}
+<div>
+<strong>{{ c.name }}</strong><br/>
+<small class="text-muted">{{ c.relationship }}</small>
+</div>
+<a class="btn btn-outline-success btn-sm" href="tel:{{ c.phone }}">
+<i class="bi bi-telephone"></i> {{ c.phone }}
                 </a>
-              </li>
+</li>
             {% endfor %}
           </ul>
         {% else %}
           <div class="alert alert-warning text-center mb-0">
-            <i class="bi bi-exclamation-triangle me-2"></i>No emergency contacts found. Please add contacts in your profile.
+<i class="bi bi-exclamation-triangle me-2"></i>No emergency contacts found. Please add contacts in your profile.
           </div>
         {% endif %}
       </div>
-      <div class="modal-footer">
-        <a href="{% url 'accounts:emergency_contacts' %}" class="btn btn-primary">
-          <i class="bi bi-pencil-square me-1"></i>Manage Contacts
+<div class="modal-footer">
+<a class="btn btn-primary" href="{% url 'accounts:emergency_contacts' %}">
+<i class="bi bi-pencil-square me-1"></i>Manage Contacts
         </a>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Close</button>
+</div>
+</div>
+</div>
 </div>
 </body>
 </html>
-
-

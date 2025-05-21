@@ -1,9 +1,0 @@
-/* Spinner component custom sizes */
-.spinner-lg {
-  width: 3rem !important;
-  height: 3rem !important;
-}
-.spinner-xl {
-  width: 4rem !important;
-  height: 4rem !important;
-}

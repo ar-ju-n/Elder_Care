@@ -1,35 +1,35 @@
 {% extends 'base.html' %}
 {% load custom_filters %}
 {% block content %}
-<link rel="stylesheet" href="{% static 'css/detail_section.css' %}">
-<link rel="stylesheet" href="{% static 'css/video_detail.css' %}">
+
+
 <div class="section video-detail-section rounded-4">
-  <div class="container py-4 animate__animated animate__fadeIn">
-    <div class="row justify-content-center">
-      <div class="col-lg-9 col-xl-8">
-        <div class="card shadow-lg border-0 mb-4 animate__animated animate__fadeInUp video-card card-custom">
-          <div class="card-body p-5">
+<div class="container py-4 animate__animated animate__fadeIn">
+<div class="row justify-content-center">
+<div class="col-lg-9 col-xl-8">
+<div class="card shadow-lg border-0 mb-4 animate__animated animate__fadeInUp video-card card-custom">
+<div class="card-body p-5">
             {% if video.file %}
-              <video class="w-100 mb-3" controls>
-                <source src="{{ video.file.url }}">
+              <video class="w-100 mb-3" controls="">
+<source src="{{ video.file.url }}"/>
                 Your browser does not support the video tag.
               </video>
             {% elif 'youtube.com' in video.url or 'youtu.be' in video.url %}
               <div class="ratio ratio-16x9 mb-3">
-                <iframe src="{{ video.url|youtube_embed }}" title="YouTube video player" allowfullscreen class="rounded shadow"></iframe>
-              </div>
+<iframe allowfullscreen="" class="rounded shadow" src="{{ video.url|youtube_embed }}" title="YouTube video player"></iframe>
+</div>
             {% elif 'vimeo.com' in video.url %}
               <div class="ratio ratio-16x9 mb-3">
-                <iframe src="https://player.vimeo.com/video/{{ video.url|cut:'https://vimeo.com/' }}" title="Vimeo video player" allowfullscreen class="rounded shadow"></iframe>
-              </div>
+<iframe allowfullscreen="" class="rounded shadow" src="https://player.vimeo.com/video/{{ video.url|cut:'https://vimeo.com/' }}" title="Vimeo video player"></iframe>
+</div>
             {% elif video.url %}
-              <video class="w-100 mb-3" controls>
-                <source src="{{ video.url }}">
+              <video class="w-100 mb-3" controls="">
+<source src="{{ video.url }}"/>
                 Your browser does not support the video tag.
               </video>
             {% endif %}
             <h1 class="card-title display-5 fw-bold mb-3 video-title animate__animated animate__fadeInDown">{{ video.title }}</h1>
-            <div class="mb-3">
+<div class="mb-3">
             {% if video.tags.all %}
             <div class="mb-3">
               {% for tag in video.tags.all %}
@@ -38,14 +38,15 @@
             </div>
             {% endif %}
           </div>
-        </div>
+</div>
         {% load slugify_extras %}
-        <a href="{% url 'content:video_list' %}" class="btn btn-outline-primary rounded-pill px-4 py-2 fw-bold animate__animated animate__fadeInUp animate__delay-1s">
-          <i class="bi bi-arrow-left"></i> Back to Videos
+        <a class="btn btn-outline-primary rounded-pill px-4 py-2 fw-bold animate__animated animate__fadeInUp animate__delay-1s" href="{% url 'content:video_list' %}">
+<i class="bi bi-arrow-left"></i> Back to Videos
         </a>
-      </div>
-    </div>
-  </div>
+</div>
+</div>
+</div>
 </div>
 
 {% endblock %}
+</div>

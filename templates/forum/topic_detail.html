@@ -1,64 +1,63 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container py-4">
-  <div class="d-flex justify-content-between align-items-center">
-    <div>
-      <h2 class="d-inline">{{ topic.title }}</h2>
+<div class="d-flex justify-content-between align-items-center">
+<div>
+<h2 class="d-inline">{{ topic.title }}</h2>
       {% if topic.category %}
         <span class="badge bg-secondary ms-2">{{ topic.category.name }}</span>
       {% endif %}
     </div>
     {% if user.is_authenticated and user == topic.author or user.is_authenticated and user.is_staff %}
       <div>
-        <a href="{% url 'forum:topic_edit' topic.pk %}" class="btn btn-sm btn-outline-primary">Edit</a>
-        <a href="{% url 'forum:topic_delete' topic.pk %}" class="btn btn-sm btn-outline-danger">Delete</a>
-      </div>
+<a class="btn btn-sm btn-outline-primary" href="{% url 'forum:topic_edit' topic.pk %}">Edit</a>
+<a class="btn btn-sm btn-outline-danger" href="{% url 'forum:topic_delete' topic.pk %}">Delete</a>
+</div>
     {% endif %}
   </div>
-  <div class="mb-3 text-muted">by <span class="text-info">{{ topic.author }}</span> on {{ topic.created_at|date:"M d, Y H:i" }}</div>
-  <div class="mb-4">{{ topic.body|linebreaks }}</div>
-
-  <h4>Replies</h4>
-  <ul class="list-group mb-4" id="replies-list">
+<div class="mb-3 text-muted">by <span class="text-info">{{ topic.author }}</span> on {{ topic.created_at|date:"M d, Y H:i" }}</div>
+<div class="mb-4">{{ topic.body|linebreaks }}</div>
+<h4>Replies</h4>
+<ul class="list-group mb-4" id="replies-list">
     {% for reply_info in reply_infos %}
       {% with reply=reply_info.obj %}
       <li class="list-group-item {% if reply_info.is_best_answer %}bg-success bg-opacity-10 border-success{% endif %}">
-        <div class="d-flex justify-content-between align-items-center">
-          <div>
+<div class="d-flex justify-content-between align-items-center">
+<div>
             {{ reply.body|linebreaks }}
             {% if reply_info.is_best_answer %}
               <span class="badge bg-success ms-2"><i class="bi bi-award-fill"></i> Best Answer</span>
             {% endif %}
           </div>
-          <div class="d-flex align-items-center">
-            <form method="post" action="" class="me-2">
+<div class="d-flex align-items-center">
+<form action="" class="me-2" method="post">
               {% csrf_token %}
-              <input type="hidden" name="action" value="upvote">
-              <input type="hidden" name="reply_id" value="{{ reply.id }}">
-              <button type="submit" class="btn {% if reply_info.user_has_upvoted %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm d-flex align-items-center" {% if not user.is_authenticated or user == reply.author %}disabled{% endif %} title="{% if reply_info.user_has_upvoted %}Remove Upvote{% else %}Upvote{% endif %}">
-                <i class="bi bi-hand-thumbs-up{% if reply_info.user_has_upvoted %}-fill{% endif %}"></i> <span class="ms-1">{{ reply_info.upvotes }}</span>
-              </button>
-            </form>
+              <input name="action" type="hidden" value="upvote"/>
+<input name="reply_id" type="hidden" value="{{ reply.id }}"/>
+<button %}="" %}disabled{%="" class="btn {% if reply_info.user_has_upvoted %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm d-flex align-items-center" endif="" if="" not="" or="" title="{% if reply_info.user_has_upvoted %}Remove Upvote{% else %}Upvote{% endif %}" type="submit" user="reply.author" user.is_authenticated="" {%="">
+<i class="bi bi-hand-thumbs-up{% if reply_info.user_has_upvoted %}-fill{% endif %}"></i> <span class="ms-1">{{ reply_info.upvotes }}</span>
+</button>
+</form>
             {% if user.is_authenticated and user == topic.author and not reply_info.is_best_answer or user.is_authenticated and user.is_staff and not reply_info.is_best_answer %}
-            <form method="post" action="">
+            <form action="" method="post">
               {% csrf_token %}
-              <input type="hidden" name="action" value="best_answer">
-              <input type="hidden" name="reply_id" value="{{ reply.id }}">
-              <button type="submit" class="btn btn-outline-success btn-sm ms-1" title="Mark as Best Answer">
-                <i class="bi bi-award"></i>
-              </button>
-            </form>
+              <input name="action" type="hidden" value="best_answer"/>
+<input name="reply_id" type="hidden" value="{{ reply.id }}"/>
+<button class="btn btn-outline-success btn-sm ms-1" title="Mark as Best Answer" type="submit">
+<i class="bi bi-award"></i>
+</button>
+</form>
             {% endif %}
             {% if user.is_authenticated and user == reply.author or user.is_authenticated and user.is_staff %}
               <div class="ms-2">
-                <a href="{% url 'forum:reply_edit' reply.pk %}" class="btn btn-sm btn-outline-primary">Edit</a>
-                <a href="{% url 'forum:reply_delete' reply.pk %}" class="btn btn-sm btn-outline-danger">Delete</a>
-              </div>
+<a class="btn btn-sm btn-outline-primary" href="{% url 'forum:reply_edit' reply.pk %}">Edit</a>
+<a class="btn btn-sm btn-outline-danger" href="{% url 'forum:reply_delete' reply.pk %}">Delete</a>
+</div>
             {% endif %}
           </div>
-        </div>
-        <div class="small text-muted">by <span class="text-info">{{ reply.author }}</span> on {{ reply.created_at|date:"M d, Y H:i" }}</div>
-      </li>
+</div>
+<div class="small text-muted">by <span class="text-info">{{ reply.author }}</span> on {{ reply.created_at|date:"M d, Y H:i" }}</div>
+</li>
       {% endwith %}
     {% empty %}
       <li class="list-group-item">No replies yet.</li>
@@ -66,17 +65,17 @@
   </ul>
 
   {% if user.is_authenticated %}
-  <form method="post" action="{% url 'forum:reply_create' topic.pk %}">
+  <form action="{% url 'forum:reply_create' topic.pk %}" method="post">
     {% csrf_token %}
     <div class="mb-3">
-      <textarea name="body" class="form-control" rows="3" placeholder="Write your reply..." required></textarea>
-    </div>
-    <button type="submit" class="btn btn-success">Post Reply</button>
-  </form>
+<textarea class="form-control" name="body" placeholder="Write your reply..." required="" rows="3"></textarea>
+</div>
+<button class="btn btn-success" type="submit">Post Reply</button>
+</form>
   {% else %}
-    <a href="{% url 'accounts:login' %}?next={% url 'forum:topic_detail' topic.pk %}" class="btn btn-outline-primary">Log in to reply</a>
+    <a class="btn btn-outline-primary" href="{% url 'accounts:login' %}?next={% url 'forum:topic_detail' topic.pk %}">Log in to reply</a>
   {% endif %}
 
-  <a href="{% url 'forum:topic_list' %}" class="btn btn-link mt-3">Back to Forum</a>
+  <a class="btn btn-link mt-3" href="{% url 'forum:topic_list' %}">Back to Forum</a>
 </div>
 {% endblock %}

@@ -1,0 +1,116 @@
+{% extends 'custom_admin/base.html' %}
+{% block content %}
+
+
+<div class="container-fluid">
+<div class="row">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button aria-label="Close" class="btn-close" data-bs-dismiss="alert" type="button"></button>
+</div>
+      {% endfor %}
+    {% endif %}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+<h2>Videos</h2>
+<a class="btn btn-success" href="{% url 'custom_admin:video_add' %}">Add Video</a>
+</div>
+<!-- Search and filter -->
+<div class="card shadow-sm mb-4">
+<div class="card-body">
+<form class="row g-3" method="get">
+<div class="col-md-8">
+<div class="input-group">
+<input class="form-control" name="search" placeholder="Search by title or tag..." type="text" value="{{ search_query }}"/>
+<button class="btn btn-outline-secondary" type="submit">Search</button>
+              {% if search_query %}
+                <a class="btn btn-outline-secondary" href="{% url 'custom_admin:video_list' %}">Clear</a>
+              {% endif %}
+            </div>
+</div>
+<div class="col-md-4 text-end">
+<span class="text-muted">{{ total_videos }} video{{ total_videos|pluralize }}</span>
+</div>
+</form>
+</div>
+</div>
+<!-- Videos table -->
+<table class="table table-hover table-bordered align-middle shadow-sm bg-white rounded">
+<thead class="table-light">
+<tr>
+<th>Title</th>
+<th>URL</th>
+<th>File</th>
+<th>Tags</th>
+<th>Published</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody>
+        {% for video in page_obj %}
+        <tr>
+<td>{{ video.title }}</td>
+<td>{% if video.url %}<a href="{{ video.url }}" target="_blank">{{ video.url }}</a>{% endif %}</td>
+<td>{% if video.file %}<a href="{{ video.file.url }}" target="_blank">Download</a>{% endif %}</td>
+<td>{% for tag in video.tags.all %}<span class="badge bg-secondary">{{ tag.name }}</span> {% endfor %}</td>
+<td>{{ video.published_at|date:'M d, Y H:i' }}</td>
+<td>
+<a class="btn btn-primary btn-sm" href="{% url 'custom_admin:video_edit' video.id %}">Edit</a>
+<a class="btn btn-danger btn-sm" href="{% url 'custom_admin:video_delete' video.id %}">Delete</a>
+</td>
+</tr>
+        {% empty %}
+        <tr><td class="text-center text-muted" colspan="6">No videos found.</td></tr>
+        {% endfor %}
+      </tbody>
+</table>
+<!-- Pagination -->
+    {% if page_obj.paginator.num_pages > 1 %}
+    <nav aria-label="Page navigation">
+<ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+          <li class="page-item">
+<a aria-label="First" class="page-link" href="?page=1{% if search_query %}&amp;search={{ search_query }}{% endif %}">
+<span aria-hidden="true">««</span>
+</a>
+</li>
+<li class="page-item">
+<a aria-label="Previous" class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&amp;search={{ search_query }}{% endif %}">
+<span aria-hidden="true">«</span>
+</a>
+</li>
+        {% else %}
+          <li class="page-item disabled"><a class="page-link" href="#"><span aria-hidden="true">««</span></a></li>
+<li class="page-item disabled"><a class="page-link" href="#"><span aria-hidden="true">«</span></a></li>
+        {% endif %}
+        
+        {% for num in page_obj.paginator.page_range %}
+          {% if page_obj.number == num %}
+            <li class="page-item active"><a class="page-link" href="?page={{ num }}{% if search_query %}&amp;search={{ search_query }}{% endif %}">{{ num }}</a></li>
+          {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <li class="page-item"><a class="page-link" href="?page={{ num }}{% if search_query %}&amp;search={{ search_query }}{% endif %}">{{ num }}</a></li>
+          {% endif %}
+        {% endfor %}
+        
+        {% if page_obj.has_next %}
+          <li class="page-item">
+<a aria-label="Next" class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&amp;search={{ search_query }}{% endif %}">
+<span aria-hidden="true">»</span>
+</a>
+</li>
+<li class="page-item">
+<a aria-label="Last" class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&amp;search={{ search_query }}{% endif %}">
+<span aria-hidden="true">»»</span>
+</a>
+</li>
+        {% else %}
+          <li class="page-item disabled"><a class="page-link" href="#"><span aria-hidden="true">»</span></a></li>
+<li class="page-item disabled"><a class="page-link" href="#"><span aria-hidden="true">»»</span></a></li>
+        {% endif %}
+      </ul>
+</nav>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -5,18 +5,18 @@
 {% block object-tools-items %}
     {% if show_approve_decline %}
         <li>
-            <a class="button btn-success" href="{{ original.id }}/approve/">Approve</a>
-        </li>
-        <li>
-            <a class="button btn-danger" href="{{ original.id }}/decline/">Decline</a>
-        </li>
+<a class="button btn-success" href="{{ original.id }}/approve/">Approve</a>
+</li>
+<li>
+<a class="button btn-danger" href="{{ original.id }}/decline/">Decline</a>
+</li>
     {% endif %}
     {{ block.super }}
 {% endblock %}
 
 {% block submit_buttons_bottom %}
     <div class="submit-row">
-        <a href="{% url 'accounts:profile' user.username|slugify_dir %}" class="btn btn-secondary">View Profile</a>
-        <a href="../../" class="button btn-secondary">Back to List</a>
-    </div>
+<a class="btn btn-secondary" href="{% url 'accounts:profile' user.username|slugify_dir %}">View Profile</a>
+<a class="button btn-secondary" href="../../">Back to List</a>
+</div>
 {% endblock %}

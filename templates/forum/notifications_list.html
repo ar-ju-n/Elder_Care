@@ -1,17 +1,24 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container py-4">
-  <h2>Your Notifications</h2>
-  <form method="post" class="mb-3">
+<h2>Your Notifications</h2>
+<form class="mb-3" method="post">
     {% csrf_token %}
-    <button type="submit" name="mark_all_read" class="btn btn-sm btn-success">Mark all as read</button>
-  </form>
-  <ul class="list-group mb-3">
+    <button class="btn btn-sm btn-success" name="mark_all_read" type="submit">Mark all as read</button>
+</form>
+<ul class="list-group mb-3">
     {% for notif in page_obj %}
       <li class="list-group-item {% if not notif.is_read %}list-group-item-info{% endif %}">
-        <a href="{{ notif.url }}">{{ notif.message }}</a>
-        <span class="badge bg-secondary ms-2">{{ notif.get_notif_type_display }}</span>
-        <div class="small text-muted">{{ notif.created_at|date:'M d, Y H:i' }}{% if not notif.is_read %} &bull; <strong>Unread</strong>{% endif %}</div>
+        <a href="{{ notif.url|default:'#' }}">{{ notif.message }}</a>
+        <span class="badge bg-secondary ms-2">
+          {% if notif.source == 'forum' %}
+            {{ notif.obj.get_notif_type_display }}
+          {% else %}
+            {{ notif.notif_type|capfirst }}
+          {% endif %}
+        </span>
+        <span class="badge bg-info ms-2">{{ notif.source|capfirst }}</span>
+        <div class="small text-muted">{{ notif.created_at|date:'M d, Y H:i' }}{% if not notif.is_read %} • <strong>Unread</strong>{% endif %}</div>
       </li>
     {% empty %}
       <li class="list-group-item">No notifications.</li>
@@ -19,7 +26,7 @@
   </ul>
   {% if page_obj.has_other_pages %}
     <nav>
-      <ul class="pagination">
+<ul class="pagination">
         {% if page_obj.has_previous %}
           <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
         {% endif %}
@@ -28,7 +35,7 @@
           <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
         {% endif %}
       </ul>
-    </nav>
+</nav>
   {% endif %}
 </div>
 {% endblock %}

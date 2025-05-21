@@ -1,0 +1,38 @@
+{% extends 'custom_admin/base.html' %}
+{% block content %}
+<div class="container d-flex align-items-center justify-content-center min-vh-100">
+    <div class="card shadow-lg p-4" style="max-width: 400px; width: 100%;">
+        <div class="text-center mb-4">
+            <img src="/static/images/admin_logo.png" alt="Admin Logo" style="height: 60px;">
+            <h2 class="mt-2 mb-0" style="font-weight: 700;">Admin Login</h2>
+            <p class="text-muted mb-0">Sign in to your admin dashboard</p>
+        </div>
+        <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username" required autofocus>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+            {% if messages %}
+                <div class="alert alert-danger">
+                    {% for message in messages %}{{ message }}<br>{% endfor %}
+                </div>
+            {% endif %}
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+        </form>
+    </div>
+</div>
+<style>
+body {
+    background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%);
+}
+.card {
+    border-radius: 1.25rem;
+    border: none;
+}
+</style>
+{% endblock %}

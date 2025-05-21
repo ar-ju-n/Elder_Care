@@ -1,0 +1,42 @@
+{% extends 'custom_admin/base.html' %}
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Guides</h2>
+        <a href="{% url 'custom_admin:guide_add' %}" class="btn btn-primary">Add Guide</a>
+    </div>
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Title</th>
+                            <th>Tags</th>
+                            <th>Published By</th>
+                            <th>Published At</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for guide in guides %}
+                        <tr>
+                            <td>{{ guide.title }}</td>
+                            <td>{% for tag in guide.tags.all %}<span class="badge bg-info text-dark me-1">{{ tag.name }}</span>{% empty %}-{% endfor %}</td>
+                            <td>{{ guide.published_by }}</td>
+                            <td>{{ guide.published_at|date:'Y-m-d H:i' }}</td>
+                            <td>
+                                <a href="{% url 'custom_admin:guide_edit' guide.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
+                                <a href="{% url 'custom_admin:guide_delete' guide.id %}" class="btn btn-sm btn-outline-danger ms-2">Delete</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5" class="text-center">No guides found.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

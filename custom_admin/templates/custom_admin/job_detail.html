@@ -1,0 +1,59 @@
+{% extends 'custom_admin/base.html' %}
+{% block content %}
+<div class="container py-4">
+  <h2 class="fw-bold mb-4">Job Detail</h2>
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h3>{{ job.title }}</h3>
+      <p><strong>Description:</strong> {{ job.description }}</p>
+      <p><strong>Schedule:</strong> {{ job.schedule }}</p>
+      <p><strong>Location:</strong> {{ job.location }}</p>
+      <p><strong>Pay:</strong> {{ job.pay }}</p>
+      <p><strong>Status:</strong> {{ job.get_status_display }}</p>
+      <p><strong>Posted By:</strong> {{ job.posted_by.get_full_name }}</p>
+      {% if can_apply %}
+        <a href="{% url 'custom_admin:apply_for_job' job.id %}" class="btn btn-success">Apply for this Job</a>
+      {% elif already_applied and application %}
+        <div class="alert alert-info mt-3">You have already applied for this job.</div>
+        <div class="card mt-3">
+          <div class="card-body">
+            <h5>Your Application</h5>
+            <p><strong>Status:</strong> {{ application.status|title }}</p>
+            <p><strong>Cover Letter:</strong> {{ application.cover_letter }}</p>
+            {% if application.resume %}<p><a href="{{ application.resume.url }}" target="_blank">View Resume</a></p>{% endif %}
+            {% if application.credentials %}<p><a href="{{ application.credentials.url }}" target="_blank">View Credentials</a></p>{% endif %}
+            {% if application.reference_letter %}<p><a href="{{ application.reference_letter.url }}" target="_blank">View Reference Letter</a></p>{% endif %}
+          </div>
+        </div>
+      {% endif %}
+
+      {% if applicants %}
+        <hr>
+        <h4>Applicants</h4>
+        <table class="table table-bordered">
+          <thead><tr><th>Caregiver</th><th>Status</th><th>Cover Letter</th><th>Resume</th><th>Credentials</th><th>Reference</th><th>Actions</th></tr></thead>
+          <tbody>
+            {% for app in applicants %}
+            <tr>
+              <td>{{ app.caregiver.get_full_name }}<br>{{ app.caregiver.email }}</td>
+              <td>{{ app.status|title }}</td>
+              <td>{{ app.cover_letter|truncatechars:40 }}</td>
+              <td>{% if app.resume %}<a href="{{ app.resume.url }}" target="_blank">Resume</a>{% endif %}</td>
+              <td>{% if app.credentials %}<a href="{{ app.credentials.url }}" target="_blank">Credentials</a>{% endif %}</td>
+              <td>{% if app.reference_letter %}<a href="{{ app.reference_letter.url }}" target="_blank">Reference</a>{% endif %}</td>
+              <td>
+                {% if app.status == 'pending' %}
+                  <a href="{% url 'custom_admin:application_accept' app.id %}" class="btn btn-sm btn-success">Accept</a>
+                  <a href="{% url 'custom_admin:application_reject' app.id %}" class="btn btn-sm btn-danger">Reject</a>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
+      <a href="{% url 'custom_admin:job_list' %}" class="btn btn-outline-secondary mt-3">Back to Jobs</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

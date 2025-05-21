@@ -1,0 +1,352 @@
+{% extends 'accounts/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+{{ block.super }}
+
+{% endblock %}
+
+{% block account_content %}
+<!-- Alerts container for dynamic messages -->
+<div class="container mt-3" id="alerts-container"></div>
+<div class="profile-header mb-4">
+<div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
+<div class="d-flex align-items-center mb-3 mb-md-0">
+<div class="position-relative" id="profile-picture-upload">
+<img alt="Profile" class="rounded-circle" height="150" id="profile-picture-preview" src="{% if user_profile.profile_picture %}{{ user_profile.profile_picture.url }}{% else %}{% static 'images/default-avatar.png' %}{% endif %}" width="150"/>
+                {% if user == user_profile %}
+                <button class="border-0" data-bs-toggle="tooltip" id="upload-profile-picture" title="Change Photo" type="button">
+<i class="bi bi-camera"></i>
+</button>
+<input accept="image/*" data-url="{% url 'accounts:ajax_upload_profile_picture' %}" id="profile-picture-input" type="file"/>
+<div class="text-center mt-2">
+<button class="btn btn-sm btn-primary d-none" id="save-profile-picture">
+<i class="bi bi-save me-1"></i> Save Changes
+                    </button>
+</div>
+                {% endif %}
+            </div>
+<div class="ms-4">
+<h2 class="mb-1">{{ user_profile.get_full_name|default:user_profile.username }}</h2>
+<p class="text-muted mb-1">
+<i class="bi {% if user_profile.role == 'caregiver' %}bi-heart-pulse{% else %}bi-person{% endif %} me-1"></i>
+                    {{ user_profile.get_role_display }}
+                    {% if user_profile.role == 'caregiver' and user_profile.is_verified %}
+                    <span class="badge bg-success ms-2">
+<i class="bi bi-check-circle-fill me-1"></i>Verified
+                    </span>
+                    {% endif %}
+                </p>
+                {% if user_profile.bio %}
+                <p class="text-muted mb-0">{{ user_profile.bio }}</p>
+                {% endif %}
+            </div>
+</div>
+        {% if user == user_profile %}
+        <div class="d-flex">
+<a class="btn btn-outline-primary me-2" href="{% url 'accounts:edit_profile' %}">
+<i class="bi bi-pencil-square me-1"></i> Edit Profile
+            </a>
+            {% if user.role == 'caregiver' and not user.is_verified %}
+            <a class="btn btn-primary" href="{% url 'accounts:caregiver_verification' %}">
+<i class="bi bi-shield-check me-1"></i> Get Verified
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+<div class="row">
+<!-- Left Column -->
+<div class="col-lg-8">
+<!-- About Section -->
+<div class="card mb-4">
+<div class="card-header">
+<h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>About</h5>
+</div>
+<div class="card-body">
+<div class="row mb-3">
+<div class="col-md-4 text-muted">
+<i class="bi bi-envelope me-2"></i> Email
+                    </div>
+<div class="col-md-8">
+                        {{ user_profile.email }}
+                        {% if user_profile.email_verified %}
+                        <span class="badge bg-success ms-2">
+<i class="bi bi-check-circle-fill me-1"></i>Verified
+                        </span>
+                        {% else %}
+                        <span class="badge bg-warning text-dark ms-2">
+<i class="bi bi-exclamation-triangle-fill me-1"></i>Not Verified
+                        </span>
+                        {% endif %}
+                    </div>
+</div>
+                
+                {% if user_profile.phone_number %}
+                <div class="row mb-3">
+<div class="col-md-4 text-muted">
+<i class="bi bi-telephone me-2"></i> Phone
+                    </div>
+<div class="col-md-8">
+                        {{ user_profile.phone_number }}
+                    </div>
+</div>
+                {% endif %}
+                
+                {% if user_profile.date_of_birth %}
+                <div class="row mb-3">
+<div class="col-md-4 text-muted">
+<i class="bi bi-calendar3 me-2"></i> Date of Birth
+                    </div>
+<div class="col-md-8">
+                        {{ user_profile.date_of_birth|date:"F d, Y" }}
+                    </div>
+</div>
+                {% endif %}
+                
+                {% if user_profile.address %}
+                <div class="row">
+<div class="col-md-4 text-muted">
+<i class="bi bi-geo-alt me-2"></i> Address
+                    </div>
+<div class="col-md-8">
+                        {{ user_profile.address|linebreaksbr }}
+                    </div>
+</div>
+                {% endif %}
+            </div>
+</div>
+<!-- Additional Info Section -->
+        {% if user_profile.role == 'caregiver' or user == user_profile %}
+        <div class="card mb-4">
+<div class="card-header">
+<h5 class="mb-0">
+<i class="bi bi-file-earmark-text me-2"></i>
+                    {% if user_profile.role == 'caregiver' %}Professional Details{% else %}Additional Information{% endif %}
+                </h5>
+</div>
+<div class="card-body">
+                {% if user_profile.role == 'caregiver' %}
+                    {% if user_profile.experience %}
+                    <div class="mb-3">
+<h6>Experience</h6>
+<p class="mb-0">{{ user_profile.experience }} years of experience</p>
+</div>
+                    {% endif %}
+                    
+                    {% if user_profile.specializations.exists %}
+                    <div class="mb-3">
+<h6>Specializations</h6>
+<div>
+                            {% for spec in user_profile.specializations.all %}
+                            <span class="badge bg-primary me-1 mb-1">{{ spec.name }}</span>
+                            {% endfor %}
+                        </div>
+</div>
+                    {% endif %}
+                    
+                    {% if user_profile.qualifications %}
+                    <div class="mb-3">
+<h6>Qualifications</h6>
+<div>{{ user_profile.qualifications|linebreaks }}</div>
+</div>
+                    {% endif %}
+                {% else %}
+                    <!-- Family member specific fields -->
+                    {% if user_profile.emergency_contact_name or user_profile.emergency_contact_phone %}
+                    <div class="mb-3">
+<h6>Emergency Contact</h6>
+<p class="mb-1">
+<strong>Name:</strong> 
+                            {{ user_profile.emergency_contact_name|default:"Not specified" }}
+                        </p>
+<p class="mb-0">
+<strong>Phone:</strong> 
+                            {{ user_profile.emergency_contact_phone|default:"Not specified" }}
+                        </p>
+</div>
+                    {% endif %}
+                {% endif %}
+                
+                {% if user_profile.additional_notes %}
+                <div>
+<h6>Additional Notes</h6>
+<p class="mb-0">{{ user_profile.additional_notes|linebreaks }}</p>
+</div>
+                {% endif %}
+            </div>
+</div>
+        {% endif %}
+    </div>
+<!-- Right Column -->
+<div class="col-lg-4">
+<!-- Account Status -->
+<div class="card mb-4">
+<div class="card-header">
+<h5 class="mb-0"><i class="bi bi-shield-lock me-2"></i>Account Status</h5>
+</div>
+<div class="card-body">
+<ul class="list-group list-group-flush">
+<li class="list-group-item d-flex justify-content-between align-items-center px-0">
+<span>Email Verified</span>
+                        {% if user_profile.email_verified %}
+                        <span class="badge bg-success">
+<i class="bi bi-check-circle-fill me-1"></i> Verified
+                        </span>
+                        {% else %}
+                        <a class="btn btn-sm btn-outline-warning" href="{% url 'accounts:verify_email' %}">
+                            Verify Now
+                        </a>
+                        {% endif %}
+                    </li>
+<li class="list-group-item d-flex justify-content-between align-items-center px-0">
+<span>Account Status</span>
+<span class="badge bg-{% if user_profile.is_active %}success{% else %}danger{% endif %}">
+                            {{ user_profile.is_active|yesno:"Active,Suspended" }}
+                        </span>
+</li>
+<li class="list-group-item d-flex justify-content-between align-items-center px-0">
+<span>Member Since</span>
+<span>{{ user_profile.date_joined|date:"M d, Y" }}</span>
+</li>
+                    {% if user_profile.last_login %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+<span>Last Login</span>
+<span>{{ user_profile.last_login|timesince }} ago</span>
+</li>
+                    {% endif %}
+                </ul>
+</div>
+</div>
+<!-- Quick Actions -->
+        {% if user == user_profile %}
+        <div class="card mb-4">
+<div class="card-header">
+<h5 class="mb-0"><i class="bi bi-lightning-charge me-2"></i>Quick Actions</h5>
+</div>
+<div class="card-body">
+<div class="d-grid gap-2">
+<a class="btn btn-outline-primary text-start" href="{% url 'accounts:change_password' %}">
+<i class="bi bi-key me-2"></i> Change Password
+                    </a>
+<a class="btn btn-outline-secondary text-start" href="{% url 'accounts:privacy_settings' %}">
+<i class="bi bi-shield-lock me-2"></i> Privacy Settings
+                    </a>
+                    {% if user.role == 'caregiver' %}
+                    <a class="btn btn-outline-success text-start" href="{% url 'accounts:career_portfolio' %}">
+<i class="bi bi-file-earmark-person me-2"></i> Career Portfolio
+                    </a>
+                    {% else %}
+                    <a class="btn btn-outline-info text-start" href="{% url 'accounts:family_dashboard' %}">
+<i class="bi bi-people me-2"></i> Family Dashboard
+                    </a>
+                    {% endif %}
+                </div>
+</div>
+</div>
+        {% endif %}
+        
+        <!-- Verification Badge -->
+        {% if user_profile.role == 'caregiver' %}
+        <div class="card">
+<div class="card-header">
+<h5 class="mb-0"><i class="bi bi-shield-check me-2"></i>Verification</h5>
+</div>
+<div class="card-body text-center">
+                {% if user_profile.is_verified %}
+                <div class="text-success mb-3">
+<i class="bi bi-patch-check-fill"></i>
+<h5 class="mt-2">Verified Caregiver</h5>
+<p class="text-muted small mb-0">Identity and credentials verified</p>
+</div>
+                {% else %}
+                <div class="text-warning mb-3">
+<i class="bi bi-shield-exclamation"></i>
+<h5 class="mt-2">Not Verified</h5>
+<p class="text-muted small mb-3">Complete verification to gain trust</p>
+                    {% if user == user_profile %}
+                    <a class="btn btn-primary w-100" href="{% url 'accounts:caregiver_verification' %}">
+                        Get Verified Now
+                    </a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+</div>
+        {% endif %}
+    </div>
+</div>
+
+{% if user == user_profile %}
+<!-- Danger Zone -->
+<div class="card border-danger mt-4">
+<div class="card-header bg-danger text-white">
+<h5 class="mb-0"><i class="bi bi-exclamation-triangle me-2"></i>Danger Zone</h5>
+</div>
+<div class="card-body">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+<div>
+<h6 class="mb-1">Deactivate Account</h6>
+<p class="text-muted mb-0 small">Temporarily deactivate your account. You can reactivate it later by logging in.</p>
+</div>
+<button class="btn btn-outline-danger mt-3 mt-md-0" data-bs-target="#deactivateAccountModal" data-bs-toggle="modal">
+<i class="bi bi-power me-1"></i> Deactivate Account
+            </button>
+</div>
+</div>
+</div>
+<!-- Deactivate Account Modal -->
+<div aria-hidden="true" aria-labelledby="deactivateAccountModalLabel" class="modal fade" id="deactivateAccountModal" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header bg-danger text-white">
+<h5 class="modal-title" id="deactivateAccountModalLabel">Confirm Deactivation</h5>
+<button aria-label="Close" class="btn-close btn-close-white" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<p>Are you sure you want to deactivate your account? This will log you out and make your profile temporarily inaccessible.</p>
+<p class="mb-0">You can reactivate your account at any time by logging in again.</p>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancel</button>
+<form action="{% url 'accounts:deactivate_account' %}" class="d-inline" method="post">
+                    {% csrf_token %}
+                    <button class="btn btn-danger" type="submit">Yes, Deactivate</button>
+</form>
+</div>
+</div>
+</div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+    // CSRF Token for AJAX requests
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    // Initialize tooltips
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+</script>
+{% endblock %}

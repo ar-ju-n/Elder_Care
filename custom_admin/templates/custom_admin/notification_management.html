@@ -1,0 +1,191 @@
+{% extends 'custom_admin/base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container py-4">
+  <h2 class="fw-bold mb-4">Notification Management</h2>
+  <!-- Collapsible Filters Card -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-light d-flex align-items-center justify-content-between">
+      <span class="fw-semibold"><i class="bi bi-funnel"></i> Filter Notifications</span>
+      <button class="btn btn-link text-decoration-none p-0" type="button" data-bs-toggle="collapse" data-bs-target="#notifFilters" aria-expanded="true">
+        <i class="bi bi-chevron-down"></i>
+      </button>
+    </div>
+    <div class="collapse show" id="notifFilters">
+      <form class="row g-3 align-items-end p-3" method="get">
+        <div class="col-md-2">
+          <label class="form-label mb-0" for="recipient">Recipient:</label>
+          <select class="form-select" id="recipient" name="recipient">
+            <option value="">All</option>
+            {% for user in recipients %}
+              <option value="{{ user.id }}" {% if user.id|stringformat:'s' == selected_recipient %}selected{% endif %}>{{ user.username }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label mb-0" for="is_read">Read Status:</label>
+          <select class="form-select" id="is_read" name="is_read">
+            <option value="">All</option>
+            <option value="read" {% if selected_is_read == 'read' %}selected{% endif %}>Read</option>
+            <option value="unread" {% if selected_is_read == 'unread' %}selected{% endif %}>Unread</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label mb-0" for="date_from">From:</label>
+          <input class="form-control" id="date_from" name="date_from" type="date" value="{{ selected_date_from }}"/>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label mb-0" for="date_to">To:</label>
+          <input class="form-control" id="date_to" name="date_to" type="date" value="{{ selected_date_to }}"/>
+        </div>
+        <div class="col-md-2 d-flex gap-2">
+          <button class="btn btn-success" type="submit"><i class="bi bi-funnel"></i> Filter</button>
+          <a class="btn btn-outline-secondary" href="?">Reset</a>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- Messages -->
+<div class="col-md-2 d-flex gap-2">
+<button class="btn btn-success" type="submit">Filter</button>
+<a class="btn btn-outline-secondary" href="?">Reset</a>
+</div>
+</form>
+</div>
+<!-- Messages -->
+  {% if messages %}
+    <div class="alert alert-info">
+<ul class="mb-0">
+        {% for message in messages %}
+          <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+      </li{%></ul>
+</div>
+  {% endif %}
+
+  <!-- Send Notification -->
+<div class="row mb-4">
+<div class="col-md-8">
+<div class="ec-card card p-3">
+<h4 class="mb-3 text-success">Send Notification</h4>
+<form method="post">
+          {% csrf_token %}
+          <div class="mb-2">
+<label for="id_recipients">Recipients</label>
+            {{ notif_form.recipients }}
+          </div>
+<div class="mb-2">
+<label for="id_template">Template</label>
+            {{ notif_form.template }}
+            <button class="btn btn-sm btn-outline-secondary" onclick="loadTemplate()" type="button">Load Template</button>
+</div>
+<div class="mb-2">
+<label for="id_subject">Subject</label>
+            {{ notif_form.subject }}
+          </div>
+<div class="mb-2">
+<label for="id_body">Body</label>
+            {{ notif_form.body }}
+          </div>
+<div class="mb-2">
+<label for="id_scheduled_for">Schedule for (optional)</label>
+            {{ notif_form.scheduled_for }}
+          </div>
+<button class="btn btn-success rounded-pill px-4 py-2 fw-semibold shadow-sm" type="submit">Send / Schedule Notification</button>
+</form>
+</div>
+</div>
+<div class="col-md-4">
+<div class="ec-card card p-3">
+<h4 class="mb-3">Save Notification Template</h4>
+<form method="post">
+          {% csrf_token %}
+          {{ template_form.as_p }}
+          <button class="btn btn-outline-success" name="save_template" type="submit">Save Template</button>
+</form>
+</div>
+</div>
+</div>
+<script>
+  function loadTemplate() {
+    var select = document.getElementById('id_template');
+    var selected = select.options[select.selectedIndex];
+    if (!selected.value) return;
+    fetch(`/custom_admin/api/notification_template/${selected.value}/`)
+      .then(resp => resp.json())
+      .then(data => {
+        document.getElementById('id_subject').value = data.subject;
+        document.getElementById('id_body').value = data.body;
+      });
+  }
+  </script>
+<!-- Scheduled Notifications -->
+<div class="ec-card card mb-4 shadow-lg rounded-4 bg-white">
+<h4 class="p-4 mb-0 border-bottom fw-bold text-primary">Scheduled Notifications</h4>
+<div class="table-responsive">
+<table class="table table-hover table-striped mb-0 align-middle">
+<thead>
+<tr><th>Subject</th><th>Recipients</th><th>Scheduled For</th><th>Sent</th></tr>
+</thead>
+<tbody>
+          {% for sched in scheduled_notifications %}
+            <tr>
+<td>{{ sched.subject }}</td>
+<td>
+                {% for recipient in sched.recipients.all %}
+                  {{ recipient }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+              </td>
+<td>{{ sched.scheduled_for }}</td>
+<td>{% if sched.sent %}<span class="badge bg-success">Yes</span>{% else %}<span class="badge bg-secondary">No</span>{% endif %}</td>
+</tr>
+          {% empty %}
+            <tr><td class="text-center" colspan="4">No scheduled notifications.</td></tr>
+          {% endfor %}
+        </tbody>
+</table>
+</div>
+</div>
+<!-- All Notifications -->
+<div class="ec-card card">
+<h4 class="p-3 mb-0 border-bottom">All Notifications</h4>
+<div class="table-responsive">
+<table class="table table-striped mb-0">
+<thead>
+<tr>
+<th>ID</th>
+<th>Recipient</th>
+<th>Message</th>
+<th>URL</th>
+<th>Created</th>
+<th>Read</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody>
+          {% for notif in notifications %}
+          <tr>
+<td>{{ notif.id }}</td>
+<td>{{ notif.recipient.username }}</td>
+<td>{{ notif.message|truncatechars:40 }}</td>
+<td>{{ notif.url }}</td>
+<td>{{ notif.created_at }}</td>
+<td>
+              {% if notif.is_read %}
+                <span class="badge ec-badge-read">✔</span>
+              {% else %}
+                <span class="badge ec-badge-unread">❌</span>
+              {% endif %}
+            </td>
+<td>
+<a class="ec-action-link" href="?action=delete¬if_id={{ notif.id }}" onclick="return confirm('Are you sure?')">Delete</a>
+</td>
+</tr>
+          {% endfor %}
+        </tbody>
+</table>
+</div>
+</div>
+</div>
+{% endblock %}

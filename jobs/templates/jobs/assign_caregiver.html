@@ -1,0 +1,150 @@
+{% extends 'jobs/base.html' %}
+
+{% block job_content %}
+<div class="card">
+<div class="card-header">
+<h4 class="mb-0">Assign Caregiver to: {{ job.title }}</h4>
+</div>
+<div class="card-body">
+        {% if applications %}
+            <div class="table-responsive">
+<table class="table table-hover">
+<thead>
+<tr>
+<th>Caregiver</th>
+<th>Status</th>
+<th>Applied</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody>
+                        {% for application in applications %}
+                        <tr>
+<td>
+<div class="d-flex align-items-center">
+<i class="fas fa-user-circle fa-2x me-2 text-secondary"></i>
+<div>
+<h6 class="mb-0">{{ application.caregiver.get_full_name|default:application.caregiver.username }}</h6>
+<small class="text-muted">{{ application.caregiver.email }}</small>
+</div>
+</div>
+</td>
+<td>
+                                {% if application.status == 'pending' %}
+                                    <span class="badge bg-warning text-dark">Pending</span>
+                                {% elif application.status == 'accepted' %}
+                                    <span class="badge bg-success">Accepted</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Rejected</span>
+                                {% endif %}
+                            </td>
+<td>{{ application.applied_at|timesince }} ago</td>
+<td>
+<a class="btn btn-sm btn-outline-primary me-1" data-bs-target="#applicationModal{{ application.id }}" data-bs-toggle="modal" href="#">
+<i class="fas fa-eye"></i> View
+                                </a>
+                                {% if application.status != 'accepted' %}
+                                <form action="{% url 'jobs:update_application_status' application.id %}" class="d-inline" method="post">
+                                    {% csrf_token %}
+                                    <input name="status" type="hidden" value="accepted"/>
+<button class="btn btn-sm btn-success" type="submit">
+<i class="fas fa-user-check"></i> Assign
+                                    </button>
+</form>
+                                {% endif %}
+                            </td>
+</tr>
+<!-- Application Details Modal -->
+<div aria-hidden="true" aria-labelledby="applicationModalLabel{{ application.id }}" class="modal fade" id="applicationModal{{ application.id }}" tabindex="-1">
+<div class="modal-dialog modal-lg">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="applicationModalLabel{{ application.id }}">
+                                            Application from {{ application.caregiver.get_full_name|default:application.caregiver.username }}
+                                        </h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<h6>Cover Letter</h6>
+<div class="mb-4 p-3 bg-light rounded">
+                                            {{ application.cover_letter|linebreaks|default:"No cover letter provided." }}
+                                        </div>
+<h6>Documents</h6>
+<div class="row g-3 mb-4">
+                                            {% if application.resume %}
+                                            <div class="col-md-6">
+<div class="card h-100">
+<div class="card-body text-center">
+<i class="fas fa-file-pdf fa-3x text-danger mb-3"></i>
+<h6>Resume</h6>
+<a class="btn btn-sm btn-outline-primary" href="{{ application.resume.url }}" target="_blank">
+<i class="fas fa-download me-1"></i> Download
+                                                        </a>
+</div>
+</div>
+</div>
+                                            {% endif %}
+                                            
+                                            {% if application.credentials %}
+                                            <div class="col-md-6">
+<div class="card h-100">
+<div class="card-body text-center">
+<i class="fas fa-certificate fa-3x text-warning mb-3"></i>
+<h6>Credentials</h6>
+<a class="btn btn-sm btn-outline-primary" href="{{ application.credentials.url }}" target="_blank">
+<i class="fas fa-download me-1"></i> Download
+                                                        </a>
+</div>
+</div>
+</div>
+                                            {% endif %}
+                                            
+                                            {% if application.reference_letter %}
+                                            <div class="col-md-6">
+<div class="card h-100">
+<div class="card-body text-center">
+<i class="fas fa-file-alt fa-3x text-info mb-3"></i>
+<h6>Reference Letter</h6>
+<a class="btn btn-sm btn-outline-primary" href="{{ application.reference_letter.url }}" target="_blank">
+<i class="fas fa-download me-1"></i> Download
+                                                        </a>
+</div>
+</div>
+</div>
+                                            {% endif %}
+                                        </div>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Close</button>
+                                        {% if application.status != 'accepted' %}
+                                        <form action="{% url 'jobs:update_application_status' application.id %}" class="d-inline" method="post">
+                                            {% csrf_token %}
+                                            <input name="status" type="hidden" value="accepted"/>
+<button class="btn btn-success" type="submit">
+<i class="fas fa-user-check me-1"></i> Assign This Caregiver
+                                            </button>
+</form>
+                                        {% endif %}
+                                    </div>
+</div>
+</div>
+</div>
+                        {% endfor %}
+                    </tbody>
+</table>
+</div>
+        {% else %}
+            <div class="text-center py-5">
+<i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+<h5>No applications received yet</h5>
+<p class="text-muted">Check back later or share this job to attract more applicants.</p>
+</div>
+        {% endif %}
+    </div>
+<div class="card-footer bg-white">
+<a class="btn btn-outline-secondary" href="{% url 'jobs:job_detail' job.id %}">
+<i class="fas fa-arrow-left me-1"></i> Back to Job
+        </a>
+</div>
+</div>
+{% endblock %}

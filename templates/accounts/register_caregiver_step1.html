@@ -1,53 +1,969 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load widget_tweaks %}
+
+{% block title %}Caregiver Registration - Step 1 of 2 | Elder Care{% endblock %}
+
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/registration.css' %}">
+<style>
+    :root {
+        --primary-color: #4361ee;
+        --secondary-color: #3f37c9;
+        --success-color: #4bb543;
+        --danger-color: #dc3545;
+        --light-gray: #f8f9fa;
+        --border-radius: 8px;
+        --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    body {
+        background-color: #f5f7fb;
+    }
+    
+    .registration-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+    }
+    
+    .registration-card {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+    
+    .registration-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 1.5rem 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .registration-header h2 {
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    .step-indicator {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 1.5rem;
+        position: relative;
+    }
+    
+    .step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .step-number {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+    }
+    
+    .step.active .step-number {
+        background: white;
+        color: var(--primary-color);
+        border-color: white;
+    }
+    
+    .step.completed .step-number {
+        background: var(--success-color);
+        border-color: var(--success-color);
+    }
+    
+    .step-label {
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.9);
+        text-align: center;
+    }
+    
+    .step.active .step-label {
+        font-weight: 600;
+        color: white;
+    }
+    
+    .step-progress {
+        position: absolute;
+        top: 20px;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.3);
+        z-index: 1;
+    }
+    
+    .step-progress-bar {
+        height: 100%;
+        background: white;
+        width: 50%;
+        transition: width 0.3s ease;
+    }
+    
+    .registration-body {
+        padding: 2rem;
+    }
+    
+    .form-section {
+        background: var(--light-gray);
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid var(--primary-color);
+    }
+    
+    .section-title {
+        color: var(--primary-color);
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .section-title i {
+        margin-right: 0.75rem;
+        font-size: 1.25rem;
+    }
+    
+    .form-label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-control, .form-select {
+        padding: 0.75rem 1rem;
+        border-radius: var(--border-radius);
+        border: 1px solid #dee2e6;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+    }
+    
+    .input-group-text {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        color: #6c757d;
+    }
+    
+    .btn-primary {
+        background: var(--primary-color);
+        border: none;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        border-radius: var(--border-radius);
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        background: var(--secondary-color);
+        transform: translateY(-2px);
+    }
+    
+    .btn-outline-secondary {
+        border-radius: var(--border-radius);
+        padding: 0.75rem 1.5rem;
+    }
+    
+    /* Profile Picture Upload */
+    .profile-picture-container {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .profile-picture-wrapper {
+        width: 150px;
+        height: 150px;
+        margin: 0 auto 1rem;
+        position: relative;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 4px solid white;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .profile-picture {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .profile-picture-placeholder {
+        width: 100%;
+        height: 100%;
+        background: #e9ecef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6c757d;
+    }
+    
+    .profile-picture-upload {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        padding: 0.5rem;
+        cursor: pointer;
+        text-align: center;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+    }
+    
+    .profile-picture-upload:hover {
+        background: rgba(0, 0, 0, 0.7);
+    }
+    
+    /* Password Strength Meter */
+    .password-strength {
+        margin-top: 0.75rem;
+    }
+    
+    .password-strength .progress {
+        height: 6px;
+        border-radius: 3px;
+        background-color: #e9ecef;
+    }
+    
+    .password-strength .progress-bar {
+        transition: width 0.3s ease, background-color 0.3s ease;
+    }
+    
+    .strength-0 {
+        background-color: #dc3545; /* Red */
+        width: 20%;
+    }
+    
+    .strength-1 {
+        background-color: #fd7e14; /* Orange */
+        width: 40%;
+    }
+    
+    .strength-2 {
+        background-color: #ffc107; /* Yellow */
+        width: 60%;
+    }
+    
+    .strength-3 {
+        background-color: #20c997; /* Teal */
+        width: 80%;
+    }
+    
+    .strength-4 {
+        background-color: #198754; /* Green */
+        width: 100%;
+    }
+    
+    /* Password Requirements */
+    .password-requirements {
+        margin-top: 0.75rem;
+        padding: 0.75rem;
+        background: #f8f9fa;
+        border-radius: var(--border-radius);
+        border: 1px dashed #dee2e6;
+    }
+    
+    .password-requirements p {
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #495057;
+    }
+    
+    .password-requirements ul {
+        margin-bottom: 0;
+        padding-left: 1.5rem;
+    }
+    
+    .password-requirements li {
+        position: relative;
+        margin-bottom: 0.25rem;
+        font-size: 0.85rem;
+        color: #6c757d;
+        transition: color 0.3s ease;
+    }
+    
+    .password-requirements li:before {
+        content: '•';
+        position: absolute;
+        left: -1rem;
+    }
+    
+    .password-requirements li.valid {
+        color: var(--success-color);
+    }
+    
+    .password-requirements li.valid:before {
+        content: '✓';
+        left: -1.25rem;
+    }
+    
+    /* Password Match Indicator */
+    .password-match {
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .password-match .bi {
+        margin-right: 0.25rem;
+    }
+    
+    .match-valid {
+        color: var(--success-color);
+    }
+    
+    .match-invalid {
+        color: var(--danger-color);
+    }
+    
+    /* Skills Input */
+    .skills-input-container {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    #skills-display {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        min-height: 40px;
+    }
+    
+    .skill-tag {
+        display: inline-flex;
+        align-items: center;
+        background: #e9ecef;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        color: #495057;
+    }
+    
+    .skill-tag .remove-skill {
+        margin-left: 0.5rem;
+        cursor: pointer;
+        color: #6c757d;
+        font-size: 1rem;
+        line-height: 1;
+    }
+    
+    .skill-tag .remove-skill:hover {
+        color: #dc3545;
+    }
+    
+    /* Terms and Conditions */
+    .terms-container {
+        background: #f8f9fa;
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+    }
+    
+    .form-check-input:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+    
+    .form-check-input:focus {
+        box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+    }
+    
+    .form-check-label a {
+        color: var(--primary-color);
+        text-decoration: none;
+    }
+    
+    .form-check-label a:hover {
+        text-decoration: underline;
+    }
+    
+    /* Footer Navigation */
+    .form-footer {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #dee2e6;
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 767.98px) {
+        .registration-container {
+            padding: 0 15px;
+        }
+        
+        .registration-body {
+            padding: 1.5rem 1rem;
+        }
+        
+        .form-section {
+            padding: 1.25rem 1rem;
+        }
+        
+        .profile-picture-wrapper {
+            width: 120px;
+            height: 120px;
+        }
+    }
+    
+    @media (max-width: 575.98px) {
+        .step-label {
+            font-size: 0.75rem;
+        }
+        
+        .step-number {
+            width: 32px;
+            height: 32px;
+            font-size: 0.875rem;
+        }
+        
+        .form-footer {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .btn {
+            width: 100%;
+        }
+    }
+    
+    #passwordMatch .bi {
+        margin-right: 0.25rem;
+    }
+    
+    /* Toggle Password Button */
+    .toggle-password {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+    .toggle-password .bi {
+        transition: opacity 0.2s ease;
+    }
+    .toggle-password:hover .bi {
+        opacity: 0.8;
+    }
+</style>
 {% endblock %}
+
 {% block extra_js %}
+{{ block.super }}
+<script src="{% static 'js/temp-email-handler.js' %}"></script>
 <script src="{% static 'js/registration.js' %}"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Phone number formatting and validation for Nepal numbers (+977 98xxxxxxxx)
+    const phoneInput = document.getElementById('id_phone_number');
+    if (phoneInput) {
+      // Format phone number as user types
+      phoneInput.addEventListener('input', function(e) {
+        // Get the input value and remove all non-digit characters
+        let value = e.target.value.replace(/\D/g, '');
+        
+        // Format the phone number as +977 98xxxxxxx
+        if (value.length > 0) {
+          // Always start with +977
+          let formattedValue = '+';
+          
+          // Add country code (977)
+          if (value.length >= 3) {
+            formattedValue += value.substring(0, 3) + ' ';
+            
+            // Add the rest of the number (98 + 8 digits)
+            if (value.length > 3) {
+              formattedValue += value.substring(3, 13); // Take up to 10 more digits
+            }
+            
+            // Update the input value with formatted number
+            e.target.value = formattedValue.trim();
+          } else {
+            // If less than 3 digits, just add the +
+            e.target.value = '+' + value;
+          }
+        } else {
+          e.target.value = '';
+        }
+      });
+      
+      // Validate on blur
+      phoneInput.addEventListener('blur', function(e) {
+        const phoneRegex = /^\+977\s?98\d{8}$/;
+        const value = e.target.value.replace(/\s+/g, ' ').trim(); // Normalize spaces
+        
+        if (value && !phoneRegex.test(value)) {
+          // Show error message if format is incorrect
+          if (!document.getElementById('phone-format-error')) {
+            const errorDiv = document.createElement('div');
+            errorDiv.id = 'phone-format-error';
+            errorDiv.className = 'invalid-feedback d-block';
+            errorDiv.textContent = 'Please enter a valid phone number in the format: +977 98xxxxxxxx';
+            phoneInput.parentNode.appendChild(errorDiv);
+            phoneInput.classList.add('is-invalid');
+          }
+        } else {
+          // Format the number properly when leaving the field
+          if (value) {
+            const digits = value.replace(/\D/g, '');
+            if (digits.length >= 3) {
+              e.target.value = `+${digits.substring(0, 3)} ${digits.substring(3, 13)}`;
+            }
+          }
+          
+          // Remove error message if format is correct
+          const errorDiv = document.getElementById('phone-format-error');
+          if (errorDiv) {
+            errorDiv.remove();
+            phoneInput.classList.remove('is-invalid');
+          }
+        }
+      });
+      
+      // Also validate on form submission
+      const form = phoneInput.closest('form');
+      if (form) {
+        form.addEventListener('submit', function(e) {
+          const phoneRegex = /^\+977\s?98\d{8}$/;
+          const value = phoneInput.value.replace(/\s+/g, ' ').trim();
+          
+          if (!phoneRegex.test(value)) {
+            e.preventDefault();
+            phoneInput.focus();
+            
+            // Show error if not already shown
+            if (!document.getElementById('phone-format-error')) {
+              const errorDiv = document.createElement('div');
+              errorDiv.id = 'phone-format-error';
+              errorDiv.className = 'invalid-feedback d-block';
+              errorDiv.textContent = 'Please enter a valid phone number in the format: +977 98xxxxxxxx';
+              phoneInput.parentNode.appendChild(errorDiv);
+              phoneInput.classList.add('is-invalid');
+            }
+          }
+        });
+      }
+    }
+
+    // Toggle password visibility
+    const togglePassword = document.querySelectorAll('.toggle-password');
+    togglePassword.forEach(button => {
+      button.addEventListener('click', function() {
+        const targetId = this.getAttribute('data-target');
+        const passwordField = document.getElementById(targetId);
+        const icon = this.querySelector('i');
+        
+        if (passwordField.type === 'password') {
+          passwordField.type = 'text';
+          icon.classList.remove('bi-eye');
+          icon.classList.add('bi-eye-slash');
+        } else {
+          passwordField.type = 'password';
+          icon.classList.remove('bi-eye-slash');
+          icon.classList.add('bi-eye');
+        }
+      });
+    });
+    
+    // Password strength checker
+    const passwordField = document.getElementById('id_password1');
+    const confirmPasswordField = document.getElementById('id_password2');
+    const strengthBar = document.getElementById('passwordStrengthBar');
+    const requirements = {
+      length: document.getElementById('req-length'),
+      uppercase: document.getElementById('req-uppercase'),
+      lowercase: document.getElementById('req-lowercase'),
+      number: document.getElementById('req-number'),
+      special: document.getElementById('req-special')
+    };
+    
+    if (passwordField) {
+      passwordField.addEventListener('input', function() {
+        const password = this.value;
+        let strength = 0;
+        
+        // Check length
+        if (password.length >= 8) {
+          requirements.length.classList.remove('invalid');
+          requirements.length.classList.add('valid');
+          strength += 20;
+        } else {
+          requirements.length.classList.remove('valid');
+          requirements.length.classList.add('invalid');
+        }
+        
+        // Check uppercase
+        if (/[A-Z]/.test(password)) {
+          requirements.uppercase.classList.remove('invalid');
+          requirements.uppercase.classList.add('valid');
+          strength += 20;
+        } else {
+          requirements.uppercase.classList.remove('valid');
+          requirements.uppercase.classList.add('invalid');
+        }
+        
+        // Check lowercase
+        if (/[a-z]/.test(password)) {
+          requirements.lowercase.classList.remove('invalid');
+          requirements.lowercase.classList.add('valid');
+          strength += 20;
+        } else {
+          requirements.lowercase.classList.remove('valid');
+          requirements.lowercase.classList.add('invalid');
+        }
+        
+        // Check number
+        if (/[0-9]/.test(password)) {
+          requirements.number.classList.remove('invalid');
+          requirements.number.classList.add('valid');
+          strength += 20;
+        } else {
+          requirements.number.classList.remove('valid');
+          requirements.number.classList.add('invalid');
+        }
+        
+        // Check special character
+        if (/[^A-Za-z0-9]/.test(password)) {
+          requirements.special.classList.remove('invalid');
+          requirements.special.classList.add('valid');
+          strength += 20;
+        } else {
+          requirements.special.classList.remove('valid');
+          requirements.special.classList.add('invalid');
+        }
+        
+        // Update strength bar
+        strengthBar.style.width = strength + '%';
+        
+        // Update strength bar color
+        if (strength < 40) {
+          strengthBar.className = 'progress-bar bg-danger';
+        } else if (strength < 80) {
+          strengthBar.className = 'progress-bar bg-warning';
+        } else {
+          strengthBar.className = 'progress-bar bg-success';
+        }
+        
+        // Check password match
+        if (confirmPasswordField && confirmPasswordField.value) {
+          checkPasswordMatch();
+        }
+      });
+    }
+    
+    // Confirm password match
+    if (confirmPasswordField) {
+      confirmPasswordField.addEventListener('input', checkPasswordMatch);
+    }
+    
+    function checkPasswordMatch() {
+      const confirmPassword = confirmPasswordField.value;
+      const password = passwordField.value;
+      const matchMessage = document.getElementById('passwordMatch');
+      
+      if (!confirmPassword) return;
+      
+      if (password === confirmPassword) {
+        matchMessage.innerHTML = '<span class="text-success"><i class="bi bi-check-circle-fill me-1"></i> Passwords match</span>';
+      } else {
+        matchMessage.innerHTML = '<span class="text-danger"><i class="bi bi-x-circle-fill me-1"></i> Passwords do not match</span>';
+      }
+    }
+  });
+</script>
 {% endblock %}
+
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
+<div class="registration-page py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="registration-card shadow-lg">
+                    <div class="registration-header text-center p-4">
+                        <h1 class="h3 mb-2">Become a Caregiver</h1>
+                        <p class="mb-0">Join our community of professional caregivers</p>
+                        
+                        <div class="registration-steps mt-4">
+                            <div class="step active">
+                                <span class="step-number">1</span>
+                                <span class="step-label">Account Info</span>
+                            </div>
+                            <div class="step">
+                                <span class="step-number">2</span>
+                                <span class="step-label">Verification</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body p-4 p-md-5">
+<form autocomplete="off" enctype="multipart/form-data" method="post" novalidate class="needs-validation">
+    {% csrf_token %}
+    <input name="step" type="hidden" value="1"/>
+    
+    <div class="row g-3">
+        <!-- Left Column -->
         <div class="col-md-6">
-            <div class="card shadow-lg">
-                <div class="card-header bg-success text-white">
-                    <h4 class="mb-0">Caregiver Registration - Step 1</h4>
+            <!-- Profile Picture -->
+            <div class="mb-4 text-center">
+                <div class="profile-picture-container mx-auto mb-3" style="position: relative; width: 150px; height: 150px; cursor: pointer;">
+                    <img id="profile-preview" src="{% static 'img/default-avatar.png' %}" 
+                         class="rounded-circle border w-100 h-100" alt="Profile picture" 
+                         style="object-fit: cover; border: 3px solid #fff; box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);">
+                    <div class="profile-upload-btn" style="position: absolute; bottom: 10px; right: 10px; background: #4e73df; color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0.15rem 0.5rem rgba(0, 0, 0, 0.15);">
+                        <i class="bi bi-camera-fill"></i>
+                    </div>
+                    <input type="file" name="profile_picture" accept="image/*" id="id_profile_picture" class="d-none">
                 </div>
-                <div class="card-body">
-                    <form method="post" enctype="multipart/form-data" novalidate>
-                        {% csrf_token %}
-                        <input type="hidden" name="step" value="1">
-                        {% for field in user_form %}
-    <div class="mb-3">
-        {{ field.label_tag }}
-        {{ field }}
-        {% if field.help_text %}
-            <small class="form-text text-muted">{{ field.help_text }}</small>
-        {% endif %}
-        {% for error in field.errors %}
-            <div class="text-danger small">{{ error }}</div>
-        {% endfor %}
-    </div>
-{% endfor %}
-{# Explicitly render profile_picture if not in user_form.fields order #}
-{% if user_form.profile_picture %}
-    <div class="mb-3">
-        {{ user_form.profile_picture.label_tag }}
-        {{ user_form.profile_picture }}
-        {% for error in user_form.profile_picture.errors %}
-            <div class="text-danger small">{{ error }}</div>
-        {% endfor %}
-    </div>
-{% endif %}
-                        <button type="submit" class="btn btn-success w-100">Continue to Step 2</button>
-                    </form>
+                {% if user_form.profile_picture.help_text %}
+                    <small class="text-muted d-block">{{ user_form.profile_picture.help_text }}</small>
+                {% endif %}
+                {% for error in user_form.profile_picture.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <!-- Full Name -->
+            <div class="mb-3">
+                <label for="id_full_name" class="form-label">Full Name *</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                    <input type="text" 
+                           class="form-control form-control-lg {% if user_form.full_name.errors %}is-invalid{% endif %}" 
+                           id="id_full_name" 
+                           name="full_name" 
+                           value="{{ user_form.full_name.value|default:'' }}" 
+                           placeholder="Enter your full name"
+                           required>
                 </div>
-                <div class="card-footer text-center">
-                    <a href="{% url 'accounts:login' %}">Already have an account? Login</a>
+                {% if user_form.full_name.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ user_form.full_name.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Phone Number -->
+            <div class="mb-3">
+                <label for="id_phone_number" class="form-label">Phone Number *</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
+                    <input type="tel" 
+                           class="form-control form-control-lg {% if user_form.phone_number.errors %}is-invalid{% endif %}" 
+                           id="id_phone_number" 
+                           name="phone_number" 
+                           value="{{ user_form.phone_number.value|default:'' }}" 
+                           placeholder="+977 9XXXXXXXXX"
+                           pattern="\+977 9[0-9]{9}"
+                           required>
                 </div>
+                <small class="form-text text-muted">{{ user_form.phone_number.help_text }}</small>
+                {% if user_form.phone_number.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ user_form.phone_number.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Email -->
+            <div class="mb-3">
+                <label for="{{ user_form.email.id_for_label }}" class="form-label">Email Address *</label>
+                <div class="input-group email-wrapper" data-no-temp-email>
+                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                    <input type="email" 
+                           name="{{ user_form.email.name }}"
+                           id="{{ user_form.email.id_for_label }}"
+                           class="form-control form-control-lg"
+                           value="{{ user_form.email.value|default:'' }}"
+                           placeholder="Enter your email address"
+                           autocomplete="email"
+                           required>
+                </div>
+                <small class="form-text text-muted">{{ user_form.email.help_text }}</small>
+                {% if user_form.email.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ user_form.email.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Address -->
+            <div class="mb-3">
+                <label for="id_address" class="form-label">Address *</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
+                    <textarea 
+                        class="form-control form-control-lg {% if user_form.address.errors %}is-invalid{% endif %}"
+                        id="id_address" 
+                        name="address" 
+                        rows="2"
+                        placeholder="Enter your full address"
+                        required>{{ user_form.address.value|default:'' }}</textarea>
+                </div>
+                {% if user_form.address.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ user_form.address.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="col-md-6">
+            <!-- Username -->
+            <div class="mb-3">
+                <label for="id_username" class="form-label">Username *</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-person-badge"></i></span>
+                    <input type="text" 
+                           class="form-control form-control-lg {% if user_form.username.errors %}is-invalid{% endif %}" 
+                           id="id_username" 
+                           name="username" 
+                           value="{{ user_form.username.value|default:'' }}" 
+                           placeholder="Choose a username"
+                           pattern="[A-Za-z0-9_@+.-]+"
+                           title="Username can only contain letters, numbers, and @/./+/-/_ characters"
+                           required>
+                </div>
+                <small class="form-text text-muted">This will be your unique identifier on our platform. Letters, digits and @/./+/-/_ only.</small>
+                {% if user_form.username.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ user_form.username.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Password with strength meter -->
+            <div class="mb-4">
+                <label for="id_password1" class="form-label">Password *</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                    <input type="password" 
+                           class="form-control form-control-lg {% if user_form.password1.errors %}is-invalid{% endif %}" 
+                           id="id_password1" 
+                           name="password1" 
+                           placeholder="Create a strong password"
+                           autocomplete="new-password"
+                           required>
+                    <button class="btn btn-outline-secondary toggle-password" 
+                            type="button"
+                            data-target="id_password1">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </div>
+                <div class="password-strength mt-2">
+                    <div class="progress">
+                        <div class="progress-bar" id="passwordStrengthBar" role="progressbar"></div>
+                    </div>
+                </div>
+                <div class="password-requirements mt-2">
+                    <small class="form-text d-block mb-1">Password must contain:</small>
+                    <ul class="list-unstyled small text-muted">
+                        <li class="invalid" id="req-length">At least 8 characters</li>
+                        <li class="invalid" id="req-uppercase">At least one uppercase letter</li>
+                        <li class="invalid" id="req-lowercase">At least one lowercase letter</li>
+                        <li class="invalid" id="req-number">At least one number</li>
+                        <li class="invalid" id="req-special">At least one special character</li>
+                    </ul>
+                </div>
+                {% if user_form.password1.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ user_form.password1.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="mb-4">
+                <label for="id_password2" class="form-label">Confirm Password *</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
+                    <input type="password" 
+                           class="form-control form-control-lg {% if user_form.password2.errors %}is-invalid{% endif %}" 
+                           id="id_password2" 
+                           name="password2" 
+                           placeholder="Re-enter your password"
+                           autocomplete="new-password"
+                           required>
+                    <button class="btn btn-outline-secondary toggle-password" 
+                            type="button"
+                            data-target="id_password2">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </div>
+                <div class="mt-2 small" id="passwordMatch"></div>
+                {% if user_form.password2.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ user_form.password2.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Rate per Hour -->
+            <div class="mb-3">
+                <label for="id_rate_per_hour" class="form-label">Rate per Hour (NPR) *</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-cash"></i></span>
+                    <input type="number" 
+                           class="form-control form-control-lg {% if user_form.rate_per_hour.errors %}is-invalid{% endif %}" 
+                           id="id_rate_per_hour" 
+                           name="rate_per_hour" 
+                           value="{{ user_form.rate_per_hour.value|default:'' }}" 
+                           placeholder="Enter your hourly rate"
+                           min="0"
+                           step="1"
+                           required>
+                </div>
+                <small class="form-text text-muted">Your hourly rate in Nepali Rupees (NPR)</small>
+                {% if user_form.rate_per_hour.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ user_form.rate_per_hour.errors.0 }}
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
+
+    <!-- Hidden fields -->
+    {% for field in user_form.hidden_fields %}
+        {{ field }}
+    {% endfor %}
+
+    <!-- Submit Button -->
+    <div class="d-grid gap-2 mt-4">
+        <button class="btn btn-primary btn-lg" type="submit" id="submit-button">
+            <span class="button-text">Continue to Step 2 <i class="bi bi-arrow-right ms-2"></i></span>
+            <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+        </button>
+    </div>
+
+    <div class="text-center mt-4">
+        <p class="mb-0">Already have an account? 
+            <a href="{% url 'accounts:login' %}" class="text-decoration-none">Sign In</a>
+        </p>
+    </div>
+</form>
 </div>
+</div>
+</div>
+</div>
+
 {% endblock %}

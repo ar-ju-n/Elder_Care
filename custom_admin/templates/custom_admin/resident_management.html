@@ -1,0 +1,114 @@
+{% extends 'custom_admin/base.html' %}
+{% block content %}
+<h2>Resident Management</h2>
+<form class="row g-3 mb-3" method="get">
+<div class="col-md-3">
+<div class="input-group">
+<span class="input-group-text"><i class="bi bi-search"></i></span>
+<input class="form-control" name="search" placeholder="Search by name, username, or email" type="text" value="{{ search_query }}"/>
+</div>
+</div>
+<div class="col-md-2">
+<input class="form-control" name="start_date" placeholder="Joined After" type="date" value="{{ start_date }}"/>
+</div>
+<div class="col-md-2">
+<input class="form-control" name="end_date" placeholder="Joined Before" type="date" value="{{ end_date }}"/>
+</div>
+<div class="col-md-2">
+<button class="btn btn-primary" type="submit"><i class="bi bi-funnel"></i> Filter</button>
+<a class="btn btn-outline-secondary ms-2" href="?export_csv=1{{ request.GET.urlencode|yesno:'&amp;,' }}"><i class="bi bi-download"></i> Export CSV</a>
+</div>
+</form>
+<form method="post">
+  {% csrf_token %}
+  <div class="mb-2">
+<select class="form-select w-auto d-inline" name="bulk_action">
+<option value="">Bulk Actions</option>
+<option value="activate">Activate</option>
+<option value="deactivate">Deactivate</option>
+<option value="delete">Delete</option>
+</select>
+<button class="btn btn-danger btn-sm ms-2" type="submit"><i class="bi bi-check2-circle"></i> Apply</button>
+</div>
+<table class="table table-striped align-middle shadow-sm">
+<thead>
+<tr>
+<th><input id="selectAll" onclick="toggleAll(this)" type="checkbox"/></th>
+<th>ID</th>
+<th>Username</th>
+<th>Email</th>
+<th>Full Name</th>
+<th>Active</th>
+<th>Date Joined</th>
+<th>Last Login</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+      {% for r in residents %}
+      <tr>
+<td><input name="selected" type="checkbox" value="{{ r.id }}"/></td>
+<td>{{ r.id }}</td>
+<td>
+<span class="avatar-circle me-1">
+    {% if r.avatar %}
+      <img alt="Avatar" class="rounded-circle" src="{{ r.avatar.url }}"/>
+    {% else %}
+      <span class="avatar-initials">{{ r.username|slice:":1"|upper }}</span>
+    {% endif %}
+  </span>{{ r.username }}
+</td>
+<td>{{ r.email }}</td>
+<td>{{ r.full_name }}</td>
+<td>{% if r.is_active %}<span class="badge bg-success">Yes</span>{% else %}<span class="badge bg-danger">No</span>{% endif %}</td>
+<td>{{ r.date_joined|date:'Y-m-d' }}</td>
+<td>{{ r.last_login|date:'Y-m-d H:i' }}</td>
+<td>
+<button class="btn btn-info btn-sm" data-bs-target="#detailsModal{{ r.id }}" data-bs-toggle="modal" type="button">
+<i class="bi bi-person-lines-fill"></i> Details
+</button>
+</td>
+</tr>
+<!-- Resident Details Modal -->
+<div aria-hidden="true" aria-labelledby="detailsModalLabel{{ r.id }}" class="modal fade" id="detailsModal{{ r.id }}" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="detailsModalLabel{{ r.id }}">Resident Details: {{ r.full_name }}</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<dl class="row">
+<dt class="col-sm-4">Username</dt><dd class="col-sm-8">{{ r.username }}</dd>
+<dt class="col-sm-4">Email</dt><dd class="col-sm-8">{{ r.email }}</dd>
+<dt class="col-sm-4">Full Name</dt><dd class="col-sm-8">{{ r.full_name }}</dd>
+<dt class="col-sm-4">Active</dt><dd class="col-sm-8">{% if r.is_active %}<span class="badge bg-success">Yes</span>{% else %}<span class="badge bg-danger">No</span>{% endif %}</dd>
+<dt class="col-sm-4">Date Joined</dt><dd class="col-sm-8">{{ r.date_joined|date:'Y-m-d H:i' }}</dd>
+<dt class="col-sm-4">Last Login</dt><dd class="col-sm-8">{{ r.last_login|date:'Y-m-d H:i' }}</dd>
+<dt class="col-sm-4">Phone</dt><dd class="col-sm-8">{{ r.phone|default:'-' }}</dd>
+<dt class="col-sm-4">Gender</dt><dd class="col-sm-8">{{ r.gender|default:'-' }}</dd>
+<dt class="col-sm-4">DOB</dt><dd class="col-sm-8">{{ r.dob|date:'Y-m-d'|default:'-' }}</dd>
+<dt class="col-sm-4">Emergency Contact</dt><dd class="col-sm-8">{{ r.emergency_contact|default:'-' }}</dd>
+<dt class="col-sm-4">Address</dt><dd class="col-sm-8">{{ r.address }}</dd>
+<dt class="col-sm-4">Bio</dt><dd class="col-sm-8">{{ r.bio|default:'-' }}</dd>
+</dl>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Close</button>
+</div>
+</div>
+</div>
+</div>
+      {% endfor %}
+    </tbody>
+</table>
+</form>
+<script>
+function toggleAll(source) {
+  checkboxes = document.getElementsByName('selected');
+  for(var i=0, n=checkboxes.length;i<n;i++) {
+    checkboxes[i].checked = source.checked;
+  }
+}
+</script>
+{% endblock %}

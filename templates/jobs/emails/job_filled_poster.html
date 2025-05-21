@@ -1,9 +1,10 @@
 <!DOCTYPE html>
+
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>Your job has been filled</title>
-    <link rel="stylesheet" href="{% static 'css/job_filled_poster.css' %}">
+<meta charset="utf-8"/>
+<title>Your job has been filled</title>
+
         body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
@@ -39,43 +40,35 @@
             border-radius: 4px;
             margin-top: 15px;
         }
-    </style>
+    
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h2>Your Job Has Been Filled</h2>
-        </div>
-        <div class="content">
-            <p>Dear {{ posted_by.get_full_name }},</p>
-            
-            <p>We're pleased to inform you that your job posting <strong>"{{ job.title }}"</strong> has been filled.</p>
-            
-            <p><strong>Caregiver Details:</strong></p>
-            <ul>
-                <li><strong>Name:</strong> {{ caregiver.get_full_name }}</li>
-                <li><strong>Email:</strong> {{ caregiver.email }}</li>
-                <li><strong>Phone:</strong> {{ caregiver.phone_number|default:"Not provided" }}</li>
-            </ul>
-            
-            <p>The caregiver has been notified and will contact you shortly to discuss further details.</p>
-            
-            <p>You can view the job details and the caregiver's profile by clicking the button below:</p>
-            
-            <p style="text-align: center;">
-                <a href="{{ site_url }}{% url 'jobs:job_detail' job.id %}" class="button">View Job Details</a>
-            </p>
-            
-            <p>Thank you for using our platform!</p>
-            
-            <p>Best regards,<br>
-            The Elderly Care & Mindful Support Hub Team</p>
-        </div>
-        <div class="footer">
-            <p>© {% now "Y" %} Elderly Care & Mindful Support Hub. All rights reserved.</p>
-            <p>If you have any questions, please contact us at support@elderlycarehubnp.com</p>
-        </div>
-    </div>
+<div class="container">
+<div class="header">
+<h2>Your Job Has Been Filled</h2>
+</div>
+<div class="content">
+<p>Dear {{ posted_by.get_full_name }},</p>
+<p>We're pleased to inform you that your job posting <strong>"{{ job.title }}"</strong> has been filled.</p>
+<p><strong>Caregiver Details:</strong></p>
+<ul>
+<li><strong>Name:</strong> {{ caregiver.get_full_name }}</li>
+<li><strong>Email:</strong> {{ caregiver.email }}</li>
+<li><strong>Phone:</strong> {{ caregiver.phone_number|default:"Not provided" }}</li>
+</ul>
+<p>The caregiver has been notified and will contact you shortly to discuss further details.</p>
+<p>You can view the job details and the caregiver's profile by clicking the button below:</p>
+<p>
+<a class="button" href="{{ site_url }}{% url 'jobs:job_detail' job.id %}">View Job Details</a>
+</p>
+<p>Thank you for using our platform!</p>
+<p>Best regards,<br/>
+            The Elderly Care &amp; Mindful Support Hub Team</p>
+</div>
+<div class="footer">
+<p>© {% now "Y" %} Elderly Care &amp; Mindful Support Hub. All rights reserved.</p>
+<p>If you have any questions, please contact us at support@elderlycarehubnp.com</p>
+</div>
+</div>
 </body>
 </html>
-

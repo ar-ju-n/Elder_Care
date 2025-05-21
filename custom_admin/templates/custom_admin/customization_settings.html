@@ -1,0 +1,90 @@
+{% extends 'custom_admin/base.html' %}
+{% load widget_tweaks %}
+{% block title %}Customization Settings | Elderly Care{% endblock %}
+
+{% block admin_header %}Customization Settings{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+<div class="row justify-content-center">
+<div class="col-lg-10">
+
+      {% if messages %}
+        <div class="mb-3">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button aria-label="Close" class="btn-close" data-bs-dismiss="alert" type="button"></button>
+</div>
+        {% endfor %}
+        </div>
+      {% endif %}
+
+      <div class="card shadow-sm mb-4">
+<div class="card-header bg-light fw-bold">All System Settings</div>
+<div class="card-body p-0">
+<div class="table-responsive">
+<table class="table table-hover align-middle mb-0">
+<thead class="table-light">
+<tr>
+<th>Key</th>
+<th>Value</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody>
+                {% for setting in settings %}
+                <tr>
+<td class="fw-semibold">{{ setting.key }}</td>
+<td>
+                    {% if edit_setting and edit_setting.id == setting.id %}
+                      <form class="d-flex gap-2 align-items-end" method="post">
+                        {% csrf_token %}
+                        <input name="edit_setting_id" type="hidden" value="{{ setting.id }}"/>
+<div class="flex-grow-1">{{ form.value }}</div>
+<button class="btn btn-success btn-sm" type="submit">Save</button>
+<a class="btn btn-secondary btn-sm" href="?">Cancel</a>
+</form>
+                    {% else %}
+                      <span class="text-muted">{{ setting.value|linebreaksbr }}</span>
+                    {% endif %}
+                  </td>
+<td>
+                    {% if not edit_setting or edit_setting.id != setting.id %}
+                      <a class="btn btn-outline-primary btn-sm me-1" href="?action=edit&amp;setting_id={{ setting.id }}" title="Edit"><i class="bi bi-pencil"></i> Edit</a>
+<a class="btn btn-outline-danger btn-sm" href="?action=delete&amp;setting_id={{ setting.id }}" onclick="return confirm('Delete this setting?')" title="Delete"><i class="bi bi-trash"></i> Delete</a>
+                    {% endif %}
+                  </td>
+</tr>
+                {% empty %}
+                <tr><td class="text-center text-muted" colspan="3">No settings found.</td></tr>
+                {% endfor %}
+              </tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="card shadow-sm mb-4">
+<div class="card-header bg-light fw-bold">Add New Setting</div>
+<div class="card-body">
+<form class="row g-3" method="post">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="col-md-5">
+              {{ form.key.label_tag }}
+              {{ form.key|add_class:'form-control' }}
+            </div>
+<div class="col-md-5">
+              {{ form.value.label_tag }}
+              {{ form.value|add_class:'form-control' }}
+            </div>
+<div class="col-md-2 d-flex align-items-end">
+<button class="btn btn-success w-100" type="submit">Add Setting</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}

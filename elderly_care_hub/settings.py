@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'content',
     'feedback',
     'chatbot',
-    
+    'custom_admin',
     'channels',  # Added for WebSockets
     'widget_tweaks',  # For add_class template filter
     'django.contrib.admin',
@@ -171,7 +171,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # For developm
 # EMAIL_HOST_PASSWORD = 'your-password'
 
 # Authentication settings
-LOGIN_URL = '/accounts/login/'
+LOGIN_URL = '/custom_admin/login/'
 LOGIN_REDIRECT_URL = '/'  # Redirect to home page after login
 LOGOUT_REDIRECT_URL = '/'  # Redirect to home page after logout
 

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <h2>Edit Article</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="mb-3">
+            <label for="id_title" class="form-label">Title</label>
+            {{ form.title }}
+        </div>
+        <div class="mb-3">
+            <label for="id_body" class="form-label">Body</label>
+            {{ form.body }}
+        </div>
+        <div class="mb-3">
+            <label for="id_tags" class="form-label">Tags</label>
+            {{ form.tags }}
+        </div>
+        <button type="submit" class="btn btn-primary">Update Article</button>
+        <a href="{% url 'content:article_detail' article.pk %}" class="btn btn-secondary ms-2">Cancel</a>
+    </form>
+</div>
+{% endblock %}

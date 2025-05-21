@@ -1,0 +1,111 @@
+{% extends 'custom_admin/base.html' %}
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-md-9">
+            <div class="card shadow-lg p-4">
+                <h2 class="fw-bold mb-4 text-center">Edit Article</h2>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label" for="id_title">Title</label>
+                        <input class="form-control" id="id_title" name="title" required type="text" value="{{ form.instance.title }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="id_body">Body</label>
+                        <textarea class="form-control" id="id_body" name="body" required rows="12">{{ form.instance.body }}</textarea>
+                        <small class="text-muted">Use the rich text editor to format your content</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="id_tags">Tags</label>
+                        <select class="form-control" id="id_tags" name="tags" multiple>
+                            {% for tag in tags %}
+                                <option value="{{ tag.id }}" {% if tag in form.instance.tags.all %}selected{% endif %}>{{ tag.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <small class="text-muted">Hold Ctrl/Cmd to select multiple tags</small>
+                    </div>
+                    <div class="d-grid gap-2 mt-3">
+                        <button type="submit" class="btn btn-success btn-lg">Save Changes</button>
+                        <a href="{% url 'custom_admin:article_list' %}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<!-- TinyMCE Rich Text Editor -->
+<script referrerpolicy="origin" src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    tinymce.init({
+      selector: '#id_content',
+      height: 400,
+      plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
+      toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
+    });
+  });
+</script>
+{% endblock %}
+
+
+<div class="col-12">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button aria-label="Close" class="btn-close" data-bs-dismiss="alert" type="button"></button>
+</div>
+      {% endfor %}
+    {% endif %}
+    <h2>Edit Article</h2>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label class="form-label" for="id_title">Title</label>
+        <input class="form-control" id="id_title" name="title" required type="text" value="{{ form.instance.title }}">
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="id_body">Body</label>
+        <textarea class="form-control" id="id_body" name="body" required rows="12">{{ form.instance.body }}</textarea>
+        <small class="text-muted">Use the rich text editor to format your content</small>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="id_tags">Tags</label>
+        <select class="form-control" id="id_tags" name="tags" multiple>
+            {% for tag in tags %}
+                <option value="{{ tag.id }}" {% if tag in form.instance.tags.all %}selected{% endif %}>{{ tag.name }}</option>
+            {% endfor %}
+        </select>
+        <small class="text-muted">Hold Ctrl/Cmd to select multiple tags</small>
+    </div>
+    <button class="btn btn-success" type="submit">Update Article</button>
+    <a class="btn btn-secondary ms-2" href="{% url 'custom_admin:article_list' %}">Cancel</a>
+</form>
+</div>
+</div>
+<!-- Tag Modal -->
+<div aria-hidden="true" aria-labelledby="tagModalLabel" class="modal fade" id="tagModal" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="tagModalLabel">Add New Tag</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<form action="{% url 'custom_admin:add_tag' %}" id="addTagForm" method="post">
+          {% csrf_token %}
+          <div class="mb-3">
+<label class="form-label" for="tag_name">Tag Name</label>
+<input class="form-control" id="tag_name" name="tag_name" required="" type="text"/>
+</div>
+<button class="btn btn-primary" type="submit">Add Tag</button>
+</form>
+</div>
+</div>
+</div>
+</div>
+

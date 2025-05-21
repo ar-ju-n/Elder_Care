@@ -3,81 +3,79 @@
 {% load static %}
 {% block content %}
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/chat_request_list.css' %}">
+
 
 {% endblock %}
 
 <div class="container py-4">
-  <div class="card shadow-sm mb-4">
-    <div class="card-header bg-primary text-white">
-      <h4 class="mb-0">Chat Requests</h4>
-    </div>
-    <div class="card-body">
+<div class="card shadow-sm mb-4">
+<div class="card-header bg-primary text-white">
+<h4 class="mb-0">Chat Requests</h4>
+</div>
+<div class="card-body">
       {% if requests %}
         {% for req in requests %}
   <div class="chat-request-modern-card mb-4 p-3 rounded-4 shadow animate__animated animate__fadeIn">
-    <div class="d-flex align-items-center justify-content-between">
-      <div class="d-flex align-items-center gap-3">
-        <div class="profile-img-modern">
+<div class="d-flex align-items-center justify-content-between">
+<div class="d-flex align-items-center gap-3">
+<div class="profile-img-modern">
           {% if user.is_caregiver %}
             {% if req.elder.profile_picture %}
-              <img src="{{ req.elder.profile_picture.url }}" alt="Profile" class="rounded-circle shadow" width="54" height="54">
+              <img alt="Profile" class="rounded-circle shadow" height="54" src="{{ req.elder.profile_picture.url }}" width="54"/>
             {% else %}
-              <img src="{% static 'img/default_profile.png' %}" alt="Profile" class="rounded-circle shadow" width="54" height="54">
+              <img alt="Profile" class="rounded-circle shadow" height="54" src="{% static 'img/default_profile.png' %}" width="54"/>
             {% endif %}
           {% else %}
             {% if req.caregiver.profile_picture %}
-              <img src="{{ req.caregiver.profile_picture.url }}" alt="Profile" class="rounded-circle shadow" width="54" height="54">
+              <img alt="Profile" class="rounded-circle shadow" height="54" src="{{ req.caregiver.profile_picture.url }}" width="54"/>
             {% else %}
-              <img src="{% static 'img/default_profile.png' %}" alt="Profile" class="rounded-circle shadow" width="54" height="54">
+              <img alt="Profile" class="rounded-circle shadow" height="54" src="{% static 'img/default_profile.png' %}" width="54"/>
             {% endif %}
           {% endif %}
         </div>
-        <div>
-          <div class="fw-bold fs-5">
+<div>
+<div class="fw-bold fs-5">
             {% if user.is_caregiver %}
               {{ req.elder.username }}
             {% else %}
               {{ req.caregiver.username }}
             {% endif %}
           </div>
-          <div class="text-muted small">
-            <i class="bi bi-clock me-1"></i> {{ req.created_at|date:"M d, Y H:i" }}
+<div class="text-muted small">
+<i class="bi bi-clock me-1"></i> {{ req.created_at|date:"M d, Y H:i" }}
           </div>
-        </div>
-      </div>
-      <span class="modern-status-chip {{ req.status }}">
+</div>
+</div>
+<span class="modern-status-chip {{ req.status }}">
         {% if req.status == 'pending' %}<i class="bi bi-hourglass-split me-1"></i>{% endif %}
         {% if req.status == 'accepted' %}<i class="bi bi-check-circle-fill me-1"></i>{% endif %}
         {% if req.status == 'rejected' %}<i class="bi bi-x-circle-fill me-1"></i>{% endif %}
         {{ req.status|capfirst }}
       </span>
-    </div>
+</div>
     {% if user.is_caregiver and req.status == 'pending' %}
       <div class="request-actions mt-3 d-flex gap-2 justify-content-end">
-        <a href="{% url 'chat:respond_request' req.id 'accepted' %}" class="btn btn-success btn-sm px-4"><i class="bi bi-check-lg me-1"></i>Accept</a>
-        <a href="{% url 'chat:respond_request' req.id 'rejected' %}" class="btn btn-danger btn-sm px-4"><i class="bi bi-x-lg me-1"></i>Reject</a>
-      </div>
+<a class="btn btn-success btn-sm px-4" href="{% url 'chat:respond_request' req.id 'accepted' %}"><i class="bi bi-check-lg me-1"></i>Accept</a>
+<a class="btn btn-danger btn-sm px-4" href="{% url 'chat:respond_request' req.id 'rejected' %}"><i class="bi bi-x-lg me-1"></i>Reject</a>
+</div>
     {% endif %}
   </div>
 {% endfor %}
       {% else %}
         <div class="text-center py-5">
-          <img src="{% static 'img/empty_state_requests.svg' %}" alt="No requests" class="mb-3 animate__animated animate__fadeInDown empty-state-img">
-          <div class="alert alert-info border-0 bg-light">
-            <i class="bi bi-info-circle me-2"></i>
-            <span class="fs-5">No chat requests at this time.</span>
-          </div>
+<img alt="No requests" class="mb-3 animate__animated animate__fadeInDown empty-state-img" src="{% static 'img/empty_state_requests.svg' %}"/>
+<div class="alert alert-info border-0 bg-light">
+<i class="bi bi-info-circle me-2"></i>
+<span class="fs-5">No chat requests at this time.</span>
+</div>
           {% if user.is_family %}
-            <a href="{% url 'chat:caregiver_list' %}" class="btn btn-primary mt-3 px-4 py-2 fs-6">
-              <i class="bi bi-plus-circle me-2"></i>Find Caregivers
+            <a class="btn btn-primary mt-3 px-4 py-2 fs-6" href="{% url 'chat:caregiver_list' %}">
+<i class="bi bi-plus-circle me-2"></i>Find Caregivers
             </a>
           {% endif %}
         </div>
       {% endif %}
     </div>
-  </div>
-  
-
+</div>
 </div>
 {% endblock %}

@@ -2,38 +2,38 @@
 {% load static %}
 {% load content_extras %}
 {% block content %}
-<link rel="stylesheet" href="{% static 'css/article_section.css' %}">
-<link rel="stylesheet" href="{% static 'css/article_detail.css' %}">
+
+
 <div class="section article-detail-section rounded-4">
-  <div class="container py-4 animate__animated animate__fadeIn">
-    <div class="row justify-content-center">
-      <div class="col-lg-9 col-xl-8">
-        <div class="card article-card shadow-lg border-0 mb-4 animate__animated animate__fadeInUp">
+<div class="container py-4 animate__animated animate__fadeIn">
+<div class="row justify-content-center">
+<div class="col-lg-9 col-xl-8">
+<div class="card article-card shadow-lg border-0 mb-4 animate__animated animate__fadeInUp">
           {% if article.video_url %}
             {% if 'youtube.com' in article.video_url or 'youtu.be' in article.video_url %}
               <div class="ratio ratio-16x9 mb-3">
-                <iframe src="{{ article.video_url|youtube_embed }}" frameborder="0" allowfullscreen></iframe>
-              </div>
+<iframe allowfullscreen="" frameborder="0" src="{{ article.video_url|youtube_embed }}"></iframe>
+</div>
             {% else %}
-              <video class="w-100 mb-3" controls>
-                <source src="{{ article.video_url }}">
+              <video class="w-100 mb-3" controls="">
+<source src="{{ article.video_url }}"/>
                 Your browser does not support the video tag.
               </video>
             {% endif %}
           {% endif %}
           {% if article.image %}
-          <img src="{{ article.image.url }}" class="card-img-top img-fluid rounded-top" alt="Image for {{ article.title }}">
+          <img alt="Image for {{ article.title }}" class="card-img-top img-fluid rounded-top" src="{{ article.image.url }}"/>
           {% endif %}
           <div class="card-body p-5">
-            <h1 class="card-title display-5 fw-bold mb-3 text-title animate__animated animate__fadeInDown">{{ article.title }}</h1>
-            <div class="mb-3 text-muted small">
-              <i class="bi bi-person-circle me-1"></i>
+<h1 class="card-title display-5 fw-bold mb-3 text-title animate__animated animate__fadeInDown">{{ article.title }}</h1>
+<div class="mb-3 text-muted small">
+<i class="bi bi-person-circle me-1"></i>
               {% if article.published_by %}
                 {{ article.published_by.get_full_name|default:article.published_by.username }}
               {% else %}
                 Unknown Author
               {% endif %}
-              &nbsp;|&nbsp;
+               | 
               <i class="bi bi-calendar-event me-1"></i> {{ article.published_at|date:'F j, Y' }}
             </div>
             {% if article.tags.all %}
@@ -46,14 +46,14 @@
             <div class="article-body mt-3">
               {{ article.body|linebreaks }}
             </div>
-          </div>
-        </div>
-        <a href="{% url 'content:article_list' %}" class="btn btn-outline-primary rounded-pill px-4 py-2 fw-bold animate__animated animate__fadeInUp animate__delay-1s">
-          <i class="bi bi-arrow-left"></i> Back to Articles
+</div>
+</div>
+<a class="btn btn-outline-primary rounded-pill px-4 py-2 fw-bold animate__animated animate__fadeInUp animate__delay-1s" href="{% url 'content:article_list' %}">
+<i class="bi bi-arrow-left"></i> Back to Articles
         </a>
-      </div>
-    </div>
-  </div>
+</div>
+</div>
+</div>
 </div>
 
 {% endblock %}

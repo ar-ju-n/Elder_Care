@@ -1,0 +1,37 @@
+{% extends 'custom_admin/base.html' %}
+{% block title %}Event Details{% endblock %}
+{% block content %}
+<div class="container py-4">
+<div class="card card-admin shadow-sm p-4">
+<div class="d-flex align-items-center mb-3">
+<h3 class="mb-0"><i class="bi bi-calendar-event me-2"></i>Event Details</h3>
+</div>
+<dl class="row mb-0">
+<dt class="col-sm-4">Title</dt>
+<dd class="col-sm-8">{{ event.title }}</dd>
+<dt class="col-sm-4">Description</dt>
+<dd class="col-sm-8">{{ event.description }}</dd>
+<dt class="col-sm-4">Start Time</dt>
+<dd class="col-sm-8">{{ event.start_time }}</dd>
+<dt class="col-sm-4">End Time</dt>
+<dd class="col-sm-8">{{ event.end_time }}</dd>
+<dt class="col-sm-4">Location</dt>
+<dd class="col-sm-8">{{ event.location }}</dd>
+<dt class="col-sm-4">Created By</dt>
+<dd class="col-sm-8">
+        {% if event.creator and event.creator.avatar %}
+          <img alt="Avatar" class="rounded-circle me-1" src="{{ event.creator.avatar.url }}"/>
+        {% elif event.creator %}
+          <span class="avatar-initials me-1">{{ event.creator.username|slice:":1"|upper }}</span>
+        {% endif %}
+        {% if event.creator %}{{ event.creator.username }}{% endif %}
+      </dd>
+</dl>
+<div class="mt-4 text-center">
+<a class="btn btn-primary btn-lg" href="{% url 'custom_admin:event_management' %}">
+<i class="bi bi-arrow-left"></i> Back to Events
+  </a>
+</div>
+</div>
+</div>
+{% endblock %}

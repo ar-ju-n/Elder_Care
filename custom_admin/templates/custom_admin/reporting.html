@@ -1,0 +1,213 @@
+{% extends 'custom_admin/base.html' %}
+{% block content %}
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<div class="d-flex justify-content-between align-items-center mb-3">
+<h2>System Monitoring &amp; Reporting</h2>
+<div>
+<a class="btn btn-outline-secondary me-2" href="/custom_admin/users/export/">Export Users CSV</a>
+<a class="btn btn-outline-secondary" href="/custom_admin/events/export/">Export Events CSV</a>
+</div>
+</div>
+<div class="row mb-4">
+<div class="col">
+<div class="card text-center">
+<div class="card-header">Total Users</div>
+<div class="card-body"><h3>{{ total_users }}</h3></div>
+</div>
+</div>
+<div class="col">
+<div class="card text-center">
+<div class="card-header">Caregivers</div>
+<div class="card-body"><h3>{{ caregivers }}</h3></div>
+</div>
+</div>
+<div class="col">
+<div class="card text-center">
+<div class="card-header">Family</div>
+<div class="card-body"><h3>{{ families }}</h3></div>
+</div>
+</div>
+<div class="col">
+<div class="card text-center">
+<div class="card-header">Admins</div>
+<div class="card-body"><h3>{{ admins }}</h3></div>
+</div>
+</div>
+<div class="col">
+<div class="card text-center">
+<div class="card-header">Total Events</div>
+<div class="card-body"><h3>{{ total_events }}</h3></div>
+</div>
+</div>
+<div class="col">
+<div class="card text-center">
+<div class="card-header">Upcoming Events</div>
+<div class="card-body"><h3>{{ upcoming_events }}</h3></div>
+</div>
+</div>
+</div>
+<h3>Recent User Registrations</h3>
+<table class="table table-striped">
+<thead>
+<tr>
+<th>Username</th>
+<th>Email</th>
+<th>Role</th>
+<th>Date Joined</th>
+</tr>
+</thead>
+<tbody>
+    {% for user in recent_users %}
+    <tr>
+<td>{{ user.username }}</td>
+<td>{{ user.email }}</td>
+<td>{{ user.role }}</td>
+<td>{{ user.date_joined }}</td>
+</tr>
+    {% endfor %}
+  </tbody>
+</table>
+<h3>Recent Events</h3>
+<table class="table table-striped">
+<thead>
+<tr>
+<th>Title</th>
+<th>Description</th>
+<th>Start</th>
+<th>End</th>
+<th>Created By</th>
+<th>Created At</th>
+</tr>
+</thead>
+<tbody>
+    {% for event in recent_events %}
+    <tr>
+<td>{{ event.title }}</td>
+<td>{{ event.description|truncatechars:40 }}</td>
+<td>{{ event.start_time }}</td>
+<td>{{ event.end_time }}</td>
+<td>{{ event.created_by }}</td>
+<td>{{ event.created_at }}</td>
+</tr>
+    {% endfor %}
+  </tbody>
+</table>
+<h3>User Registration Trend (Last 30 Days)</h3>
+<canvas height="80" id="userTrendChart"></canvas>
+<table class="table table-sm table-striped mt-3">
+<thead><tr><th>Date</th><th>Registrations</th></tr></thead>
+<tbody>
+    {% for day in user_trends %}
+      <tr><td>{{ day.day }}</td><td>{{ day.count }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+<h3>Event Creation Trend (Last 30 Days)</h3>
+<canvas height="80" id="eventTrendChart"></canvas>
+<table class="table table-sm table-striped mt-3">
+<thead><tr><th>Date</th><th>Events Created</th></tr></thead>
+<tbody>
+    {% for day in event_trends %}
+      <tr><td>{{ day.day }}</td><td>{{ day.count }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+<script>
+  const userTrendData = {{ user_trends|safe }};
+  const eventTrendData = {{ event_trends|safe }};
+  function formatDate(dateStr) {
+    // Format as YYYY-MM-DD
+    if (!dateStr) return '';
+    return dateStr.length > 10 ? dateStr.slice(0, 10) : dateStr;
+  }
+  const userLabels = userTrendData.map(d => formatDate(d.day));
+  const userCounts = userTrendData.map(d => d.count);
+  const eventLabels = eventTrendData.map(d => formatDate(d.day));
+  const eventCounts = eventTrendData.map(d => d.count);
+  new Chart(document.getElementById('userTrendChart').getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: userLabels,
+      datasets: [{
+        label: 'Registrations',
+        data: userCounts,
+        borderColor: '#007bff',
+        backgroundColor: 'rgba(0,123,255,0.1)',
+        fill: true,
+        tension: 0.3
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: { x: { title: { display: true, text: 'Date' } }, y: { beginAtZero: true } }
+    }
+  });
+  new Chart(document.getElementById('eventTrendChart').getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: eventLabels,
+      datasets: [{
+        label: 'Events Created',
+        data: eventCounts,
+        borderColor: '#28a745',
+        backgroundColor: 'rgba(40,167,69,0.1)',
+        fill: true,
+        tension: 0.3
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: { x: { title: { display: true, text: 'Date' } }, y: { beginAtZero: true } }
+    }
+  });
+</script>
+<h3>Recent User Logins</h3>
+<table class="table table-sm table-striped">
+<thead><tr><th>Username</th><th>Last Login</th></tr></thead>
+<tbody>
+    {% for user in user_activity %}
+      <tr><td>{{ user.username }}</td><td>{{ user.last_login }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+<h3>Recent Event Activity</h3>
+<table class="table table-sm table-striped">
+<thead><tr><th>Title</th><th>Created By</th><th>Created At</th></tr></thead>
+<tbody>
+    {% for event in event_activity %}
+      <tr><td>{{ event.title }}</td><td>{{ event.created_by }}</td><td>{{ event.created_at }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+<h3>Recent Admin Audit Log</h3>
+<table class="table table-sm table-striped">
+<thead>
+<tr>
+<th>Timestamp</th>
+<th>Admin User</th>
+<th>Action</th>
+<th>Target Type</th>
+<th>Target</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+    {% for log in audit_logs %}
+      <tr>
+<td>{{ log.timestamp|date:"Y-m-d H:i" }}</td>
+<td>{{ log.user }}</td>
+<td>{{ log.get_action_display }}</td>
+<td>{{ log.target_type }}</td>
+<td>{{ log.target_repr }}</td>
+<td>{{ log.details }}</td>
+</tr>
+    {% empty %}
+      <tr><td class="text-center" colspan="6">No audit logs yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

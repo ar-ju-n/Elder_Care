@@ -1,0 +1,58 @@
+{% extends 'custom_admin/base.html' %}
+{% block content %}
+<div class="container-fluid">
+<div class="row">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button aria-label="Close" class="btn-close" data-bs-dismiss="alert" type="button"></button>
+</div>
+      {% endfor %}
+    {% endif %}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+<h2>Homepage Slides</h2>
+<a class="btn btn-success" href="{% url 'custom_admin:slide_add' %}">Add Slide</a>
+</div>
+<table class="table table-hover table-bordered align-middle shadow-sm bg-white rounded">
+<thead class="table-light">
+<tr>
+<th>Title</th>
+<th>Image</th>
+<th>Ordering</th>
+<th>Link</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody>
+        {% for slide in slides %}
+        <tr>
+<td>{{ slide.title }}</td>
+<td>
+            {% if slide.image %}
+            <img src="{{ slide.image.url }}" alt="{{ slide.title }}" style="max-width:160px; max-height:90px; object-fit:cover; border-radius:6px; box-shadow:0 2px 8px rgba(0,0,0,0.08);"/>
+            {% else %}
+            No image
+            {% endif %}
+          </td>
+<td>{{ slide.ordering }}</td>
+<td>
+            {% if slide.link %}
+            <a class="text-primary" href="{{ slide.link }}" target="_blank">{{ slide.link|truncatechars:30 }}</a>
+            {% else %}
+            <span class="text-muted">No link</span>
+            {% endif %}
+          </td>
+<td>
+<a class="btn btn-primary btn-sm" href="{% url 'custom_admin:slide_edit' slide.id %}">Edit</a>
+<a class="btn btn-danger btn-sm" href="{% url 'custom_admin:slide_delete' slide.id %}">Delete</a>
+</td>
+</tr>
+        {% empty %}
+        <tr><td class="text-center text-muted" colspan="5">No slides found.</td></tr>
+        {% endfor %}
+      </tbody>
+</table>
+</div>
+</div>
+{% endblock %}

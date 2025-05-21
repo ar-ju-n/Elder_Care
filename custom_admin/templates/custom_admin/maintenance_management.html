@@ -1,0 +1,127 @@
+{% extends 'custom_admin/base.html' %}
+{% block content %}
+<div class="ec-card card mb-4 shadow-lg rounded-4 bg-white">
+<h4 class="p-4 mb-0 border-bottom fw-bold text-primary">Maintenance</h4>
+<div class="p-4">
+<p class="text-muted">Perform system health checks, backups, and other maintenance tasks.</p>
+<div class="row g-4">
+<div class="col-md-6">
+<div class="card h-100 p-3">
+<h5>System Health</h5>
+<ul class="list-unstyled">
+<li><span class="fw-bold">Database:</span> <span class="badge bg-success" id="db-status-badge">Healthy</span></li>
+<li><span class="fw-bold">Storage:</span> <span class="badge bg-success" id="storage-status-badge">Healthy</span></li>
+<li><span class="fw-bold">Background Jobs:</span> <span class="badge bg-warning text-dark" id="jobs-status-badge">Warning</span></li>
+</ul>
+<button class="btn btn-outline-primary btn-sm" id="rerun-health-checks-btn">Re-run Health Checks</button>
+</div>
+</div>
+<div class="col-md-6">
+<div class="card h-100 p-3">
+<h5>Maintenance Actions</h5>
+<button class="btn btn-outline-secondary mb-2 w-100" id="download-logs-btn">Download Logs</button>
+<button class="btn btn-outline-secondary mb-2 w-100" id="clear-cache-btn">Clear Cache</button>
+<button class="btn btn-outline-secondary mb-2 w-100" id="backup-db-btn">Backup Database</button>
+<button class="btn btn-outline-danger mb-2 w-100" id="restore-db-btn">Restore Database</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Maintenance actions AJAX handlers
+    function showAlert(message, success=true) {
+        let alertDiv = document.createElement('div');
+        alertDiv.className = 'alert ' + (success ? 'alert-success' : 'alert-danger') + ' alert-dismissible fade show';
+        alertDiv.role = 'alert';
+        alertDiv.innerHTML = message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+        document.body.prepend(alertDiv);
+        setTimeout(() => { alertDiv.remove(); }, 4000);
+    }
+    function postAction(url, btn) {
+        btn.disabled = true;
+        let orig = btn.innerHTML;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Working...';
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': (document.querySelector('[name=csrfmiddlewaretoken]')||{}).value || '',
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+        }).then(res => res.json())
+        .then(data => {
+            showAlert(data.message, data.status === 'success');
+        }).catch(() => {
+            showAlert('Action failed.', false);
+        }).finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = orig;
+        });
+    }
+    let downloadBtn = document.getElementById('download-logs-btn');
+    let clearCacheBtn = document.getElementById('clear-cache-btn');
+    let backupDbBtn = document.getElementById('backup-db-btn');
+    let restoreDbBtn = document.getElementById('restore-db-btn');
+    if(downloadBtn) downloadBtn.onclick = () => postAction('/custom_admin/api/download_logs/', downloadBtn);
+    if(clearCacheBtn) clearCacheBtn.onclick = () => postAction('/custom_admin/api/clear_cache/', clearCacheBtn);
+    if(backupDbBtn) backupDbBtn.onclick = () => postAction('/custom_admin/api/backup_database/', backupDbBtn);
+    if(restoreDbBtn) restoreDbBtn.onclick = () => postAction('/custom_admin/api/restore_database/', restoreDbBtn);
+
+    const rerunButton = document.getElementById('rerun-health-checks-btn');
+    const dbStatusBadge = document.getElementById('db-status-badge');
+    const storageStatusBadge = document.getElementById('storage-status-badge');
+    const jobsStatusBadge = document.getElementById('jobs-status-badge');
+
+    // Helper function to update badge class and text
+    function updateBadge(badgeElement, status) {
+        badgeElement.textContent = status;
+        badgeElement.className = 'badge'; // Reset classes
+        if (status === 'Healthy') {
+            badgeElement.classList.add('bg-success');
+        } else if (status === 'Warning') {
+            badgeElement.classList.add('bg-warning', 'text-dark');
+        } else if (status === 'Error' || status === 'Unhealthy') {
+            badgeElement.classList.add('bg-danger');
+        } else {
+            badgeElement.classList.add('bg-secondary'); // Default/unknown
+        }
+    }
+
+    if (rerunButton) { // Ensure the button exists before adding listener
+        rerunButton.addEventListener('click', function () {
+            // Optionally, add a loading indicator here
+            rerunButton.disabled = true;
+            rerunButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Checking...';
+
+            fetch("{% url 'custom_admin:api_get_health_status' %}") // We will create this URL name
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok: ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    updateBadge(dbStatusBadge, data.database_status);
+                    updateBadge(storageStatusBadge, data.storage_status);
+                    updateBadge(jobsStatusBadge, data.jobs_status);
+                })
+                .catch(error => {
+                    console.error('Error fetching health status:', error);
+                    // Optionally, display an error message to the user
+                    updateBadge(dbStatusBadge, 'Error');
+                    updateBadge(storageStatusBadge, 'Error');
+                    updateBadge(jobsStatusBadge, 'Error');
+                })
+                .finally(() => {
+                     rerunButton.disabled = false;
+                     rerunButton.textContent = 'Re-run Health Checks';
+                });
+        });
+    }
+});
+</script>
+{% endblock %}
