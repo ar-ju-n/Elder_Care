@@ -180,4 +180,3 @@ load_dotenv()
 # OpenAI API key
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', '')
 
-TAILWIND_APP_NAME = 'them
