@@ -1,0 +1,75 @@
+{# Refactored: This template uses only the global base.html and global URL/template policy #}
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Send Connection Request - Elder Care{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Send Connection Request</h4>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="flex-shrink-0">
+                            {% if caregiver.profile_picture %}
+                                <img src="{{ caregiver.profile_picture.url }}" 
+                                     alt="{{ caregiver.get_full_name|default:caregiver.username }}" 
+                                     class="rounded-circle" 
+                                     width="80" 
+                                     height="80">
+                            {% else %}
+                                <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center" 
+                                     style="width: 80px; height: 80px; font-size: 2rem;">
+                                    {{ caregiver.get_full_name|default:caregiver.username|first|upper }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="ms-4">
+                            <h5 class="mb-1">{{ caregiver.get_full_name|default:caregiver.username }}</h5>
+                            {% if caregiver.bio %}
+                                <p class="text-muted mb-0">{{ caregiver.bio|truncatewords:20 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Message (Optional)</label>
+                            <textarea class="form-control" 
+                                     id="message" 
+                                     name="message" 
+                                     rows="4" 
+                                     placeholder="Write a message to introduce yourself and explain why you'd like to connect..."></textarea>
+                            <div class="form-text">
+                                Let the caregiver know why you'd like to connect with them.
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{% url 'profile' caregiver.id %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-1"></i> Back to Profile
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-send me-1"></i> Send Request
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add any additional JavaScript here if needed
+});
+</script>
+{% endblock %}

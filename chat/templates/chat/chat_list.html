@@ -92,9 +92,13 @@
 </div>
 <div class="list-group" id="userList">
                     {% for user in available_users %}
-                    <a class="list-group-item list-group-item-action" href="{% url 'chat:start_chat' user.id %}">
+                    <a class="list-group-item list-group-item-action" href="{% url 'chat:start_chat_with_user' user.id %}">
 <div class="d-flex align-items-center">
-<img alt="{{ user.get_full_name }}" class="rounded-circle me-3" height="40" src="{{ user.profile_picture.url|default:'/static/images/default-avatar.png' }}" width="40"/>
+{% if user.profile_picture and user.profile_picture.url %}
+  <img alt="{{ user.get_full_name }}" class="rounded-circle me-3" height="40" src="{{ user.profile_picture.url }}" width="40"/>
+{% else %}
+  <img alt="{{ user.get_full_name }}" class="rounded-circle me-3" height="40" src="/static/images/default-avatar.png" width="40"/>
+{% endif %}
 <div>
 <h6 class="mb-0">{{ user.get_full_name|default:user.username }}</h6>
 <small class="text-muted">{{ user.get_role_display }}</small>

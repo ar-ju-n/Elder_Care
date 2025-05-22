@@ -1,5 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
+from PIL import Image
+from io import BytesIO
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 class User(AbstractUser):
     # Role choices
@@ -49,10 +53,26 @@ class User(AbstractUser):
     ]
     
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default=FAMILY)
-    profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
+    def validate_image_size(image):
+        max_size = 1024 * 1024  # 1MB
+        if image.size > max_size:
+            raise ValidationError("Profile picture file size may not exceed 1MB.")
+
+    profile_picture = models.ImageField(
+        upload_to='profile_pictures/',
+        blank=True,
+        null=True,
+        validators=[validate_image_size]
+    )
     bio = models.TextField(blank=True)
     full_name = models.CharField(max_length=150)  # Required for both family and caregiver
     address = models.CharField(max_length=255)    # Required for both family and caregiver
+    phone = models.CharField(
+        max_length=20,
+        blank=True,
+        null=True,
+        help_text='Phone number in international format (e.g., +14155552671)'
+    )
     rate_per_hour = models.PositiveIntegerField(null=True, blank=True, help_text="Caregiver's rate per hour in NPR. Only required for caregivers.")  # Already correct: null=True, blank=True
     email_verified = models.BooleanField(default=False, help_text="Whether the user has verified their email address")
     
@@ -215,3 +235,38 @@ class Message(models.Model):
 
     def __str__(self):
         return f"Message from {self.sender.username} to {self.recipient.username}: {self.content[:40]}..."
+
+class ConnectionRequest(models.Model):
+    PENDING = 'pending'
+    ACCEPTED = 'accepted'
+    REJECTED = 'rejected'
+    STATUS_CHOICES = [
+        (PENDING, 'Pending'),
+        (ACCEPTED, 'Accepted'),
+        (REJECTED, 'Rejected'),
+    ]
+    
+    from_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_connection_requests')
+    to_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_connection_requests')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=PENDING)
+    message = models.TextField(blank=True, help_text="Optional message to the caregiver")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('from_user', 'to_user')
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.from_user.username} → {self.to_user.username} ({self.get_status_display()})"
+    
+    def accept(self):
+        self.status = self.ACCEPTED
+        self.save()
+        # Create a connection between users
+        self.from_user.connections.add(self.to_user)
+        self.to_user.connections.add(self.from_user)
+    
+    def reject(self):
+        self.status = self.REJECTED
+        self.save()

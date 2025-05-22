@@ -1,0 +1,96 @@
+{% comment %}
+Custom widget template for multiple input fields.
+This template is used by the VideoForm for the tags field.
+{% endcomment %}
+
+<div class="multiple-input-widget">
+    <div class="tags-input-container">
+        {% for widget in widget.subwidgets %}
+            <div class="input-group mb-2">
+                <input type="text" 
+                       name="{{ widget.name }}" 
+                       value="{{ widget.value|default:'' }}" 
+                       class="form-control tag-input"
+                       placeholder="Add a tag"
+                       {% if widget.attrs.required %}required{% endif %}>
+                {% if not forloop.last %}
+                    <button type="button" class="btn btn-outline-secondary remove-tag" title="Remove tag">
+                        <i class="bi bi-dash-circle"></i>
+                    </button>
+                {% else %}
+                    <button type="button" class="btn btn-outline-primary add-tag" title="Add another tag">
+                        <i class="bi bi-plus-circle"></i>
+                    </button>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+(function() {
+    document.addEventListener('DOMContentLoaded', function() {
+        const container = document.querySelector('.tags-input-container');
+        
+        // Add new tag input
+        function addNewTagInput(initialValue = '') {
+            const inputGroup = document.createElement('div');
+            inputGroup.className = 'input-group mb-2';
+            
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'form-control tag-input';
+            input.placeholder = 'Add a tag';
+            input.value = initialValue;
+            
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'btn btn-outline-secondary remove-tag';
+            removeBtn.title = 'Remove tag';
+            removeBtn.innerHTML = '<i class="bi bi-dash-circle"></i>';
+            
+            inputGroup.appendChild(input);
+            inputGroup.appendChild(removeBtn);
+            
+            // Add the new input group before the add button
+            const addButton = container.querySelector('.add-tag').parentElement;
+            container.insertBefore(inputGroup, addButton);
+            
+            // Focus the new input
+            input.focus();
+        }
+        
+        // Handle add tag button click
+        container.addEventListener('click', function(e) {
+            const addBtn = e.target.closest('.add-tag');
+            const removeBtn = e.target.closest('.remove-tag');
+            
+            if (addBtn) {
+                e.preventDefault();
+                addNewTagInput();
+            } else if (removeBtn) {
+                e.preventDefault();
+                const inputGroups = container.querySelectorAll('.input-group');
+                if (inputGroups.length > 2) { // Keep at least one input
+                    removeBtn.closest('.input-group').remove();
+                } else if (inputGroups.length === 2) {
+                    // If this is the last input, just clear it
+                    const input = inputGroups[0].querySelector('input');
+                    if (input) input.value = '';
+                }
+            }
+        });
+        
+        // Handle Enter key to add new tag
+        container.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const activeElement = document.activeElement;
+                if (activeElement.classList.contains('tag-input') && activeElement.value.trim() !== '') {
+                    addNewTagInput();
+                }
+            }
+        });
+    });
+})();
+</script>

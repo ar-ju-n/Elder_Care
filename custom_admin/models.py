@@ -12,6 +12,9 @@ class Integration(models.Model):
     status = models.CharField(max_length=20, default='Not Connected')
     config = models.JSONField(default=dict, blank=True)  # Store API keys, etc.
 
+    class Meta:
+        app_label = 'custom_admin'
+
     def __str__(self):
         return f"{self.name} ({self.get_service_type_display()})"
 

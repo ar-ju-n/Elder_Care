@@ -3,7 +3,7 @@
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold">FAQs</h2>
-        <a href="{% url 'custom_admin:faq_add' %}" class="btn btn-primary">Add FAQ</a>
+        <a href="{% url 'custom_admin:content:faq_add' %}" class="btn btn-primary">Add FAQ</a>
     </div>
     <div class="card shadow-sm">
         <div class="card-body p-0">
@@ -24,8 +24,8 @@
                             <td>{% for tag in faq.tags.all %}<span class="badge bg-info text-dark me-1">{{ tag.name }}</span>{% empty %}-{% endfor %}</td>
                             <td>{{ faq.created_at|date:'Y-m-d H:i' }}</td>
                             <td>
-                                <a href="{% url 'custom_admin:faq_edit' faq.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
-                                <a href="{% url 'custom_admin:faq_delete' faq.id %}" class="btn btn-sm btn-outline-danger ms-2">Delete</a>
+                                <a href="{% url 'custom_admin:content:faq_edit' faq.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
+                                <a href="{% url 'custom_admin:content:faq_delete' faq.id %}" class="btn btn-sm btn-outline-danger ms-2">Delete</a>
                             </td>
                         </tr>
                         {% empty %}

@@ -1,0 +1,500 @@
+{% extends 'custom_admin/jobs/base_job.html' %}
+{% load static crispy_forms_tags %}
+
+{% block page_title %}
+    {% if form.instance.pk %}Edit{% else %}Add New{% endif %} Application - {{ job.title }}
+{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<style>
+    .form-section {
+        background: #fff;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(0, 0, 0, 0.125);
+    }
+    .form-section h5 {
+        color: #495057;
+        padding-bottom: 0.75rem;
+        margin-bottom: 1.25rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+    .form-actions {
+        background: #f8f9fa;
+        padding: 1rem 1.5rem;
+        border-radius: 0.5rem;
+        margin-top: 2rem;
+        border: 1px solid #e9ecef;
+    }
+    .file-upload {
+        border: 2px dashed #dee2e6;
+        border-radius: 0.5rem;
+        padding: 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        background: #f8f9fa;
+    }
+    .file-upload:hover {
+        border-color: #0d6efd;
+        background: #f0f7ff;
+    }
+    .file-upload i {
+        font-size: 2.5rem;
+        color: #6c757d;
+        margin-bottom: 1rem;
+        display: block;
+    }
+    .file-info {
+        margin-top: 1rem;
+        padding: 0.75rem;
+        background: #f8f9fa;
+        border-radius: 0.25rem;
+        border: 1px solid #e9ecef;
+    }
+    .preview-image {
+        max-width: 200px;
+        max-height: 200px;
+        margin: 1rem 0;
+        border-radius: 0.25rem;
+        border: 1px solid #e9ecef;
+    }
+    .required-field:after {
+        content: " *";
+        color: #dc3545;
+    }
+    .form-text {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+    .custom-file-upload {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+        margin-bottom: 1rem;
+    }
+    .custom-file-upload:hover {
+        background-color: #e9ecef;
+    }
+    #file-name {
+        margin-left: 1rem;
+        color: #6c757d;
+    }
+</style>
+{% endblock %}
+
+{% block job_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">
+            {% if form.instance.pk %}
+                Edit Application
+            {% else %}
+                Add New Application
+            {% endif %}
+        </h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{% url 'custom_admin:job_list' %}">Jobs</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'custom_admin:job_detail' job.id %}">{{ job.title|truncatechars:30 }}</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'custom_admin:job_applications' job.id %}">Applications</a></li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    {% if form.instance.pk %}
+                        Edit
+                    {% else %}
+                        New
+                    {% endif %}
+                </li>
+            </ol>
+        </nav>
+    </div>
+    <div>
+        <a href="{% if form.instance.pk %}{% url 'custom_admin:job_application_detail' job.id form.instance.pk %}{% else %}{% url 'custom_admin:job_applications' job.id %}{% endif %}" 
+           class="btn btn-outline-secondary">
+            <i class="fas fa-times me-1"></i> Cancel
+        </a>
+        <button type="submit" form="applicationForm" class="btn btn-primary">
+            <i class="fas fa-save me-1"></i> Save Changes
+        </button>
+    </div>
+</div>
+
+<form method="post" id="applicationForm" enctype="multipart/form-data" class="needs-validation" novalidate>
+    {% csrf_token %}
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Basic Information -->
+            <div class="form-section">
+                <h5>Basic Information</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="id_first_name" class="form-label required-field">First Name</label>
+                        <input type="text" class="form-control" id="id_first_name" name="first_name" 
+                               value="{{ form.first_name.value|default:'' }}" required>
+                        <div class="invalid-feedback">
+                            Please provide a first name.
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="id_last_name" class="form-label required-field">Last Name</label>
+                        <input type="text" class="form-control" id="id_last_name" name="last_name" 
+                               value="{{ form.last_name.value|default:'' }}" required>
+                        <div class="invalid-feedback">
+                            Please provide a last name.
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="id_email" class="form-label required-field">Email</label>
+                        <input type="email" class="form-control" id="id_email" name="email" 
+                               value="{{ form.email.value|default:'' }}" required>
+                        <div class="invalid-feedback">
+                            Please provide a valid email address.
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="id_phone" class="form-label">Phone</label>
+                        <input type="tel" class="form-control" id="id_phone" name="phone" 
+                               value="{{ form.phone.value|default:'' }}">
+                        <div class="form-text">Format: (123) 456-7890</div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="id_address" class="form-label">Address</label>
+                    <textarea class="form-control" id="id_address" name="address" rows="2">{{ form.address.value|default:'' }}</textarea>
+                </div>
+            </div>
+
+            <!-- Application Details -->
+            <div class="form-section">
+                <h5>Application Details</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="id_status" class="form-label required-field">Status</label>
+                        <select class="form-select" id="id_status" name="status" required>
+                            {% for value, label in form.fields.status.choices %}
+                                <option value="{{ value }}" 
+                                    {% if form.status.value == value %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="id_source" class="form-label">Source</label>
+                        <select class="form-select" id="id_source" name="source">
+                            <option value="">--- Select Source ---</option>
+                            {% for value, label in form.fields.source.choices %}
+                                <option value="{{ value }}" 
+                                    {% if form.source.value == value %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="id_cover_letter" class="form-label">Cover Letter</label>
+                    <textarea class="form-control" id="id_cover_letter" name="cover_letter" rows="6">{{ form.cover_letter.value|default:'' }}</textarea>
+                    <div class="form-text">
+                        You can use basic HTML tags for formatting.
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Resume</label>
+                    {% if form.instance.resume %}
+                        <div class="file-info mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="far fa-file-pdf text-danger"></i>
+                                    <span>{{ form.instance.resume.name|slice:"6:"|truncatechars:30 }}</span>
+                                </div>
+                                <a href="{{ form.instance.resume.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye me-1"></i> View
+                                </a>
+                            </div>
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" type="checkbox" id="clear_resume" name="clear_resume">
+                                <label class="form-check-label" for="clear_resume">
+                                    Remove current resume
+                                </label>
+                            </div>
+                        </div>
+                        <p class="text-muted mb-2">Or upload a new resume:</p>
+                    {% endif %}
+                    <div class="file-upload" id="resume-upload-area">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <h6>Click to upload or drag and drop</h6>
+                        <p class="small text-muted mb-0">PDF, DOC, DOCX (max. 5MB)</p>
+                        <input type="file" id="id_resume" name="resume" class="d-none" accept=".pdf,.doc,.docx">
+                    </div>
+                    <div id="file-selected" class="d-none mt-2">
+                        <i class="fas fa-check-circle text-success me-1"></i>
+                        <span id="file-name"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Information -->
+            <div class="form-section">
+                <h5>Additional Information</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="id_expected_salary" class="form-label">Expected Salary</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" id="id_expected_salary" 
+                                   name="expected_salary" value="{{ form.expected_salary.value|default:'' }}" min="0" step="0.01">
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="id_available_from" class="form-label">Available From</label>
+                        <input type="date" class="form-control" id="id_available_from" 
+                               name="available_from" value="{{ form.available_from.value|date:'Y-m-d'|default:'' }}">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="id_skills" class="form-label">Skills</label>
+                    <textarea class="form-control" id="id_skills" name="skills" rows="2" 
+                              placeholder="List relevant skills separated by commas">{{ form.skills.value|default:'' }}</textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="id_notes" class="form-label">Internal Notes</label>
+                    <textarea class="form-control" id="id_notes" name="notes" rows="3" 
+                              placeholder="Add any internal notes about this application">{{ form.notes.value|default:'' }}</textarea>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Status & Actions -->
+            <div class="form-section">
+                <h5>Status & Actions</h5>
+                <div class="mb-3">
+                    <label class="form-label">Current Status</label>
+                    <div class="p-3 bg-light rounded">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-{{ form.instance.status|default:'secondary' }} status-badge">
+                                {{ form.instance.get_status_display|default:"New" }}
+                            </span>
+                            <span class="text-muted small">
+                                {% if form.instance.pk %}
+                                    Last updated {{ form.instance.updated_at|timesince }} ago
+                                {% else %}
+                                    New application
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="submit" name="save_and_continue" class="btn btn-outline-primary">
+                        <i class="fas fa-save me-1"></i> Save & Continue Editing
+                    </button>
+                    <a href="{% if form.instance.pk %}{% url 'custom_admin:job_application_detail' job.id form.instance.pk %}{% else %}{% url 'custom_admin:job_applications' job.id %}{% endif %}" 
+                       class="btn btn-outline-secondary">
+                        <i class="fas fa-times me-1"></i> Cancel
+                    </a>
+                </div>
+            </div>
+
+            <!-- Job Information -->
+            <div class="form-section">
+                <h5>Job Information</h5>
+                <div class="mb-2">
+                    <strong>Position:</strong>
+                    <p class="mb-1">{{ job.title }}</p>
+                </div>
+                <div class="mb-2">
+                    <strong>Department:</strong>
+                    <p class="mb-1">{{ job.department|default:"N/A" }}</p>
+                </div>
+                <div class="mb-2">
+                    <strong>Location:</strong>
+                    <p class="mb-1">{{ job.location|default:"N/A" }}</p>
+                </div>
+                <div class="mb-2">
+                    <strong>Type:</strong>
+                    <p class="mb-0">{{ job.get_job_type_display|default:"N/A" }}</p>
+                </div>
+            </div>
+
+            <!-- Application Timeline -->
+            {% if form.instance.pk %}
+            <div class="form-section">
+                <h5>Application Timeline</h5>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-date">{{ form.instance.created_at|date:"M j, Y" }}</div>
+                        <div class="timeline-content">
+                            <strong>Application Received</strong>
+                            <p class="mb-0 small text-muted">Candidate applied for the position</p>
+                        </div>
+                    </div>
+                    {% for activity in form.instance.activities.all|slice:":3" %}
+                    <div class="timeline-item">
+                        <div class="timeline-date">{{ activity.created_at|date:"M j, Y" }}</div>
+                        <div class="timeline-content">
+                            <strong>{{ activity.get_activity_type_display }}</strong>
+                            <p class="mb-0 small text-muted">{{ activity.note|truncatewords:10 }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% if form.instance.activities.count > 3 %}
+                    <div class="text-center mt-2">
+                        <a href="#" class="text-decoration-none small">
+                            View all {{ form.instance.activities.count }} activities
+                            <i class="fas fa-chevron-down ms-1"></i>
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                {% if form.instance.pk %}
+                    <span class="text-muted small">
+                        Created {{ form.instance.created_at|timesince }} ago
+                        {% if form.instance.created_by %}
+                            by {{ form.instance.created_by.get_full_name|default:form.instance.created_by.email }}
+                        {% endif %}
+                    </span>
+                {% endif %}
+            </div>
+            <div class="btn-group">
+                <a href="{% if form.instance.pk %}{% url 'custom_admin:job_application_detail' job.id form.instance.pk %}{% else %}{% url 'custom_admin:job_applications' job.id %}{% endif %}" 
+                   class="btn btn-outline-secondary">
+                    <i class="fas fa-times me-1"></i> Cancel
+                </a>
+                <button type="submit" name="save_and_continue" class="btn btn-outline-primary">
+                    <i class="fas fa-save me-1"></i> Save & Continue
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-check me-1"></i> Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // File upload handling
+    const resumeUpload = document.getElementById('resume-upload-area');
+    const fileInput = document.getElementById('id_resume');
+    const fileNameDisplay = document.getElementById('file-name');
+    const fileSelectedDiv = document.getElementById('file-selected');
+    
+    if (resumeUpload && fileInput) {
+        // Click on the dropzone to open file dialog
+        resumeUpload.addEventListener('click', function() {
+            fileInput.click();
+        });
+        
+        // Handle file selection
+        fileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                const fileName = this.files[0].name;
+                fileNameDisplay.textContent = fileName;
+                fileSelectedDiv.classList.remove('d-none');
+                
+                // Update the UI to show file is selected
+                resumeUpload.innerHTML = `
+                    <i class="fas fa-file-alt"></i>
+                    <h6>${fileName}</h6>
+                    <p class="small text-muted mb-0">${formatFileSize(this.files[0].size)} • Click to change</p>
+                `;
+            }
+        });
+        
+        // Handle drag and drop
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            resumeUpload.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            resumeUpload.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            resumeUpload.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            resumeUpload.classList.add('border-primary');
+            resumeUpload.style.backgroundColor = '#f0f7ff';
+        }
+        
+        function unhighlight() {
+            resumeUpload.classList.remove('border-primary');
+            resumeUpload.style.backgroundColor = '';
+        }
+        
+        // Handle dropped files
+        resumeUpload.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length) {
+                fileInput.files = files;
+                const event = new Event('change');
+                fileInput.dispatchEvent(event);
+            }
+        }
+        
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+    }
+    
+    // Form validation
+    const form = document.getElementById('applicationForm');
+    if (form) {
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+    }
+    
+    // Initialize date picker if available
+    if (typeof flatpickr !== 'undefined' && document.getElementById('id_available_from')) {
+        flatpickr('#id_available_from', {
+            dateFormat: 'Y-m-d',
+            allowInput: true
+        });
+    }
+});
+</script>
+{% endblock %}

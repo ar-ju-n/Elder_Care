@@ -82,18 +82,15 @@ from .models import Category
 
 @login_required
 def topic_create(request):
-    categories = Category.objects.all()
     if request.method == 'POST':
         title = request.POST.get('title')
         body = request.POST.get('body')
-        category_id = request.POST.get('category')
-        category = Category.objects.filter(id=category_id).first() if category_id else None
-        if title and body and category:
-            Topic.objects.create(title=title, body=body, author=request.user, category=category)
+        if title and body:
+            Topic.objects.create(title=title, body=body, author=request.user)
             return redirect('forum:topic_list')
         # If invalid, re-render with error
-        return render(request, 'forum/topic_form.html', {'categories': categories, 'title': title, 'body': body, 'category_id': category_id})
-    return render(request, 'forum/topic_form.html', {'categories': categories})
+        return render(request, 'forum/topic_form.html', {'title': title, 'body': body})
+    return render(request, 'forum/topic_form.html')
 
 # Add a reply to a topic
 @login_required

@@ -1,18 +1,10 @@
+{# Refactored: This template uses only the global base.html and global URL/template policy #}
 {% extends 'base.html' %}
 {% block content %}
 <div class="container py-4">
 <h2>Start a New Topic</h2>
 <form method="post">
     {% csrf_token %}
-    <div class="mb-3">
-<label class="form-label" for="id_category">Category</label>
-<select class="form-select" id="id_category" name="category" required="">
-<option value="">-- Select Category --</option>
-        {% for category in categories %}
-          <option %}="" %}selected{%="" and="" endif="" if="" topic="" topic.category="" topic.category.id="category.id" value="{{ category.id }}" {%="">{{ category.name }}</option>
-        {% endfor %}
-      </select>
-</div>
 <div class="mb-3">
 <label class="form-label" for="id_title">Title</label>
 <input class="form-control" id="id_title" name="title" required="" type="text" value="{% if topic %}{{ topic.title }}{% endif %}"/>

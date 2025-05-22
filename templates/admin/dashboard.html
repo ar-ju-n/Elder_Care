@@ -1,0 +1,234 @@
+{# This template follows the global URL/template policy #}
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'admin/css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <!-- System Status Card -->
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-server"></i> System Status
+        </div>
+        <div class="card-body">
+            <div class="system-status">
+                <div class="status-item">
+                    <span class="status-label">Database:</span>
+                    <span class="status-value status-active">Online</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Storage:</span>
+                    <span class="status-value">{% widthratio 25 100 1 %}% used (25GB/100GB)</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Last Backup:</span>
+                    <span class="status-value">2 hours ago</span>
+                </div>
+                <div class="status-actions">
+                    <a href="{% url 'admin:custom_admin_system_status' %}" class="button">View Details</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-history"></i> Recent Activity
+        </div>
+        <div class="card-body">
+            {% if recent_logs %}
+            <ul class="activity-list">
+                {% for log in recent_logs %}
+                <li class="activity-item">
+                    <div class="activity-meta">
+                        <span class="activity-time">{{ log.timestamp|timesince }} ago</span>
+                        {% if log.user %}
+                        <span class="activity-user">by {{ log.user.get_username }}</span>
+                        {% else %}
+                        <span class="activity-user">by System</span>
+                        {% endif %}
+                    </div>
+                    <div class="activity-message">
+                        {{ log.action }}
+                        {% if log.details %}
+                        <span class="activity-details">{{ log.details|truncatechars:50 }}</span>
+                        {% endif %}
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            <div class="view-all">
+                <a href="{% url 'admin:custom_admin_audit_log_list' %}">View All Activity</a>
+            </div>
+            {% else %}
+            <p>No recent activity</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Integrations -->
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-plug"></i> Integrations
+        </div>
+        <div class="card-body">
+            {% if integrations %}
+            <ul class="integration-list">
+                {% for integration in integrations %}
+                <li class="integration-item">
+                    <div class="integration-name">{{ integration.name }}</div>
+                    <div class="integration-status">
+                        <span class="status-badge {% if integration.status == 'connected' %}status-active{% else %}status-inactive{% endif %}">
+                            {{ integration.status|title }}
+                        </span>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            <div class="integration-actions">
+                <a href="{% url 'admin:custom_admin_integration_changelist' %}" class="button">Manage Integrations</a>
+            </div>
+            {% else %}
+            <p>No integrations configured</p>
+            <div class="integration-actions">
+                <a href="{% url 'admin:custom_admin_integration_add' %}" class="button">Add Integration</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-bolt"></i> Quick Actions
+        </div>
+        <div class="card-body">
+            <div class="quick-actions">
+                <a href="{% url 'admin:content_article_add' %}" class="quick-action">
+                    <i class="fas fa-plus"></i>
+                    <span>New Article</span>
+                </a>
+                <a href="{% url 'admin:content_video_add' %}" class="quick-action">
+                    <i class="fas fa-video"></i>
+                    <span>New Video</span>
+                </a>
+                <a href="{% url 'admin:content_faq_add' %}" class="quick-action">
+                    <i class="fas fa-question-circle"></i>
+                    <span>New FAQ</span>
+                </a>
+                <a href="{% url 'admin:auth_user_add' %}" class="quick-action">
+                    <i class="fas fa-user-plus"></i>
+                    <span>New User</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Overview -->
+<div class="card mt-4">
+    <div class="card-header">
+        <i class="fas fa-chart-bar"></i> Statistics Overview
+    </div>
+    <div class="card-body">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">1,248</div>
+                <div class="stat-label">Total Users</div>
+                <div class="stat-change positive">+12% from last month</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">356</div>
+                <div class="stat-label">Active Today</div>
+                <div class="stat-change positive">+5% from yesterday</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">12,487</div>
+                <div class="stat-label">Page Views</div>
+                <div class="stat-change negative">-2% from last week</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">87%</div>
+                <div class="stat-label">Uptime</div>
+                <div class="stat-change">Last updated: 5 min ago</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Content -->
+<div class="card mt-4">
+    <div class="card-header">
+        <i class="fas fa-file-alt"></i> Recent Content
+    </div>
+    <div class="card-body">
+        <div class="recent-content">
+            <div class="content-tabs">
+                <button class="tab-button active" data-tab="articles">Articles</button>
+                <button class="tab-button" data-tab="videos">Videos</button>
+                <button class="tab-button" data-tab="faqs">FAQs</button>
+            </div>
+            
+            <div class="tab-content active" id="articles-tab">
+                <table class="content-table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Published</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><a href="#">10 Tips for Healthy Aging</a></td>
+                            <td>Dr. Sarah Johnson</td>
+                            <td>2 days ago</td>
+                            <td><span class="status-badge status-active">Published</span></td>
+                        </tr>
+                        <tr>
+                            <td><a href="#">Understanding Dementia</a></td>
+                            <td>Dr. Michael Chen</td>
+                            <td>1 week ago</td>
+                            <td><span class="status-badge status-active">Published</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="view-all">
+                    <a href="{% url 'admin:content_article_changelist' %}">View All Articles</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extrajs %}
+<script>
+// Tab functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const tabButtons = document.querySelectorAll('.tab-button');
+    
+    tabButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Remove active class from all buttons and content
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active class to clicked button
+            this.classList.add('active');
+            
+            // Show corresponding content
+            const tabId = this.getAttribute('data-tab');
+            document.getElementById(`${tabId}-tab`).classList.add('active');
+        });
+    });
+});
+</script>
+{% endblock %}

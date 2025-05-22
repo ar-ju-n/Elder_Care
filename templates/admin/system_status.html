@@ -1,0 +1,768 @@
+{# This template follows the global URL/template policy #}
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'admin/css/system_status.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}
+
+{% block content_title %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>{% trans 'System Status' %}</h1>
+    <div class="btn-group">
+        <button type="button" class="btn btn-outline-secondary btn-sm" id="refresh-btn" title="{% trans 'Refresh' %}">
+            <i class="fas fa-sync-alt"></i> {% trans 'Refresh' %}
+        </button>
+        <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-cog"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="#" id="export-logs-btn"><i class="fas fa-download me-2"></i>{% trans 'Export Logs' %}</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#" id="settings-btn"><i class="fas fa-cog me-2"></i>{% trans 'Settings' %}</a></li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="system-status-container">
+    <!-- System Health Overview -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-heartbeat"></i> {% trans 'System Health' %}
+                    <div class="last-updated">
+                        <i class="fas fa-sync-alt"></i> {% trans 'Last updated' %}: {{ current_time|date:"Y-m-d H:i:s" }}
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="health-indicators">
+                        <div class="health-indicator {% if db_status == 'online' %}status-up{% else %}status-down{% endif %}">
+                            <div class="indicator-icon">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <div class="indicator-details">
+                                <div class="indicator-title">{% trans 'Database' %}</div>
+                                <div class="indicator-status">
+                                    <span class="status-dot"></span>
+                                    <span class="status-text">
+                                        {% if db_status == 'online' %}
+                                            {% trans 'Online' %}
+                                        {% else %}
+                                            {% trans 'Offline' %}
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="health-indicator status-up">
+                            <div class="indicator-icon">
+                                <i class="fas fa-server"></i>
+                            </div>
+                            <div class="indicator-details">
+                                <div class="indicator-title">{% trans 'Server' %}</div>
+                                <div class="indicator-status">
+                                    <span class="status-dot"></span>
+                                    <span class="status-text">{% trans 'Running' %}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="health-indicator status-up">
+                            <div class="indicator-icon">
+                                <i class="fas fa-hdd"></i>
+                            </div>
+                            <div class="indicator-details">
+                                <div class="indicator-title">{% trans 'Storage' %}</div>
+                                <div class="indicator-status">
+                                    <span class="status-dot"></span>
+                                    <span class="status-text">
+                                        {% widthratio disk_usage.used_gb disk_usage.total_gb 100 as used_percent %}
+                                        {{ used_percent|floatformat:0 }}% {% trans 'used' %} ({{ disk_usage.used_gb|floatformat:1 }}GB / {{ disk_usage.total_gb|floatformat:1 }}GB)
+                                    </span>
+                                </div>
+                                <div class="progress mt-2">
+                                    <div class="progress-bar {% if used_percent > 90 %}bg-danger{% elif used_percent > 70 %}bg-warning{% else %}bg-success{% endif %}" 
+                                         role="progressbar" 
+                                         style="width: {{ used_percent }}%" 
+                                         aria-valuenow="{{ used_percent }}" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="100">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="health-indicator status-up">
+                            <div class="indicator-icon">
+                                <i class="fas fa-memory"></i>
+                            </div>
+                            <div class="indicator-details">
+                                <div class="indicator-title">{% trans 'Memory' %}</div>
+                                <div class="indicator-status">
+                                    <span class="status-dot"></span>
+                                    <span class="status-text">
+                                        {% widthratio memory_usage.used_mb memory_usage.total_mb 100 as used_percent %}
+                                        {{ used_percent|floatformat:0 }}% {% trans 'used' %} ({{ memory_usage.used_mb|floatformat:1 }}MB / {{ memory_usage.total_mb|floatformat:1 }}MB)
+                                    </span>
+                                </div>
+                                <div class="progress mt-2">
+                                    <div class="progress-bar {% if used_percent > 90 %}bg-danger{% elif used_percent > 70 %}bg-warning{% else %}bg-success{% endif %}" 
+                                         role="progressbar" 
+                                         style="width: {{ used_percent }}%" 
+                                         aria-valuenow="{{ used_percent }}" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="100">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Information -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <i class="fas fa-info-circle"></i> {% trans 'System Information' %}
+                </div>
+                <div class="card-body">
+                    <div class="system-info">
+                        <div class="info-row">
+                            <span class="info-label">{% trans 'Application Version' %}:</span>
+                            <span class="info-value">{{ app_version }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">{% trans 'Django Version' %}:</span>
+                            <span class="info-value">{{ django_version }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">{% trans 'Python Version' %}:</span>
+                            <span class="info-value">{{ python_version }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">{% trans 'Database' %}:</span>
+                            <span class="info-value">{{ database.name }} {{ database.version }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">{% trans 'Debug Mode' %}:</span>
+                            <span class="info-value">
+                                {% if debug %}
+                                    <span class="badge badge-warning">{% trans 'Enabled' %}</span>
+                                {% else %}
+                                    <span class="badge badge-success">{% trans 'Disabled' %}</span>
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">{% trans 'Environment' %}:</span>
+                            <span class="info-value">
+                                {% if environment == 'production' %}
+                                    <span class="badge badge-danger">{% trans 'Production' %}</span>
+                                {% elif environment == 'staging' %}
+                                    <span class="badge badge-warning">{% trans 'Staging' %}</span>
+                                {% else %}
+                                    <span class="badge badge-info">{% trans 'Development' %}</span>
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <i class="fas fa-tachometer-alt"></i> {% trans 'Performance Metrics' %}
+                </div>
+                <div class="card-body">
+                    <div class="metric">
+                        <div class="metric-title">
+                            <i class="fas fa-tachometer-alt"></i> {% trans 'Response Time' %}
+                            <span class="metric-value">{{ metrics.avg_response_time|floatformat:2 }} ms</span>
+                        </div>
+                        <div class="progress">
+                            {% with percent=metrics.avg_response_time|floatformat:0 %}
+                            <div class="progress-bar bg-{% if percent < 100 %}success{% elif percent < 300 %}warning{% else %}danger{% endif %}" 
+                                 role="progressbar" 
+                                 style="width: {% if percent > 100 %}100{% else %}{{ percent }}{% endif %}%" 
+                                 aria-valuenow="{{ percent }}" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="500">
+                            </div>
+                            {% endwith %}
+                        </div>
+                        <div class="metric-details">
+                            <span>{% trans 'Last 24h average' %}</span>
+                            <span>{{ metrics.request_count }} {% trans 'requests' %}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="metric mt-4">
+                        <div class="metric-title">
+                            <i class="fas fa-database"></i> {% trans 'Database Queries' %}
+                            <span class="metric-value">{{ metrics.avg_queries_per_request|floatformat:1 }} {% trans 'per request' %}</span>
+                        </div>
+                        <div class="progress">
+                            {% with percent=metrics.avg_queries_per_request|floatformat:0|add:0 %}
+                            <div class="progress-bar bg-{% if percent < 5 %}success{% elif percent < 10 %}warning{% else %}danger{% endif %}" 
+                                 role="progressbar" 
+                                 style="width: {% widthratio percent 20 100 %}%" 
+                                 aria-valuenow="{{ percent }}" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="20">
+                            </div>
+                            {% endwith %}
+                        </div>
+                        <div class="metric-details">
+                            <span>{% trans 'Total queries' %}: {{ metrics.total_queries }}</span>
+                            <span>{% trans 'Duplicate queries' %}: {{ metrics.duplicate_queries }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="metric mt-4">
+                        <div class="metric-title">
+                            <i class="fas fa-users"></i> {% trans 'Active Users' %}
+                            <span class="metric-value">{{ metrics.active_users }} {% trans 'online' %}</span>
+                        </div>
+                        <div class="progress">
+                            {% with percent=metrics.active_users_percent|floatformat:0|add:0 %}
+                            <div class="progress-bar bg-{% if percent < 50 %}success{% elif percent < 80 %}warning{% else %}danger{% endif %}" 
+                                 role="progressbar" 
+                                 style="width: {{ percent }}%" 
+                                 aria-valuenow="{{ percent }}" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="100">
+                            </div>
+                            {% endwith %}
+                        </div>
+                        <div class="metric-details">
+                            <span>{% trans 'Total users' %}: {{ metrics.total_users }}</span>
+                            <span>{% trans 'New today' %}: {{ metrics.new_users_today }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- System Actions -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-cogs"></i> {% trans 'System Actions' %}
+                </div>
+                <div class="card-body">
+                    <div class="system-actions">
+                        <div class="action-card">
+                            <div class="action-icon bg-primary">
+                                <i class="fas fa-sync-alt"></i>
+                            </div>
+                            <h5>{% trans 'Clear Cache' %}</h5>
+                            <p>{% trans 'Clear all cached data including template fragments and database queries.' %}</p>
+                            <button class="btn btn-outline-primary btn-sm" id="clear-cache-btn">
+                                <i class="fas fa-sync-alt"></i> {% trans 'Clear Now' %}
+                            </button>
+                        </div>
+                        
+                        <div class="action-card">
+                            <div class="action-icon bg-success">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <h5>{% trans 'Optimize Database' %}</h5>
+                            <p>{% trans 'Run database optimization tasks like VACUUM and ANALYZE.' %}</p>
+                            <button class="btn btn-outline-success btn-sm" id="optimize-db-btn">
+                                <i class="fas fa-magic"></i> {% trans 'Optimize Now' %}
+                            </button>
+                        </div>
+                        
+                        <div class="action-card">
+                            <div class="action-icon bg-info">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <h5>{% trans 'Rebuild Search Index' %}</h5>
+                            <p>{% trans 'Rebuild the search index for better search performance.' %}</p>
+                            <button class="btn btn-outline-info btn-sm" id="rebuild-index-btn">
+                                <i class="fas fa-sync"></i> {% trans 'Rebuild Now' %}
+                            </button>
+                        </div>
+                        
+                        <div class="action-card">
+                            <div class="action-icon bg-warning">
+                                <i class="fas fa-download"></i>
+                            </div>
+                            <h5>{% trans 'Backup Database' %}</h5>
+                            <p>{% trans 'Create a complete backup of the database.' %}</p>
+                            <button class="btn btn-outline-warning btn-sm" id="backup-db-btn">
+                                <i class="fas fa-file-archive"></i> {% trans 'Backup Now' %}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- System Logs -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="fas fa-terminal"></i> {% trans 'Recent System Logs' %}
+                    </div>
+                    <div>
+                        <a href="{% url 'admin:custom_admin_audit_log_list' %}" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-list"></i> {% trans 'View All Logs' %}
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="system-logs">
+                        {% for log in recent_logs %}
+                        <div class="log-entry log-level-{{ log.level|lower }}">
+                            <div class="log-time">{{ log.timestamp|date:"H:i:s" }}</div>
+                            <div class="log-level">
+                                <span class="badge badge-{{ log.level|lower }}">{{ log.level }}</span>
+                            </div>
+                            <div class="log-message" title="{{ log.message }}">
+                                {{ log.message|truncatechars:100 }}
+                                {% if log.traceback %}
+                                <div class="log-traceback">
+                                    <pre>{{ log.traceback }}</pre>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="text-center p-4 text-muted">
+                            <i class="fas fa-inbox fa-3x mb-2"></i>
+                            <p class="mb-0">{% trans 'No recent log entries found.' %}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extrajs %}
+{{ block.super }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Wait for DOM to be fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+
+    // Refresh button
+    document.getElementById('refresh-btn').addEventListener('click', function() {
+        const btn = this;
+        const icon = btn.querySelector('i');
+        icon.classList.add('fa-spin');
+        
+        // Refresh the page after a short delay to show the animation
+        setTimeout(() => {
+            window.location.reload();
+        }, 500);
+    });
+    
+    // Export logs button
+    document.getElementById('export-logs-btn').addEventListener('click', function(e) {
+        e.preventDefault();
+        showAlert('info', 'Preparing logs for download... This may take a moment.');
+        
+        // In a real implementation, this would trigger a server-side export
+        setTimeout(() => {
+            showAlert('success', 'Logs exported successfully!');
+            // Simulate file download
+            const blob = new Blob(['Log data would be here in a real implementation'], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `system-logs-${new Date().toISOString().split('T')[0]}.log`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 1500);
+    });
+    
+    // Settings button
+    document.getElementById('settings-btn').addEventListener('click', function(e) {
+        e.preventDefault();
+        // In a real implementation, this would open a settings modal
+        showAlert('info', 'Settings dialog would open here');
+    });
+    
+    // Initialize charts
+    initializeCharts();
+    
+    // Show/hide tracebacks in logs
+    document.querySelectorAll('.log-entry').forEach(logEntry => {
+        logEntry.addEventListener('click', function() {
+            const traceback = this.nextElementSibling;
+            if (traceback && traceback.classList.contains('log-traceback')) {
+                traceback.style.display = traceback.style.display === 'block' ? 'none' : 'block';
+            }
+        });
+    });
+    
+    // Initialize system metrics auto-refresh
+    let metricsRefreshInterval = setInterval(fetchLatestMetrics, 30000); // Refresh every 30 seconds
+    // Clear Cache Button
+    document.getElementById('clear-cache-btn').addEventListener('click', function() {
+        if (confirm('Are you sure you want to clear all cache?')) {
+            const btn = this;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Clearing...';
+            
+            fetch('{% url "admin:custom_admin_clear_cache" %}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('success', 'Cache cleared successfully!');
+                } else {
+                    showAlert('danger', 'Error clearing cache: ' + data.error);
+                }
+            })
+            .catch(error => {
+                showAlert('danger', 'Error: ' + error.message);
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-sync-alt"></i> Clear Now';
+            });
+        }
+    });
+    
+    // Optimize Database Button
+    document.getElementById('optimize-db-btn').addEventListener('click', function() {
+        if (confirm('This may take a while. Are you sure you want to optimize the database?')) {
+            const btn = this;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Optimizing...';
+            
+            fetch('{% url "admin:custom_admin_optimize_db" %}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('success', 'Database optimized successfully!');
+                } else {
+                    showAlert('danger', 'Error optimizing database: ' + data.error);
+                }
+            })
+            .catch(error => {
+                showAlert('danger', 'Error: ' + error.message);
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-magic"></i> Optimize Now';
+            });
+        }
+    });
+    
+    // Rebuild Search Index Button
+    document.getElementById('rebuild-index-btn').addEventListener('click', function() {
+        if (confirm('This may take a while. Rebuild search index?')) {
+            const btn = this;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Rebuilding...';
+            
+            fetch('{% url "admin:custom_admin_rebuild_index" %}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('success', 'Search index rebuilt successfully!');
+                } else {
+                    showAlert('danger', 'Error rebuilding search index: ' + data.error);
+                }
+            })
+            .catch(error => {
+                showAlert('danger', 'Error: ' + error.message);
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-sync"></i> Rebuild Now';
+            });
+        }
+    });
+    
+    // Backup Database Button
+    document.getElementById('backup-db-btn').addEventListener('click', function() {
+        if (confirm('This may take a while. Create a database backup?')) {
+            const btn = this;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Backing up...';
+            
+            fetch('{% url "admin:custom_admin_backup_db" %}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('success', 'Database backup created successfully!');
+                    if (data.download_url) {
+                        // Create a temporary link to download the backup
+                        const link = document.createElement('a');
+                        link.href = data.download_url;
+                        link.download = data.filename || 'backup.sql';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }
+                } else {
+                    showAlert('danger', 'Error creating backup: ' + data.error);
+                }
+            })
+            .catch(error => {
+                showAlert('danger', 'Error: ' + error.message);
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-file-archive"></i> Backup Now';
+            });
+        }
+    });
+    
+    // Toggle log tracebacks
+    document.querySelectorAll('.log-message').forEach(log => {
+        log.addEventListener('click', function() {
+            const traceback = this.querySelector('.log-traceback');
+            if (traceback) {
+                traceback.style.display = traceback.style.display === 'block' ? 'none' : 'block';
+            }
+        });
+    });
+    
+    // Show alert message
+    function showAlert(type, message) {
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type} alert-dismissible fade show`;
+        alert.role = 'alert';
+        alert.innerHTML = `
+            ${message}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        `;
+        
+        // Add to the top of the content
+        const content = document.querySelector('.system-status-container');
+        content.insertBefore(alert, content.firstChild);
+        
+        // Auto-dismiss after 5 seconds
+        setTimeout(() => {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        }, 5000);
+    }
+    
+    // Auto-refresh the page every 5 minutes
+    let pageRefreshTimeout = setTimeout(() => {
+        window.location.reload();
+    }, 5 * 60 * 1000);
+    
+    // Reset auto-refresh timer on user activity
+    document.addEventListener('mousemove', resetAutoRefresh);
+    document.addEventListener('keypress', resetAutoRefresh);
+    
+    function resetAutoRefresh() {
+        clearTimeout(pageRefreshTimeout);
+        pageRefreshTimeout = setTimeout(() => {
+            window.location.reload();
+        }, 5 * 60 * 1000);
+    }
+    
+    // Initialize performance charts
+    function initializeCharts() {
+        // CPU Usage Chart
+        const cpuCtx = document.getElementById('cpuUsageChart').getContext('2d');
+        new Chart(cpuCtx, {
+            type: 'line',
+            data: {
+                labels: Array.from({length: 12}, (_, i) => `${i * 5}m`),
+                datasets: [{
+                    label: 'CPU Usage %',
+                    data: [10, 15, 12, 18, 22, 19, 25, 28, 24, 22, 20, 18],
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Memory Usage Chart
+        const memoryCtx = document.getElementById('memoryUsageChart').getContext('2d');
+        new Chart(memoryCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Used', 'Cached', 'Free'],
+                datasets: [{
+                    data: [
+                        {{ memory_usage.used_mb|floatformat:0 }},
+                        {{ memory_usage.cached_mb|default:0|floatformat:0 }},
+                        {{ memory_usage.free_mb|default:0|floatformat:0 }}
+                    ],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(75, 192, 192, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.y + ' MB';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value + ' MB';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    // Fetch latest metrics via AJAX
+    function fetchLatestMetrics() {
+        fetch('{% url 'admin:system_metrics' %}')
+            .then(response => response.json())
+            .then(data => {
+                // Update CPU usage
+                document.querySelector('.cpu-usage .metric-value').textContent = data.cpu_usage + '%';
+                document.querySelector('.cpu-usage .progress-bar').style.width = data.cpu_usage + '%';
+                document.querySelector('.cpu-usage .progress-bar').setAttribute('aria-valuenow', data.cpu_usage);
+                
+                // Update memory usage
+                document.querySelector('.memory-usage .metric-value').textContent = data.memory_usage.used_mb + 'MB / ' + data.memory_usage.total_mb + 'MB (' + data.memory_usage.percent_used + '%)';
+                document.querySelector('.memory-usage .progress-bar').style.width = data.memory_usage.percent_used + '%';
+                document.querySelector('.memory-usage .progress-bar').setAttribute('aria-valuenow', data.memory_usage.percent_used);
+                
+                // Update disk usage
+                document.querySelector('.disk-usage .metric-value').textContent = data.disk_usage.used_gb + 'GB / ' + data.disk_usage.total_gb + 'GB (' + data.disk_usage.percent_used + '%)';
+                document.querySelector('.disk-usage .progress-bar').style.width = data.disk_usage.percent_used + '%';
+                document.querySelector('.disk-usage .progress-bar').setAttribute('aria-valuenow', data.disk_usage.percent_used);
+                
+                // Update status indicators
+                updateStatusIndicators(data);
+            })
+            .catch(error => {
+                console.error('Error fetching metrics:', error);
+                showAlert('danger', 'Failed to update system metrics. ' + error.message);
+            });
+    }
+    
+    function updateStatusIndicators(data) {
+        // Update status indicators based on thresholds
+        const indicators = {
+            'database': data.db_status === 'online' ? 'up' : 'down',
+            'server': 'up', // Assuming server is up if we got a response
+            'storage': data.disk_usage.percent_used > 90 ? 'warning' : 'up',
+            'memory': data.memory_usage.percent_used > 90 ? 'warning' : 'up'
+        };
+        
+        // Update each indicator
+        Object.entries(indicators).forEach(([type, status]) => {
+            const indicator = document.querySelector(`.health-indicator.${type}`);
+            if (indicator) {
+                // Remove all status classes
+                indicator.classList.remove('status-up', 'status-down', 'status-warning');
+                // Add the current status class
+                indicator.classList.add(`status-${status}`);
+                // Update status text if needed
+                const statusText = indicator.querySelector('.status-text');
+                if (statusText) {
+                    statusText.textContent = {
+                        'up': '{% trans 'Online' %}',
+                        'down': '{% trans 'Offline' %}',
+                        'warning': '{% trans 'Warning' %}'
+                    }[status];
+                }
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

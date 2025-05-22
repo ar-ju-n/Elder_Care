@@ -5,6 +5,7 @@ from .views import ApplicationDetailView
 
 app_name = 'jobs'
 
+# All views and templates referenced here use only the global templates directory.
 urlpatterns = [
     # Job listing and detail views
     path('', views.job_list, name='job_list'),

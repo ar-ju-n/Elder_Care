@@ -1,0 +1,459 @@
+{% extends 'custom_admin/base.html' %}
+{% load static %}
+
+{% block title %}System Status - Elderly Care Admin{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.css">
+<style>
+.system-status-container {
+    padding: 20px;
+}
+
+.status-card {
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    transition: transform 0.2s;
+}
+
+.status-card:hover {
+    transform: translateY(-2px);
+}
+
+.card-header {
+    font-weight: 600;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.metric-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.metric-label {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.chart-container {
+    position: relative;
+    height: 250px;
+    width: 100%;
+}
+
+.system-health {
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.health-good {
+    color: #198754;
+}
+
+.health-warning {
+    color: #ffc107;
+}
+
+.health-critical {
+    color: #dc3545;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid system-status-container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-speedometer2 me-2"></i>System Status</h2>
+        <div>
+            <button id="refresh-btn" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-clockwise"></i> Refresh
+            </button>
+            <button id="export-logs-btn" class="btn btn-outline-secondary ms-2">
+                <i class="bi bi-download"></i> Export Logs
+            </button>
+        </div>
+    </div>
+
+    <!-- System Health Overview -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card status-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>System Health</span>
+                    <span class="system-health health-good">
+                        <i class="bi bi-check-circle"></i> All systems operational
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 text-center mb-3 mb-md-0">
+                            <div class="metric-value">{{ cpu_usage.current|default:0 }}%</div>
+                            <div class="metric-label">CPU Usage</div>
+                        </div>
+                        <div class="col-md-3 text-center mb-3 mb-md-0">
+                            <div class="metric-value">{{ memory_usage.percent|default:0 }}%</div>
+                            <div class="metric-label">Memory Usage</div>
+                        </div>
+                        <div class="col-md-3 text-center mb-3 mb-md-0">
+                            <div class="metric-value">{{ disk_usage.percent|default:0 }}%</div>
+                            <div class="metric-label">Disk Usage</div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="metric-value">{{ uptime.days }}d {{ uptime.hours }}h</div>
+                            <div class="metric-label">Uptime</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Charts -->
+    <div class="row mb-4">
+        <div class="col-md-6 mb-4 mb-md-0">
+            <div class="card status-card h-100">
+                <div class="card-header">
+                    CPU Usage (Last 24 Hours)
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="cpuUsageChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card status-card h-100">
+                <div class="card-header">
+                    Memory Usage
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="memoryUsageChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Information -->
+    <div class="row">
+        <div class="col-md-6 mb-4 mb-md-0">
+            <div class="card status-card h-100">
+                <div class="card-header">
+                    System Information
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-5">Python Version:</dt>
+                        <dd class="col-sm-7">{{ python_version }}</dd>
+                        
+                        <dt class="col-sm-5">Django Version:</dt>
+                        <dd class="col-sm-7">{{ django_version }}</dd>
+                        
+                        <dt class="col-sm-5">Database Backend:</dt>
+                        <dd class="col-sm-7">{{ database.backend }} {{ database.version }}</dd>
+                        
+                        <dt class="col-sm-5">Server Time:</dt>
+                        <dd class="col-sm-7">{{ server_time|date:"Y-m-d H:i:s" }}</dd>
+                        
+                        <dt class="col-sm-5">Debug Mode:</dt>
+                        <dd class="col-sm-7">
+                            {% if debug %}
+                                <span class="badge bg-warning">Enabled</span>
+                            {% else %}
+                                <span class="badge bg-success">Disabled</span>
+                            {% endif %}
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card status-card h-100">
+                <div class="card-header">
+                    Recent Activity
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for log in recent_activity %}
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">{{ log.action }}</h6>
+                                    <small class="text-muted">{{ log.timestamp|timesince }} ago</small>
+                                </div>
+                                <p class="mb-1">{{ log.details }}</p>
+                                <small class="text-muted">By {{ log.user.get_full_name|default:log.user.username }}</small>
+                            </div>
+                        {% empty %}
+                            <div class="text-center p-3 text-muted">
+                                No recent activity found.
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+<script>
+/**
+ * System Status Dashboard
+ * Handles charts, auto-refresh, and user interactions
+ */
+
+// Global chart references
+var charts = {
+    cpu: null,
+    memory: null
+};
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize UI components
+    try {
+        initializeTooltips();
+        initializeCharts();
+        setupEventListeners();
+        setupAutoRefresh();
+    } catch (error) {
+        console.error('Error initializing system status:', error);
+        showAlert('danger', 'Failed to initialize system status dashboard');
+    }
+});
+
+/**
+ * Initialize Bootstrap tooltips
+ */
+function initializeTooltips() {
+    var tooltipTriggerList = Array.prototype.slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.forEach(function(tooltipTriggerEl) {
+        new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+}
+
+/**
+ * Initialize all charts
+ */
+function initializeCharts() {
+    initializeCpuChart();
+    initializeMemoryChart();
+}
+
+/**
+ * Initialize CPU Usage Chart
+ */
+function initializeCpuChart() {
+    const cpuCtx = document.getElementById('cpuUsageChart');
+    if (!cpuCtx) return;
+
+    try {
+        const cpuData = {
+            labels: JSON.parse('{{ cpu_usage.labels|escapejs|default:"[]" }}'),
+            datasets: [{
+                label: 'CPU Usage',
+                data: JSON.parse('{{ cpu_usage.data|escapejs|default:"[]" }}'),
+                borderColor: 'rgb(75, 192, 192)',
+                backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                tension: 0.1,
+                fill: true
+            }]
+        };
+
+        charts.cpu = new Chart(cpuCtx, {
+            type: 'line',
+            data: cpuData,
+            options: getChartOptions('%')
+        });
+    } catch (error) {
+        console.error('Error initializing CPU chart:', error);
+        showAlert('warning', 'Failed to load CPU usage data');
+    }
+}
+
+/**
+ * Initialize Memory Usage Chart
+ */
+function initializeMemoryChart() {
+    const memoryCtx = document.getElementById('memoryUsageChart');
+    if (!memoryCtx) return;
+
+    try {
+        var memoryData = {
+            labels: ['Used', 'Cached', 'Free'],
+            datasets: [{
+                data: [
+                    {{ memory_usage.used_mb|default:0|floatformat:0 }},
+                    {{ memory_usage.cached_mb|default:0|floatformat:0 }},
+                    {{ memory_usage.free_mb|default:0|floatformat:0 }}
+                ],
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.7)',
+                    'rgba(255, 206, 86, 0.7)',
+                    'rgba(75, 192, 192, 0.7)'
+                ],
+                borderColor: [
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)'
+                ],
+                borderWidth: 1
+            }]
+        };
+
+        charts.memory = new Chart(memoryCtx, {
+            type: 'bar',
+            data: memoryData,
+            options: getChartOptions(' MB')
+        });
+    } catch (error) {
+        console.error('Error initializing memory chart:', error);
+        showAlert('warning', 'Failed to load memory usage data');
+    }
+}
+
+/**
+ * Get chart configuration options
+ * @param {string} unit - Unit of measurement (%, MB, etc.)
+ * @returns {Object} Chart options
+ */
+function getChartOptions(unit) {
+    return {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return `${context.parsed.y}${unit}`;
+                    }
+                }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    callback: function(value) {
+                        return value + unit;
+                    }
+                }
+            }
+        }
+    };
+}
+
+/**
+ * Set up event listeners
+ */
+function setupEventListeners() {
+    // Refresh button
+    const refreshBtn = document.getElementById('refresh-btn');
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', handleRefresh);
+    }
+
+    // Export logs button
+    const exportLogsBtn = document.getElementById('export-logs-btn');
+    if (exportLogsBtn) {
+        exportLogsBtn.addEventListener('click', handleExportLogs);
+    }
+}
+
+/**
+ * Handle refresh button click
+ * @param {Event} event - Click event
+ */
+function handleRefresh(event) {
+    const icon = event.currentTarget.querySelector('i');
+    if (icon) {
+        icon.classList.add('fa-spin');
+    }
+    window.location.reload();
+}
+
+/**
+ * Handle export logs button click
+ * @param {Event} event - Click event
+ */
+function handleExportLogs(event) {
+    event.preventDefault();
+    showAlert('info', 'Preparing logs for download...');
+    // TODO: Implement log export functionality
+    // This would typically make an API call to generate and download logs
+    console.log('Export logs functionality not yet implemented');
+}
+
+/**
+ * Set up auto-refresh functionality
+ */
+function setupAutoRefresh() {
+    const refreshInterval = 5 * 60 * 1000; // 5 minutes
+    let refreshTimer = setTimeout(refreshPage, refreshInterval);
+
+    // Reset timer on user activity
+    const resetTimer = () => {
+        clearTimeout(refreshTimer);
+        refreshTimer = setTimeout(refreshPage, refreshInterval);
+    };
+
+    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
+    events.forEach(function(event) {
+        window.addEventListener(event, resetTimer, { passive: true });
+    });
+
+    // Cleanup function
+    var cleanup = function() {
+        clearTimeout(refreshTimer);
+        events.forEach(function(event) {
+            window.removeEventListener(event, resetTimer, { passive: true });
+        });
+    };
+    
+    // Return cleanup function
+    return cleanup;
+        // Return cleanup function
+        return cleanup;
+}
+
+/**
+ * Refresh the page
+ */
+function refreshPage() {
+    window.location.reload();
+}
+
+/**
+ * Show a Bootstrap alert
+ * @param {string} type - Alert type (success, danger, warning, info)
+ * @param {string} message - Message to display
+ */
+function showAlert(type, message) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+    alertDiv.role = 'alert';
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    
+    const container = document.querySelector('.system-status-container');
+    if (container) {
+        container.insertBefore(alertDiv, container.firstChild);
+        
+        // Auto-dismiss after 5 seconds
+        setTimeout(() => {
+            const bsAlert = bootstrap.Alert.getInstance(alertDiv) || new bootstrap.Alert(alertDiv);
+            bsAlert.close();
+        }, 5000);
+    }
+}
+</script>
+{% endblock %}

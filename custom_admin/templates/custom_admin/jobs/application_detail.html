@@ -1,0 +1,75 @@
+{% extends 'custom_admin/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mb-4">Application Details</h1>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+    <strong>Applicant:</strong> {{ application.applicant.get_full_name }}<br>
+    <small class="text-muted">{{ application.applicant.email }}</small><br>
+    <small class="text-muted">Phone: {{ application.applicant.phone|default:'N/A' }}</small><br>
+    <small class="text-muted">Role: {{ application.applicant.get_role_display|default:'Caregiver' }}</small>
+</div>
+<div class="card-body">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label class="form-label"><strong>Cover Letter:</strong></label>
+            <div class="border rounded p-2 bg-light">{{ application.cover_letter|linebreaksbr|default:'N/A' }}</div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label"><strong>Resume:</strong></label>
+            {% if application.resume %}
+                <a href="{{ application.resume.url }}" target="_blank">View Resume</a>
+            {% else %}
+                <span class="text-muted">Not uploaded</span>
+            {% endif %}
+        </div>
+        <div class="mb-3">
+            <label class="form-label"><strong>Certifications/Credentials:</strong></label>
+            {% if application.credentials %}
+                <a href="{{ application.credentials.url }}" target="_blank">View Credentials</a>
+            {% else %}
+                <span class="text-muted">Not uploaded</span>
+            {% endif %}
+        </div>
+        <div class="mb-3">
+            <label class="form-label"><strong>Reference Letters:</strong></label>
+            {% if application.reference_letter %}
+                <a href="{{ application.reference_letter.url }}" target="_blank">View Reference Letter</a>
+            {% else %}
+                <span class="text-muted">Not uploaded</span>
+            {% endif %}
+        </div>
+        <button type="submit" class="btn btn-primary">Update Application</button>
+        <a href="{% url 'custom_admin:jobs:job_applications' %}" class="btn btn-secondary ms-2">Back to Applications</a>
+    </form>
+</div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <strong>Job:</strong> <a href="{% url 'custom_admin:jobs:job_detail' application.job.id %}">{{ application.job.title }}</a>
+                </div>
+                <div class="card-body">
+                    <p><strong>Status:</strong> <span class="badge bg-{{ application.status|lower }}">{{ application.get_status_display }}</span></p>
+                    <p><strong>Applied At:</strong> {{ application.applied_at|date:'M d, Y H:i' }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <strong>Actions</strong>
+                </div>
+                <div class="card-body">
+    <a href="{% url 'custom_admin:jobs:update_job_application_status' application.id 'accepted' %}" class="btn btn-success w-100 mb-2">Accept Application</a>
+    <a href="{% url 'custom_admin:jobs:update_job_application_status' application.id 'rejected' %}" class="btn btn-danger w-100">Reject Application</a>
+</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

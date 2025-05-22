@@ -318,11 +318,61 @@ def dashboard(request):
     return render(request, 'custom_admin/dashboard.html')
 
 from accounts.models import User, CaregiverVerification
-from .forms import AdminUserEditForm
+from .forms import AdminUserEditForm, UserRoleForm
 from django.contrib import messages
+from django.contrib.auth.models import Group, Permission
+from django.contrib.contenttypes.models import ContentType
 
 @login_required
 @user_passes_test(is_admin)
+def user_roles_edit(request, user_id):
+    """
+    View to edit user roles and permissions in the admin panel.
+    """
+    if not request.user.is_superuser:
+        messages.error(request, 'You do not have permission to edit user roles.')
+        return redirect('custom_admin:user_management')
+    
+    user = get_object_or_404(User, id=user_id)
+    
+    if request.method == 'POST':
+        form = UserRoleForm(request.POST, instance=user)
+        if form.is_valid():
+            # Save basic user info
+            user = form.save(commit=False)
+            
+            # Handle groups
+            user.groups.clear()
+            for group in form.cleaned_data['groups']:
+                user.groups.add(group)
+            
+            # Handle user permissions
+            user.user_permissions.clear()
+            for permission in form.cleaned_data['user_permissions']:
+                user.user_permissions.add(permission)
+            
+            user.save()
+            
+            # Log the action
+            log_admin_action(
+                request.user,
+                f'Updated roles and permissions for user {user.get_full_name() or user.email} (ID: {user.id})',
+                f'Updated groups: {list(user.groups.values_list("name", flat=True))}\nUpdated permissions: {list(user.user_permissions.values_list("codename", flat=True))}'
+            )
+            
+            messages.success(request, 'User roles and permissions updated successfully.')
+            return redirect('custom_admin:user_management')
+    else:
+        form = UserRoleForm(instance=user)
+    
+    context = {
+        'title': f'Edit Roles & Permissions: {user.get_full_name() or user.email}',
+        'form': form,
+        'user': user,
+    }
+    return render(request, 'custom_admin/user_roles_edit.html', context)
+
+
 def user_management(request):
     from core.models import AuditLog
     users = User.objects.all().order_by('-date_joined')
@@ -1250,9 +1300,43 @@ import csv
 from accounts.models import User
 from events.models import Event
 from core.forms import UserCSVImportForm, EventCSVImportForm
+import csv
+from django.http import HttpResponse
+from django.utils import timezone
 
 @login_required
 @user_passes_test(is_admin)
+def export_users(request):
+    """
+    Export users to a CSV file with basic user information.
+    """
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="users_export_{timezone.now().strftime("%Y%m%d_%H%M%S")}.csv"'
+    
+    # Get all users
+    users = User.objects.all().order_by('date_joined')
+    
+    # Create CSV writer
+    writer = csv.writer(response)
+    
+    # Write header
+    writer.writerow(['Username', 'Email', 'First Name', 'Last Name', 'Role', 'Is Active', 'Date Joined'])
+    
+    # Write user data
+    for user in users:
+        writer.writerow([
+            user.username,
+            user.email,
+            user.first_name,
+            user.last_name,
+            user.role,
+            'Yes' if user.is_active else 'No',
+            user.date_joined.strftime('%Y-%m-%d %H:%M:%S') if user.date_joined else ''
+        ])
+    
+    return response
+
+
 def user_import(request):
     result = None
     errors = []

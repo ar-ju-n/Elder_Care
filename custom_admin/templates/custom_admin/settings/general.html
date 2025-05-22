@@ -1,0 +1,216 @@
+{% extends 'custom_admin/base.html' %}
+{% load static %}
+
+{% block title %}General Settings - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="page-header">
+                <h1><i class="bi bi-sliders me-2"></i>General Settings</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'custom_admin:dashboard' %}">Dashboard</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">General Settings</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Site Configuration</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" id="generalSettingsForm">
+                        {% csrf_token %}
+                        
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible">
+                                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="site_name">Site Name</label>
+                                    <input type="text" class="form-control" id="site_name" name="site_name" 
+                                           value="{{ form.site_name.value|default:'' }}" required>
+                                    <small class="form-text text-muted">The name of your website</small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="site_description">Site Description</label>
+                                    <textarea class="form-control" id="site_description" name="site_description" 
+                                              rows="3">{{ form.site_description.value|default:'' }}</textarea>
+                                    <small class="form-text text-muted">A brief description of your website</small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="time_zone">Time Zone</label>
+                                    <select class="form-control select2" id="time_zone" name="time_zone" style="width: 100%;">
+                                        {% for tz in timezones %}
+                                            <option value="{{ tz }}" {% if tz == form.time_zone.value %}selected{% endif %}>
+                                                {{ tz }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="date_format">Date Format</label>
+                                    <select class="form-control" id="date_format" name="date_format">
+                                        <option value="Y-m-d" {% if form.date_format.value == 'Y-m-d' %}selected{% endif %}>YYYY-MM-DD</option>
+                                        <option value="m/d/Y" {% if form.date_format.value == 'm/d/Y' %}selected{% endif %}>MM/DD/YYYY</option>
+                                        <option value="d/m/Y" {% if form.date_format.value == 'd/m/Y' %}selected{% endif %}>DD/MM/YYYY</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="time_format">Time Format</label>
+                                    <select class="form-control" id="time_format" name="time_format">
+                                        <option value="H:i" {% if form.time_format.value == 'H:i' %}selected{% endif %}>24-hour (14:30)</option>
+                                        <option value="h:i A" {% if form.time_format.value == 'h:i A' %}selected{% endif %}>12-hour (2:30 PM)</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="items_per_page">Items Per Page</label>
+                                    <input type="number" class="form-control" id="items_per_page" 
+                                           name="items_per_page" value="{{ form.items_per_page.value|default:'25' }}" 
+                                           min="5" max="100">
+                                    <small class="form-text text-muted">Number of items to show per page in lists</small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="site_logo">Site Logo</label>
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="site_logo" name="site_logo" accept="image/*">
+                                        <label class="custom-file-label" for="site_logo">Choose file</label>
+                                    </div>
+                                    {% if site_logo_url %}
+                                        <div class="mt-2">
+                                            <img src="{{ site_logo_url }}" alt="Site Logo" class="img-thumbnail" style="max-height: 60px;">
+                                            <div class="form-check mt-2">
+                                                <input type="checkbox" class="form-check-input" id="remove_logo" name="remove_logo">
+                                                <label class="form-check-label" for="remove_logo">Remove logo</label>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <h5><i class="bi bi-gear me-2"></i>Advanced Settings</h5>
+                                <hr>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="maintenance_mode" 
+                                               name="maintenance_mode" {% if form.maintenance_mode.value %}checked{% endif %}>
+                                        <label class="custom-control-label" for="maintenance_mode">Maintenance Mode</label>
+                                    </div>
+                                    <small class="form-text text-muted">When enabled, only administrators can access the site</small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="user_registration" 
+                                               name="user_registration" {% if form.user_registration.value %}checked{% endif %}>
+                                        <label class="custom-control-label" for="user_registration">Allow User Registration</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="email_verification" 
+                                               name="email_verification" {% if form.email_verification.value %}checked{% endif %}>
+                                        <label class="custom-control-label" for="email_verification">Require Email Verification</label>
+                                    </div>
+                                    <small class="form-text text-muted">Users must verify their email address before logging in</small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="enable_analytics" 
+                                               name="enable_analytics" {% if form.enable_analytics.value %}checked{% endif %}>
+                                        <label class="custom-control-label" for="enable_analytics">Enable Analytics</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                            <a href="{% url 'custom_admin:dashboard' %}" class="btn btn-default">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Initialize select2 for timezone dropdown
+    $('.select2').select2({
+        theme: 'bootstrap4',
+        width: '100%'
+    });
+    
+    // Show filename when file is selected
+    $('.custom-file-input').on('change', function() {
+        let fileName = $(this).val().split('\\').pop();
+        $(this).next('.custom-file-label').addClass("selected").html(fileName);
+    });
+    
+    // Form validation
+    $('#generalSettingsForm').on('submit', function(e) {
+        const itemsPerPage = parseInt($('#items_per_page').val());
+        
+        if (itemsPerPage < 5 || itemsPerPage > 100) {
+            e.preventDefault();
+            alert('Items per page must be between 5 and 100.');
+            return false;
+        }
+    });
+    
+    // Toggle maintenance mode notice
+    $('#maintenance_mode').change(function() {
+        if ($(this).is(':checked')) {
+            if (!confirm('Enabling maintenance mode will restrict access to administrators only. Are you sure?')) {
+                $(this).prop('checked', false);
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -116,6 +116,11 @@ body {
     <!-- Core JS -->
     <script src="{% static 'js/main.js' %}"></script>
     
+    <!-- WebSocket Notifications -->
+    {% if user.is_authenticated %}
+    <script src="{% static 'js/notifications_ws.js' %}"></script>
+    {% endif %}
+    
     <!-- Page-specific JS -->
     {% block extra_js %}{% endblock %}
     

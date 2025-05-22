@@ -8,7 +8,7 @@
 <i class="bi bi-people"></i>
 <h5 class="card-title mt-2">User Management</h5>
 <p class="text-muted">Manage users and permissions</p>
-<a class="btn btn-admin-primary mt-2" href="{% url 'custom_admin:user_management' %}">Go</a>
+<a class="btn btn-admin-primary mt-2" href="{% url 'custom_admin:users:user_management' %}">Go</a>
 </div>
 </div>
 </div>
@@ -18,7 +18,7 @@
 <i class="bi bi-person-square"></i>
 <h5 class="card-title mt-2">Resident Management</h5>
 <p class="text-muted">Manage residents and their profiles</p>
-<a class="btn btn-admin-primary mt-2" href="{% url 'custom_admin:resident_management' %}">Go</a>
+{# <a class="btn btn-admin-primary mt-2" href="{% url 'custom_admin:resident_management' %}">Go</a> #}
 </div>
 </div>
 </div>
@@ -35,10 +35,40 @@
 <div class="col-md-4">
 <div class="card card-admin text-center h-100">
 <div class="card-body">
-<i class="bi bi-bar-chart-line"></i>
-<h5 class="card-title mt-2">System Monitoring</h5>
-<p class="text-muted">View reports and analytics</p>
-<a class="btn btn-admin-primary mt-2" href="{% url 'custom_admin:reporting' %}">Go</a>
+<i class="bi bi-person-check"></i>
+<h5 class="card-title mt-2">Caregiver Verification</h5>
+<p class="text-muted">Review and verify caregivers</p>
+<a class="btn btn-admin-primary mt-2" href="{% url 'custom_admin:users:caregiver_verification_list' %}">Go</a>
+</div>
+</div>
+</div>
+<div class="col-md-4">
+<div class="card card-admin text-center h-100">
+<div class="card-body">
+<i class="bi bi-book"></i>
+<h5 class="card-title mt-2">Guides</h5>
+<p class="text-muted">View and manage guides</p>
+<a class="btn btn-admin-primary mt-2" href="{% url 'custom_admin:content:guide_list' %}">Go</a>
+</div>
+</div>
+</div>
+<div class="col-md-4">
+<div class="card card-admin text-center h-100">
+<div class="card-body">
+<i class="bi bi-question-circle"></i>
+<h5 class="card-title mt-2">FAQs</h5>
+<p class="text-muted">View and manage FAQs</p>
+<a class="btn btn-admin-primary mt-2" href="{% url 'custom_admin:content:faq_list' %}">Go</a>
+</div>
+</div>
+</div>
+<div class="col-md-4">
+<div class="card card-admin text-center h-100">
+<div class="card-body">
+<i class="bi bi-chat"></i>
+<h5 class="card-title mt-2">Forum</h5>
+<p class="text-muted">View forum threads and replies</p>
+<a class="btn btn-admin-primary mt-2" href="/forum/threads/">Go</a>
 </div>
 </div>
 </div>
@@ -68,7 +98,7 @@
 <i class="bi bi-shield-lock"></i>
 <h5 class="card-title mt-2">Security &amp; Compliance</h5>
 <p class="text-muted">Security settings and compliance</p>
-<a class="btn btn-admin-primary mt-2" href="{% url 'custom_admin:security_compliance' %}">Go</a>
+{# <a class="btn btn-admin-primary mt-2" href="{% url 'custom_admin:security_compliance' %}">Go</a> #}
 </div>
 </div>
 </div>
@@ -78,7 +108,7 @@
 <i class="bi bi-sliders"></i>
 <h5 class="card-title mt-2">Customization &amp; Settings</h5>
 <p class="text-muted">Branding and configuration</p>
-<a class="btn btn-admin-primary mt-2" href="{% url 'custom_admin:customization_settings' %}">Go</a>
+{# <a class="btn btn-admin-primary mt-2" href="{% url 'custom_admin:customization_settings' %}">Go</a> #}
 </div>
 </div>
 </div>

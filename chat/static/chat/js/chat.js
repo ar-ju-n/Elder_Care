@@ -58,6 +58,10 @@ class ChatApp {
         this.sendButtonIcon = document.getElementById('sendButtonIcon');
         this.sendingSpinner = document.getElementById('sendingSpinner');
         
+        // Attach the message form submit event to AJAX handler
+        if (this.messageForm) {
+            this.messageForm.addEventListener('submit', this.handleMessageSubmit);
+        }
         // Get chat request ID from the form
         this.chatRequestId = this.messageForm ? 
             (this.messageForm.querySelector('input[name="chat_request_id"]')?.value || null) : null;

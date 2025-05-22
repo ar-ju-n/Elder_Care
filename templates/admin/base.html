@@ -1,0 +1,29 @@
+{# This template follows the global URL/template policy #}
+{% extends "admin/base.html" %}
+{% load i18n static %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'admin/css/custom_admin.css' %}">
+{% endblock %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">
+    <a href="{% url 'admin:index' %}">
+        <img src="{% static 'images/logo.png' %}" height="40px" alt="Elder Care Logo">
+        {{ site_header|default:_('Django administration') }}
+    </a>
+</h1>
+{% endblock %}
+
+{% block usertools %}
+    {{ block.super }}
+    <!-- Add any custom user tools here -->
+{% endblock %}
+
+{% block nav-global %}
+    {{ block.super }}
+    <!-- Add any global navigation items here -->
+{% endblock %}

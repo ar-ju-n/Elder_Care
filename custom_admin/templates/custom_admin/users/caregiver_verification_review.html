@@ -1,0 +1,42 @@
+{% extends 'custom_admin/base.html' %}
+{% block content %}
+<div class="container py-4">
+    <h2 class="fw-bold mb-4">Review Caregiver Verification</h2>
+    <div class="card shadow-sm p-4">
+        <dl class="row">
+            <dt class="col-sm-3">User</dt>
+            <dd class="col-sm-9">{{ verification.user }}</dd>
+
+            <dt class="col-sm-3">Certification Type</dt>
+            <dd class="col-sm-9">{{ verification.certification_type }}</dd>
+
+            <dt class="col-sm-3">Document</dt>
+            <dd class="col-sm-9">{% if verification.document %}<a href="{{ verification.document.url }}" target="_blank">View Document</a>{% else %}-{% endif %}</dd>
+
+            <dt class="col-sm-3">Submitted At</dt>
+            <dd class="col-sm-9">{{ verification.submitted_at|date:'M d, Y H:i' }}</dd>
+
+            <dt class="col-sm-3">Reviewed</dt>
+            <dd class="col-sm-9">{{ verification.reviewed|yesno:'Yes,No' }}</dd>
+
+            <dt class="col-sm-3">Approved</dt>
+            <dd class="col-sm-9">{{ verification.approved|yesno:'Yes,No' }}</dd>
+
+            <dt class="col-sm-3">Admin Comment</dt>
+            <dd class="col-sm-9">{{ verification.admin_comment|default:'-' }}</dd>
+        </dl>
+        <form method="post" class="mt-4">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="admin_comment" class="form-label">Admin Comment (optional)</label>
+                <textarea class="form-control" name="admin_comment" id="admin_comment" rows="3">{{ verification.admin_comment }}</textarea>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="submit" name="action" value="approve" class="btn btn-success">Approve</button>
+                <button type="submit" name="action" value="reject" class="btn btn-danger">Reject</button>
+                <a href="{% url 'custom_admin:users:caregiver_verification_list' %}" class="btn btn-secondary">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -8,7 +8,7 @@
 <form method="post">
         {% csrf_token %}
         <button class="btn btn-danger" type="submit">Yes, Delete</button>
-<a class="btn btn-secondary ms-2" href="{% url 'custom_admin:video_list' %}">Cancel</a>
+<a class="btn btn-secondary ms-2" href="{{ cancel_url|default:'#' }}">Cancel</a>
 </form>
 </div>
 </div>

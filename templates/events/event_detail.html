@@ -1,3 +1,4 @@
+{# Refactored: This template uses only the global base.html and global URL/template policy #}
 {% extends 'base.html' %}
 {% block content %}
 <div class="container py-5">
@@ -27,7 +28,7 @@
 <p class="mb-4">{{ event.description }}</p>
 <div class="mb-4">
 <strong><i class="bi bi-people-fill me-1"></i>Attendees:</strong> {{ event.attendees.count }}
-            {% if event.attendees.count &gt; 0 %}
+            {% if event.attendees.count > 0 %}
               <ul class="mt-2">
                 {% for attendee in event.attendees.all %}
                   <li>

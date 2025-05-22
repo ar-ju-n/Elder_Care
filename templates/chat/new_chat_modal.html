@@ -1,0 +1,48 @@
+{# New Chat Modal for starting a chat with any user #}
+<div class="modal fade" id="newChatModal" tabindex="-1" aria-labelledby="newChatModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="newChatModalLabel">New Chat</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <input type="text" class="form-control mb-3" id="searchUserInput" placeholder="Search users..." onkeyup="filterUserList()">
+        <div id="userListContainer">
+          {% if available_users %}
+            <ul class="list-group">
+              {% for user in available_users %}
+                <li class="list-group-item d-flex align-items-center justify-content-between">
+                  <div>
+                    {% if user.profile_picture and user.profile_picture.url %}
+                      <img src="{{ user.profile_picture.url }}" class="rounded-circle me-2" width="32" height="32" alt="Avatar">
+                    {% else %}
+                      <img src="/static/images/default-avatar.png" class="rounded-circle me-2" width="32" height="32" alt="Avatar">
+                    {% endif %}
+                    <span>{{ user.get_full_name|default:user.username }}</span>
+                  </div>
+                  <a href="{% url 'chat:start_chat_with_user' user.id %}" class="btn btn-primary btn-sm">Chat</a>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <div class="text-center text-muted">No users available to chat</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function filterUserList() {
+  var input = document.getElementById('searchUserInput');
+  var filter = input.value.toLowerCase();
+  var ul = document.querySelector('#userListContainer ul');
+  if (!ul) return;
+  var li = ul.getElementsByTagName('li');
+  for (var i = 0; i < li.length; i++) {
+    var txt = li[i].innerText.toLowerCase();
+    li[i].style.display = txt.indexOf(filter) > -1 ? '' : 'none';
+  }
+}
+</script>

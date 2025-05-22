@@ -1,0 +1,18 @@
+{# This template follows the global URL/template policy #}
+{% extends "admin/admin_base.html" %}
+{% load static i18n %}
+
+{% block nav-global %}
+{{ block.super }}
+<div class="admin-navigation">
+    <a href="{% url 'admin:index' %}" class="nav-item">Dashboard</a>
+    {# <a href="{% url 'admin:content_article_changelist' %}" class="nav-item">Content</a> #}
+    <!-- Content admin link removed: no such admin registered -->
+    {# <a href="{% url 'admin:auth_user_changelist' %}" class="nav-item">Users</a> #}
+    <!-- Users admin link removed: no such admin registered -->
+    {# <a href="{% url 'admin:custom_admin_audit_log_list' %}" class="nav-item">Audit Logs</a> #}
+    <!-- Audit Logs admin link removed: no such admin registered -->
+    {# <a href="{% url 'admin:custom_admin_system_status' %}" class="nav-item">System</a> #}
+    <!-- System admin link removed: no such admin registered -->
+</div>
+{% endblock %}

@@ -204,10 +204,7 @@ def send_chat_message(request, chat_request):
                 chat_request=chat_request,
                 sender=request.user,
                 message=message_text,
-                attachment=file_data['file_path'] if file_data else None,
-                attachment_name=file_data.get('file_name') if file_data else None,
-                is_image=file_data.get('is_image', False) if file_data else False,
-                file_size=file_data.get('file_size', '0') if file_data else '0'
+                attachment=file_data['file_path'] if file_data else None
             )
             
             # Update the chat request's updated_at timestamp
@@ -280,15 +277,14 @@ def render_chat_room(request, chat_request):
     # Determine the other user
     other_user = chat_request.caregiver if request.user == chat_request.elder else chat_request.elder
     
-    # Get messages for this chat, ordered by timestamp
-    messages = ChatMessage.objects.filter(chat_request=chat_request).select_related('sender').order_by('-timestamp')[:50]
+    # Get all messages for this chat, ordered by timestamp
+    all_messages = ChatMessage.objects.filter(chat_request=chat_request).select_related('sender').order_by('-timestamp')
+    messages = all_messages[:50]
     
-    # Mark messages as read
-    unread_messages = messages.exclude(sender=request.user).exclude(read_by=request.user)
+    # Mark messages as read (from all_messages, not the sliced list)
+    unread_messages = all_messages.exclude(sender=request.user).filter(is_read=False)
     if unread_messages.exists():
-        # Use a single query to mark all unread messages as read
-        unread_messages.update(read_by=F('read_by').bitand(~request.user.id))  # Clear the bit for this user
-        unread_messages.update(read_by=F('read_by').bitor(request.user.id))    # Set the bit for this user
+        unread_messages.update(is_read=True)
     
     # Get the last 50 messages (most recent first, then we'll reverse them for display)
     messages = list(reversed(messages))
@@ -296,8 +292,9 @@ def render_chat_room(request, chat_request):
     # Get unread count for the other user
     unread_count = ChatMessage.objects.filter(
         chat_request=chat_request,
-        sender=other_user
-    ).exclude(read_by=request.user).count()
+        sender=other_user,
+        is_read=False
+    ).count()
     
     # Get the WebSocket URL
     ws_scheme = 'wss' if request.is_secure() else 'ws'
@@ -509,16 +506,16 @@ def chat_list(request):
     for chat in chat_requests:
         # Get the other user
         other_user = chat.caregiver if request.user == chat.elder else chat.elder
-        
         # Get the last message
         last_message = ChatMessage.objects.filter(chat_request=chat).order_by('-timestamp').first()
-        
+
         # Count unread messages
         unread_count = ChatMessage.objects.filter(
             chat_request=chat,
-            sender=other_user
-        ).exclude(read_by=request.user).count()
-        
+            sender=other_user,
+            is_read=False
+        ).count()
+
         chats.append({
             'id': chat.id,
             'other_user': other_user,
@@ -538,14 +535,9 @@ def start_chat(request):
     # Get all users except the current user
     users = User.objects.exclude(id=request.user.id)
     
-    # Filter based on user roles (family can only chat with caregivers and vice versa)
-    if request.user.role == User.FAMILY:
-        users = users.filter(role=User.CAREGIVER, is_verified=True)
-    elif request.user.role == User.CAREGIVER:
-        users = users.filter(role=User.FAMILY)
-    else:
-        # Admin or other roles can chat with anyone
-        pass
+    # Show all users except self (no role-based filtering)
+    # If you want to restrict to only caregivers, uncomment the next line:
+    # users = users.filter(role=User.CAREGIVER, is_verified=True)
     
     # Get the search query if any
     search_query = request.GET.get('q', '')

@@ -1,0 +1,77 @@
+{% extends 'custom_admin/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mb-4">Job Applications</h1>
+
+    <form method="get" class="row mb-3 g-2 align-items-end">
+        <div class="col-md-3">
+            <label for="job" class="form-label">Filter by Job</label>
+            <select name="job_id" id="job" class="form-select">
+                <option value="">All Jobs</option>
+                {% for job in jobs %}
+                    <option value="{{ job.id }}" {% if job.id|stringformat:'s' == request.GET.job_id %}selected{% endif %}>{{ job.title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label for="status" class="form-label">Status</label>
+            <select name="status" id="status" class="form-select">
+                <option value="">All Statuses</option>
+                {% for key, value in status_choices.items %}
+                    <option value="{{ key }}" {% if key == request.GET.status %}selected{% endif %}>{{ value }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label for="search" class="form-label">Search</label>
+            <input type="text" name="search" id="search" class="form-control" value="{{ request.GET.search }}" placeholder="Applicant, email, job title...">
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary w-100">Filter</button>
+        </div>
+    </form>
+
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Applicant</th>
+                            <th>Job</th>
+                            <th>Status</th>
+                            <th>Applied At</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for application in applications %}
+                        <tr>
+                            <td>{{ application.applicant.get_full_name }}<br><small class="text-muted">{{ application.applicant.email }}</small></td>
+                            <td><a href="{% url 'custom_admin:jobs:job_detail' application.job.id %}">{{ application.job.title }}</a></td>
+                            <td><span class="badge bg-{{ application.status|lower }}">{{ application.get_status_display }}</span></td>
+                            <td>{{ application.applied_at|date:'M d, Y H:i' }}</td>
+                            <td>
+                                <a href="{% url 'custom_admin:jobs:application_detail' application.id %}" class="btn btn-sm btn-outline-info">View</a>
+                                {% if application.status != 'accepted' %}
+                                    <a href="{% url 'custom_admin:jobs:update_job_application_status' application.id 'accepted' %}" class="btn btn-sm btn-outline-success">Accept</a>
+                                {% endif %}
+                                {% if application.status != 'rejected' %}
+                                    <a href="{% url 'custom_admin:jobs:update_job_application_status' application.id 'rejected' %}" class="btn btn-sm btn-outline-danger">Reject</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">No applications found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

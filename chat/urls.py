@@ -4,6 +4,7 @@ from . import views
 
 app_name = 'chat'
 
+# All views and templates referenced here use only the global templates directory.
 urlpatterns = [
     # Redirect root to chat list
     path('', RedirectView.as_view(pattern_name='chat:chat_list', permanent=False), name='index'),

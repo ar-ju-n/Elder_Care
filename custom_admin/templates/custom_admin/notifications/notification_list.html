@@ -1,0 +1,53 @@
+{% extends 'custom_admin/base.html' %}
+{% block title %}Notifications{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mt-4 mb-4">Notifications</h1>
+    <div class="card mb-4">
+        <div class="card-header">
+            <strong>All Notifications</strong>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Recipient</th>
+                        <th>Subject</th>
+                        <th>Status</th>
+                        <th>Read</th>
+                        <th>Created At</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for n in notifications %}
+                    <tr>
+                        <td>{{ n.id }}</td>
+                        <td>{{ n.recipient }}</td>
+                        <td>{{ n.subject }}</td>
+                        <td>{{ n.get_status_display }}</td>
+                        <td>{% if n.is_read %}<span class="badge bg-success">Read</span>{% else %}<span class="badge bg-warning text-dark">Unread</span>{% endif %}</td>
+                        <td>{{ n.created_at|date:'M d, Y H:i' }}</td>
+                        <td>
+                            {% if n.url %}
+                            <a href="{{ n.url }}" class="btn btn-sm btn-outline-primary" target="_blank">View</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="7" class="text-center text-muted">No notifications found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% comment %}
+Helper filter for dict lookup
+{% endcomment %}
+{% if False %}
+{% load custom_filters %}
+{% endif %}

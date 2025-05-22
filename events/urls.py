@@ -3,6 +3,7 @@ from . import views
 
 app_name = 'events'
 
+# All views and templates referenced here use only the global templates directory.
 urlpatterns = [
     path('', views.event_list, name='event_list'),
     path('create/', views.event_create, name='event_create'),

@@ -1,0 +1,193 @@
+{% extends 'custom_admin/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Security Settings</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="securitySettingsForm">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Password Policy</h5>
+                                <div class="form-group">
+                                    <label for="password_min_length">Minimum Password Length</label>
+                                    <input type="number" class="form-control" id="password_min_length" 
+                                           name="password_min_length" value="{{ form.password_min_length.value|default:'8' }}" 
+                                           min="4" max="50" required>
+                                    <small class="form-text text-muted">Minimum number of characters required for passwords.</small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Password Requirements</label>
+                                    <div class="custom-control custom-checkbox">
+                                        <input class="custom-control-input" type="checkbox" id="password_require_uppercase" 
+                                               name="password_require_uppercase" {% if form.password_require_uppercase.value %}checked{% endif %}>
+                                        <label for="password_require_uppercase" class="custom-control-label">Require uppercase letters (A-Z)</label>
+                                    </div>
+                                    <div class="custom-control custom-checkbox">
+                                        <input class="custom-control-input" type="checkbox" id="password_require_lowercase" 
+                                               name="password_require_lowercase" {% if form.password_require_lowercase.value %}checked{% endif %}>
+                                        <label for="password_require_lowercase" class="custom-control-label">Require lowercase letters (a-z)</label>
+                                    </div>
+                                    <div class="custom-control custom-checkbox">
+                                        <input class="custom-control-input" type="checkbox" id="password_require_numbers" 
+                                               name="password_require_numbers" {% if form.password_require_numbers.value %}checked{% endif %}>
+                                        <label for="password_require_numbers" class="custom-control-label">Require numbers (0-9)</label>
+                                    </div>
+                                    <div class="custom-control custom-checkbox">
+                                        <input class="custom-control-input" type="checkbox" id="password_require_symbols" 
+                                               name="password_require_symbols" {% if form.password_require_symbols.value %}checked{% endif %}>
+                                        <label for="password_require_symbols" class="custom-control-label">Require symbols (!@#$%^&*)</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="password_expiry_days">Password Expiry (Days)</label>
+                                    <input type="number" class="form-control" id="password_expiry_days" 
+                                           name="password_expiry_days" value="{{ form.password_expiry_days.value|default:'90' }}" 
+                                           min="0" max="365">
+                                    <small class="form-text text-muted">Number of days after which passwords expire (0 to disable).</small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <h5>Login Security</h5>
+                                <div class="form-group">
+                                    <label for="login_attempts_limit">Max Failed Login Attempts</label>
+                                    <input type="number" class="form-control" id="login_attempts_limit" 
+                                           name="login_attempts_limit" value="{{ form.login_attempts_limit.value|default:'5' }}" 
+                                           min="1" max="20" required>
+                                    <small class="form-text text-muted">Number of failed login attempts before account is locked.</small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="login_timeout_minutes">Login Timeout (Minutes)</label>
+                                    <input type="number" class="form-control" id="login_timeout_minutes" 
+                                           name="login_timeout_minutes" value="{{ form.login_timeout_minutes.value|default:'15' }}" 
+                                           min="1" max="1440" required>
+                                    <small class="form-text text-muted">Time in minutes before an inactive user is logged out.</small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="session_timeout_hours">Session Timeout (Hours)</label>
+                                    <input type="number" class="form-control" id="session_timeout_hours" 
+                                           name="session_timeout_hours" value="{{ form.session_timeout_hours.value|default:'24' }}" 
+                                           min="1" max="720" required>
+                                    <small class="form-text text-muted">Maximum session duration in hours (1-720).</small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="enable_2fa" 
+                                               name="enable_2fa" {% if form.enable_2fa.value %}checked{% endif %}>
+                                        <label class="custom-control-label" for="enable_2fa">Enable Two-Factor Authentication</label>
+                                    </div>
+                                    <small class="form-text text-muted">Require users to verify their identity using a second factor.</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group mt-4">
+                            <h5>Security Headers</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="enable_hsts" 
+                                               name="enable_hsts" {% if form.enable_hsts.value %}checked{% endif %}>
+                                        <label class="custom-control-label" for="enable_hsts">Enable HSTS (HTTP Strict Transport Security)</label>
+                                    </div>
+                                    <small class="form-text text-muted">Force secure (HTTPS) connections.</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="enable_xss_protection" 
+                                               name="enable_xss_protection" {% if form.enable_xss_protection.value %}checked{% endif %}>
+                                        <label class="custom-control-label" for="enable_xss_protection">Enable XSS Protection</label>
+                                    </div>
+                                    <small class="form-text text-muted">Enable browser XSS filtering.</small>
+                                </div>
+                            </div>
+                            
+                            <div class="row mt-2">
+                                <div class="col-md-6">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="enable_content_security_policy" 
+                                               name="enable_content_security_policy" {% if form.enable_content_security_policy.value %}checked{% endif %}>
+                                        <label class="custom-control-label" for="enable_content_security_policy">Enable Content Security Policy</label>
+                                    </div>
+                                    <small class="form-text text-muted">Restrict resources that can be loaded.</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="enable_referrer_policy" 
+                                               name="enable_referrer_policy" {% if form.enable_referrer_policy.value %}checked{% endif %}>
+                                        <label class="custom-control-label" for="enable_referrer_policy">Enable Referrer Policy</label>
+                                    </div>
+                                    <small class="form-text text-muted">Control referrer information in requests.</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                            <a href="{% url 'custom_admin:dashboard' %}" class="btn btn-default">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Form validation
+    $('#securitySettingsForm').on('submit', function(e) {
+        const minLength = parseInt($('#password_min_length').val());
+        
+        if (minLength < 4) {
+            e.preventDefault();
+            alert('Minimum password length must be at least 4 characters.');
+            return false;
+        }
+        
+        // Add any additional client-side validation here
+    });
+    
+    // Toggle password requirements based on minimum length
+    $('#password_min_length').on('change', function() {
+        const minLength = parseInt($(this).val());
+        if (minLength < 8) {
+            // Show warning if password length is less than recommended
+            $(this).addClass('is-invalid');
+            $('<div class="invalid-feedback">For better security, use at least 8 characters.</div>')
+                .insertAfter($(this));
+        } else {
+            $(this).removeClass('is-invalid');
+            $(this).next('.invalid-feedback').remove();
+        }
+    });
+    
+    // Initialize tooltips
+    $('[data-toggle="tooltip"]').tooltip();
+});
+</script>
+{% endblock %}

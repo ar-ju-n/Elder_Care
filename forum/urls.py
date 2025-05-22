@@ -3,8 +3,10 @@ from . import views
 
 app_name = 'forum'
 
+# All views and templates referenced here use only the global templates directory.
 urlpatterns = [
     path('', views.topic_list, name='topic_list'),
+    path('threads/', views.topic_list, name='thread_list'),
     path('topic/<int:pk>/', views.topic_detail, name='topic_detail'),
     path('topic/new/', views.topic_create, name='topic_create'),
     path('topic/<int:pk>/edit/', views.topic_edit, name='topic_edit'),

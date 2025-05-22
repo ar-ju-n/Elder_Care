@@ -1,9 +1,16 @@
+{# This partial follows the global URL/template policy #}
 {% load static %}
+{% if user.is_authenticated %}
+{{ user_data|json_script:"user-data" }}
+
 <script>
-  window.isAuthenticated = {{ user.is_authenticated|yesno:'true,false' }};
-  window.userId = {{ user.id|default:'null' }};
+// Parse the user data from the JSON script tag
+const userData = JSON.parse(document.getElementById('user-data').textContent);
+// Make it globally available
+window.userData = userData;
 </script>
 <script src="{% static 'js/notifications_ws.js' %}"></script>
+{% endif %}
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm fixed-top">
 <div class="container">
 <!-- Brand/Logo -->
@@ -43,14 +50,33 @@
 <i class="bi bi-briefcase d-lg-none me-2"></i>Jobs
           </a>
 </li>
+{% if user.is_authenticated %}
+<li class="nav-item">
+  <a class="nav-link{% if request.path|slice:'0:11' == '/chat/chats' %} active{% endif %}" href="/chat/chats/">
+    <i class="bi bi-chat-left-text d-lg-none me-2"></i>Chat
+  </a>
+</li>
+<li class="nav-item d-flex align-items-center">
+  <button class="btn btn-outline-light btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#newChatModal">
+    <i class="bi bi-plus-circle me-1"></i> New Chat
+  </button>
+</li>
+<li class="nav-item">
+  <a class="nav-link{% if request.path|slice:'0:8' == '/chatbot' %} active{% endif %}" href="/chatbot/">
+    <i class="bi bi-robot d-lg-none me-2"></i>Chatbot
+  </a>
+</li>
+{% endif %}
+
+
 <li class="nav-item dropdown">
 <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" id="resourcesDropdown" role="button">
 <i class="bi bi-collection d-lg-none me-2"></i>Resources
           </a>
 <ul aria-labelledby="resourcesDropdown" class="dropdown-menu">
 <li><a class="dropdown-item" href="{% url 'content:article_list' %}">Articles</a></li>
-<li><a class="dropdown-item" href="#">Guides</a></li>
-<li><a class="dropdown-item" href="#">FAQs</a></li>
+<li><a class="dropdown-item" href="{% url 'custom_admin:content:guide_list' %}">Guides</a></li>
+<li><a class="dropdown-item" href="{% url 'custom_admin:content:faq_list' %}">FAQs</a></li>
 </ul>
 </li>
         {% if not user.is_authenticated %}
@@ -102,7 +128,7 @@
     </div>
     <li><hr class="dropdown-divider my-0"/></li>
     <li class="text-center py-2">
-      <a class="text-primary small" href="{% url 'forum:notifications_list' %}">View all notifications</a>
+      <a class="text-primary small" href="{% url 'accounts:notifications_list' %}">View all notifications</a>
     </li>
   </ul>
 </li>
@@ -170,33 +196,12 @@ document.addEventListener('DOMContentLoaded', function() {
         <a id="viewAllMessagesLink" class="text-muted small" href="{% url 'accounts:profile' user.id %}?tab=messages">View all</a>
       </div>
     </li>
-    <!-- <li><hr class="dropdown-divider my-0"/></li>
-    <div id="messagesListContainer">
-      <li class="text-center py-2 text-muted" id="messagesLoading">Loading...</li>
-    </div>
-    <li><hr class="dropdown-divider my-0"/></li>
-    <li class="text-center py-2">
-      <a class="btn btn-sm btn-outline-primary" href="{% url 'accounts:profile' user.id %}?tab=messages">View all messages</a>
-    </li> -->
+    
   </ul>
 </li>
 <!-- Chat Link -->
-{% if user.is_authenticated %}
-<li class="nav-item mx-2">
-  <a class="nav-link d-flex align-items-center" href="/chat/chats/" title="Chat">
-    <i class="bi bi-chat-dots fs-5"></i>
-    <span class="d-none d-lg-inline ms-1">Chat</span>
-  </a>
-</li>
-<!-- Chatbot Link -->
-<li class="nav-item mx-2">
-  <a class="nav-link d-flex align-items-center" href="/chatbot/" title="Chatbot">
-    <i class="bi bi-robot fs-5"></i>
-    <span class="d-none d-lg-inline ms-1">Chatbot</span>
-  </a>
-</li>
-{% endif %}
-<!-- User Dropdown -->
+
+
 <li class="nav-item dropdown ms-2">
 <a aria-expanded="false" class="nav-link dropdown-toggle d-flex align-items-center" data-bs-toggle="dropdown" href="#" id="userDropdown">
               {% if user.profile_picture and user.profile_picture.url %}
@@ -260,6 +265,9 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 </div>
 </nav>
+{% if user.is_authenticated %}
+  {% include 'chat/new_chat_modal.html' %}
+{% endif %}
 <!-- Navbar Spacer -->
 <div></div>
 <!-- Clock Script -->

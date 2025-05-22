@@ -1,0 +1,262 @@
+{% extends 'content/base_content.html' %}
+{% load static crispy_forms_tags %}
+
+{% block page_title %}{{ title|default:'Video Form' }}{% endblock %}
+
+{% block page_actions %}
+    <a href="{% url 'video_list' %}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left"></i> Back to List
+    </a>
+{% endblock %}
+
+{% block content_area %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" id="videoForm">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="form-group">
+                        {{ form.title|as_crispy_field }}
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label>Video Type *</label>
+                            <div class="btn-group btn-group-toggle w-100" data-toggle="buttons">
+                                <label class="btn btn-outline-primary {% if not form.instance.pk or form.instance.url %}active" id="externalVideoBtn">
+                                    <input type="radio" name="video_type" value="external" autocomplete="off" 
+                                           {% if not form.instance.pk or form.instance.url %}checked{% endif %}>
+                                    External URL
+                                </label>
+                                <label class="btn btn-outline-primary {% if form.instance.pk and form.instance.file %}active" id="uploadVideoBtn">
+                                    <input type="radio" name="video_type" value="upload" autocomplete="off"
+                                           {% if form.instance.pk and form.instance.file %}checked{% endif %}>
+                                    Upload Video
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="externalVideoSection" class="{% if form.instance.pk and form.instance.file %}d-none{% endif %}">
+                        <div class="form-group">
+                            {{ form.url|as_crispy_field }}
+                            <small class="form-text text-muted">
+                                Enter a YouTube, Vimeo, or other video URL.
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <div id="uploadVideoSection" class="{% if not form.instance.pk or form.instance.url %}d-none{% endif %}">
+                        <div class="form-group">
+                            {{ form.file|as_crispy_field }}
+                            <small class="form-text text-muted">
+                                Maximum file size: 100MB. Supported formats: MP4, WebM, Ogg.
+                            </small>
+                            
+                            {% if form.instance.file %}
+                            <div class="mt-2" id="currentVideo">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-video"></i> Current video: 
+                                    <a href="{{ form.instance.file.url }}" target="_blank">
+                                        {{ form.instance.filename }}
+                                    </a>
+                                    <button type="button" class="close" id="removeVideo" aria-label="Remove video">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    <input type="hidden" name="clear_file" id="clearFile" value="">
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        {{ form.tags|as_crispy_field }}
+                        <small class="form-text text-muted">
+                            Type and press Enter to add a tag. Use commas to separate multiple tags.
+                        </small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> {{ submit_text|default:'Save' }}
+                        </button>
+                        <a href="{% url 'video_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Video Preview</h5>
+            </div>
+            <div class="card-body text-center">
+                <div id="videoPreview" class="embed-responsive embed-responsive-16by9 mb-3">
+                    {% if form.instance.url %}
+                        {% if 'youtube.com' in form.instance.url or 'youtu.be' in form.instance.url %}
+                            <iframe class="embed-responsive-item" 
+                                    src="https://www.youtube.com/embed/{{ form.instance.url|youtube_embed_id }}" 
+                                    allowfullscreen></iframe>
+                        {% elif 'vimeo.com' in form.instance.url %}
+                            <iframe class="embed-responsive-item" 
+                                    src="https://player.vimeo.com/video/{{ form.instance.url|vimeo_embed_id }}" 
+                                    allowfullscreen></iframe>
+                        {% else %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i> Video preview not available for this URL.
+                            </div>
+                        {% endif %}
+                    {% elif form.instance.file %}
+                        <video controls class="w-100">
+                            <source src="{{ form.instance.file.url }}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    {% else %}
+                        <div class="text-muted p-4">
+                            <i class="fas fa-video fa-3x mb-2"></i>
+                            <p class="mb-0">Preview will appear here</p>
+                        </div>
+                    {% endif %}
+                </div>
+                <p class="small text-muted mb-0">
+                    <i class="fas fa-info-circle"></i> Changes will be reflected in the preview after saving.
+                </p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Publishing</h5>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="isActive" name="is_active" 
+                               {% if form.instance.is_active or not form.instance.pk %}checked{% endif %}>
+                        <label class="custom-control-label" for="isActive">Active</label>
+                    </div>
+                    <small class="form-text text-muted">
+                        Inactive videos won't be visible to users.
+                    </small>
+                </div>
+                
+                <hr>
+                
+                <div class="small text-muted">
+                    <div><strong>Created:</strong> {{ form.instance.created_at|default:'-' }}</div>
+                    <div><strong>Last Updated:</strong> {{ form.instance.updated_at|default:'-' }}</div>
+                    {% if form.instance.published_by %}
+                        <div><strong>Published By:</strong> {{ form.instance.published_by.get_full_name|default:form.instance.published_by.username }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+$(document).ready(function() {
+    // Initialize Select2 for tags
+    $('#id_tags').select2({
+        tags: true,
+        tokenSeparators: [',', ' '],
+        placeholder: 'Add tags...',
+        width: '100%'
+    });
+    
+    // Toggle between URL and file upload
+    $('input[name="video_type"]').change(function() {
+        if ($(this).val() === 'external') {
+            $('#externalVideoSection').removeClass('d-none');
+            $('#uploadVideoSection').addClass('d-none');
+            // Clear file input when switching to URL
+            $('#id_file').val('');
+        } else {
+            $('#externalVideoSection').addClass('d-none');
+            $('#uploadVideoSection').removeClass('d-none');
+            // Clear URL input when switching to file upload
+            $('#id_url').val('');
+        }
+    });
+    
+    // Handle remove video button
+    $('#removeVideo').click(function() {
+        if (confirm('Are you sure you want to remove this video? This cannot be undone.')) {
+            $('#currentVideo').remove();
+            $('#clearFile').val('true');
+            $('#id_file').closest('.form-group').show();
+        }
+    });
+    
+    // Form validation
+    $('#videoForm').submit(function(e) {
+        const videoType = $('input[name="video_type"]:checked').val();
+        
+        if (videoType === 'external' && !$('#id_url').val().trim()) {
+            e.preventDefault();
+            alert('Please enter a video URL or switch to file upload.');
+            return false;
+        } else if (videoType === 'upload' && !$('#id_file').val() && !$('#currentVideo').length) {
+            e.preventDefault();
+            alert('Please select a video file to upload or switch to external URL.');
+            return false;
+        }
+        
+        return true;
+    });
+    
+    // Show file name when selected
+    $('#id_file').on('change', function() {
+        const fileName = $(this).val().split('\\\\').pop();
+        if (fileName) {
+            $(this).next('.custom-file-label').html(fileName);
+        }
+    });
+});
+</script>
+{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+.select2-container--default .select2-selection--multiple {
+    border: 1px solid #ced4da;
+    padding: .375rem .75rem;
+    height: auto;
+    min-height: 38px;
+}
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: #007bff;
+    border: 1px solid #0056b3;
+    color: white;
+    padding: 0 8px;
+    margin-top: 5px;
+}
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    color: rgba(255,255,255,.7);
+    margin-right: 5px;
+}
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+    color: white;
+}
+</style>
+{% endblock %}

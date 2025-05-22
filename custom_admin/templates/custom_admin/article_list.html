@@ -12,7 +12,7 @@
     {% endif %}
     <div class="d-flex justify-content-between align-items-center mb-3">
 <h2>Articles</h2>
-<a class="btn btn-success" href="{% url 'custom_admin:article_add' %}">Add Article</a>
+<a class="btn btn-success" href="{% url 'custom_admin:content:article_add' %}">Add Article</a>
 </div>
 <table class="table table-hover table-bordered align-middle shadow-sm bg-white rounded">
 <thead class="table-light">
@@ -34,8 +34,8 @@
 <td>{{ article.body|truncatechars:100 }}</td>
 <td>{{ article.published_at|date:'M d, Y H:i' }}</td>
 <td>
-<a class="btn btn-primary btn-sm" href="{% url 'custom_admin:article_edit' article.id %}">Edit</a>
-<a class="btn btn-danger btn-sm" href="{% url 'custom_admin:article_delete' article.id %}" onclick="return confirm('Are you sure?')">Delete</a>
+<a class="btn btn-primary btn-sm" href="{% url 'custom_admin:content:article_edit' article.id %}">Edit</a>
+<a class="btn btn-danger btn-sm" href="{% url 'custom_admin:content:article_delete' article.id %}" onclick="return confirm('Are you sure?')">Delete</a>
 </td>
 </tr>
         {% empty %}

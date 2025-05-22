@@ -3,7 +3,7 @@
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold">Guides</h2>
-        <a href="{% url 'custom_admin:guide_add' %}" class="btn btn-primary">Add Guide</a>
+        <a href="{% url 'custom_admin:content:guide_add' %}" class="btn btn-primary">Add Guide</a>
     </div>
     <div class="card shadow-sm">
         <div class="card-body p-0">
@@ -26,8 +26,8 @@
                             <td>{{ guide.published_by }}</td>
                             <td>{{ guide.published_at|date:'Y-m-d H:i' }}</td>
                             <td>
-                                <a href="{% url 'custom_admin:guide_edit' guide.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
-                                <a href="{% url 'custom_admin:guide_delete' guide.id %}" class="btn btn-sm btn-outline-danger ms-2">Delete</a>
+                                <a href="{% url 'custom_admin:content:guide_edit' guide.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
+                                <a href="{% url 'custom_admin:content:guide_delete' guide.id %}" class="btn btn-sm btn-outline-danger ms-2">Delete</a>
                             </td>
                         </tr>
                         {% empty %}

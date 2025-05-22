@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% load permission_tags %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        {% if user_roles.is_admin %}
+            {% include 'admin_dashboard.html' %}
+        {% elif user_roles.is_caregiver %}
+            {% include 'caregiver_dashboard.html' %}
+        {% elif user_roles.is_family %}
+            {% include 'family_dashboard.html' %}
+        {% else %}
+            <div class="alert alert-warning">
+                Your account doesn't have an assigned role. Please contact the administrator.
+            </div>
+        {% endif %}
+    {% else %}
+        {% include 'landing_page.html' %}
+    {% endif %}
+{% endblock %}
+
+{% block sidebar %}
+    {% if user.is_authenticated %}
+        <div class="sidebar">
+            <div class="user-info">
+                <h5>{{ user.get_full_name|default:user.username }}</h5>
+                <small class="text-muted">{{ user.get_role_display }}</small>
+            </div>
+            
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'home' %}">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                </li>
+                
+                {% if user_roles.is_admin %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'admin:index' %}">
+                            <i class="fas fa-cog"></i> Admin Panel
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'admin_user_list' %}">
+                            <i class="fas fa-users"></i> Manage Users
+                        </a>
+                    </li>
+                {% endif %}
+                
+                {% if user_roles.is_admin or user_roles.is_family %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'job_list' %}">
+                            <i class="fas fa-briefcase"></i> Jobs
+                        </a>
+                    </li>
+                {% endif %}
+                
+                {% if user_roles.is_caregiver %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'job_applications' %}">
+                            <i class="fas fa-clipboard-list"></i> My Applications
+                        </a>
+                    </li>
+                {% endif %}
+                
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'forum_list' %}">
+                        <i class="fas fa-comments"></i> Forum
+                    </a>
+                </li>
+                
+                {% if user_roles.is_admin %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="contentDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-file-alt"></i> Content
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="contentDropdown">
+                            <li><a class="dropdown-item" href="{% url 'admin_article_list' %}">Articles</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin_video_list' %}">Videos</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin_link_list' %}">Links</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin_homepageslide_list' %}">Homepage Slides</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin_guide_list' %}">Guides</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin_faq_list' %}">FAQs</a></li>
+                        </ul>
+                    </li>
+                {% endif %}
+                
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'profile' %}">
+                        <i class="fas fa-user"></i> Profile
+                    </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
+    {% endif %}
+{% endblock %}

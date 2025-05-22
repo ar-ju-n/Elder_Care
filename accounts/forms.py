@@ -187,20 +187,26 @@ class CustomUserCreationForm(UserCreationForm):
         return cleaned_data
 
 class ProfileForm(forms.ModelForm):
+    # Explicitly define phone field to add validation
+    phone = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Phone number (e.g., +977 98XXXXXXXX)'
+        }),
+        help_text='Enter a valid international phone number (e.g., +9779812345678, +1 5551234567, +44 2071234567)'
+    )
+    
     class Meta:
         model = User
         fields = [
-            'username', 'full_name', 'email', 'phone_number', 'bio', 
+            'username', 'full_name', 'email', 'phone', 'bio', 
             'profile_picture', 'language_preference', 'timezone', 
             'email_notifications', 'profile_visibility'
         ]
         widgets = {
             'username': forms.TextInput(attrs={'class': 'form-control'}),
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
-            'phone_number': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Phone number (e.g., +977 98XXXXXXXX)'
-            }),
             'bio': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
             'profile_picture': forms.FileInput(attrs={'class': 'form-control'}),
             'language_preference': forms.Select(attrs={'class': 'form-select'}),
@@ -208,9 +214,31 @@ class ProfileForm(forms.ModelForm):
             'email_notifications': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'profile_visibility': forms.Select(attrs={'class': 'form-select'})
         }
-        help_texts = {
-            'phone_number': 'Enter a valid phone number with country code (e.g., +977 98XXXXXXXX)'
-        }
+    
+    def clean_phone(self):
+        """
+        Validate phone number format.
+        Valid formats:
+        - +9779812345678
+        - +1 555 123 4567
+        - +44 20 7123 4567
+        """
+        phone = self.cleaned_data.get('phone', '').strip()
+        if not phone:  # Phone is optional
+            return phone
+            
+        # Remove all non-digit characters except leading +
+        cleaned_phone = ''
+        if phone.startswith('+'):
+            cleaned_phone = '+'
+            phone = phone[1:]
+        cleaned_phone += ''.join(c for c in phone if c.isdigit())
+        
+        # Basic validation: at least 8 digits after country code
+        if len(cleaned_phone) < 9 or not cleaned_phone[1:].isdigit():
+            raise forms.ValidationError('Enter a valid phone number with country code (e.g., +9779812345678)')
+            
+        return cleaned_phone
 
 from .models import CERTIFICATION_CHOICES
 

@@ -1,7 +1,44 @@
+{# Refactored: This template uses only the global base.html and global URL/template policy #}
 {% extends 'base.html' %}
 {% load custom_filters %}
 {% load static %}
 {% block content %}
+<style>
+  .chat-avatar {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 50%;
+    display: inline-block;
+  }
+</style>
+<style>
+  .chat-image {
+    max-width: 350px;
+    max-height: 350px;
+    width: auto;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+  }
+</style>
+<style>
+  .chat-image {
+    max-width: 350px;
+    max-height: 350px;
+    width: auto;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+  }
+</style>
+<!-- New Chat Button -->
+<div class="text-end mb-3">
+  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newChatModal">
+    <i class="bi bi-plus-circle me-1"></i> New Chat
+  </button>
+</div>
+{% include 'chat/new_chat_modal.html' %}
 <div class="chat-room-glass-container">
 <div class="chat-glass-card animate__animated animate__fadeInUp">
 <!-- Header -->
@@ -10,13 +47,13 @@
 <div class="avatar">
           {% if user == chat_request.elder %}
             {% if chat_request.caregiver.profile_picture %}
-              <img alt="{{ chat_request.caregiver.get_full_name }}" class="avatar-img" src="{{ chat_request.caregiver.profile_picture.url }}"/>
+              <img alt="{{ chat_request.caregiver.get_full_name }}" class="rounded-circle" src="{{ chat_request.caregiver.profile_picture.url }}" style="width:40px; height:40px; object-fit:cover;"/>
             {% else %}
               {{ chat_request.caregiver.get_full_name|first }}
             {% endif %}
           {% else %}
             {% if chat_request.elder.profile_picture %}
-              <img alt="{{ chat_request.elder.get_full_name }}" class="avatar-img" src="{{ chat_request.elder.profile_picture.url }}"/>
+              <img alt="{{ chat_request.elder.get_full_name }}" class="rounded-circle" src="{{ chat_request.elder.profile_picture.url }}" style="width:40px; height:40px; object-fit:cover;"/>
             {% else %}
               {{ chat_request.elder.get_full_name|first }}
             {% endif %}
@@ -45,7 +82,7 @@
                 <div class="message-row {% if msg.sender == user %}self{% endif %}">
 <div class="avatar">
                     {% if msg.sender.profile_picture %}
-                      <img alt="{{ msg.sender.get_full_name }}" class="avatar-img" src="{{ msg.sender.profile_picture.url }}"/>
+                      <img alt="{{ msg.sender.get_full_name }}" class="rounded-circle" src="{{ msg.sender.profile_picture.url }}" style="width:40px; height:40px; object-fit:cover;"/>
                     {% else %}
                       {{ msg.sender.get_full_name|first }}
                     {% endif %}
@@ -58,7 +95,7 @@
                       {% if msg.is_image %}
                         <div class="message-image">
 <a href="{{ msg.attachment.url }}" target="_blank">
-<img alt="Image" class="img-fluid rounded" src="{{ msg.attachment.url }}"/>
+<img alt="Image" class="img-fluid rounded chat-image" src="{{ msg.attachment.url }}"/>
 </a>
 </div>
                       {% else %}
@@ -132,13 +169,13 @@
 <div class="avatar">
                 {% if user == chat_request.elder %}
                   {% if chat_request.caregiver.profile_picture %}
-                    <img alt="{{ chat_request.caregiver.get_full_name }}" class="avatar-img" src="{{ chat_request.caregiver.profile_picture.url }}"/>
+                    <img alt="{{ chat_request.caregiver.get_full_name }}" class="rounded-circle" src="{{ chat_request.caregiver.profile_picture.url }}" style="width:40px; height:40px; object-fit:cover;"/>
                   {% else %}
                     {{ chat_request.caregiver.get_full_name|first }}
                   {% endif %}
                 {% else %}
                   {% if chat_request.elder.profile_picture %}
-                    <img alt="{{ chat_request.elder.get_full_name }}" class="avatar-img" src="{{ chat_request.elder.profile_picture.url }}"/>
+                    <img alt="{{ chat_request.elder.get_full_name }}" class="rounded-circle" src="{{ chat_request.elder.profile_picture.url }}" style="width:40px; height:40px; object-fit:cover;"/>
                   {% else %}
                     {{ chat_request.elder.get_full_name|first }}
                   {% endif %}
@@ -164,13 +201,13 @@
 <div class="avatar">
               {% if user == chat_request.elder %}
                 {% if chat_request.caregiver.profile_picture %}
-                  <img alt="{{ chat_request.caregiver.get_full_name }}" class="avatar-img" src="{{ chat_request.caregiver.profile_picture.url }}"/>
+                  <img alt="{{ chat_request.caregiver.get_full_name }}" class="rounded-circle" src="{{ chat_request.caregiver.profile_picture.url }}" style="width:40px; height:40px; object-fit:cover;"/>
                 {% else %}
                   {{ chat_request.caregiver.get_full_name|first }}
                 {% endif %}
               {% else %}
                 {% if chat_request.elder.profile_picture %}
-                  <img alt="{{ chat_request.elder.get_full_name }}" class="avatar-img" src="{{ chat_request.elder.profile_picture.url }}"/>
+                  <img alt="{{ chat_request.elder.get_full_name }}" class="rounded-circle" src="{{ chat_request.elder.profile_picture.url }}" style="width:40px; height:40px; object-fit:cover;"/>
                 {% else %}
                   {{ chat_request.elder.get_full_name|first }}
                 {% endif %}
@@ -206,7 +243,7 @@
                     {% if msg.is_image %}
                       <div class="message-image">
 <a href="{{ msg.attachment.url }}" target="_blank">
-<img alt="Image" class="img-fluid rounded" src="{{ msg.attachment.url }}"/>
+<img alt="Image" class="img-fluid rounded chat-image" src="{{ msg.attachment.url }}"/>
 </a>
 </div>
                     {% else %}
@@ -234,13 +271,13 @@
 <div class="avatar">
               {% if user == chat_request.elder %}
                 {% if chat_request.caregiver.profile_picture %}
-                  <img alt="{{ chat_request.caregiver.get_full_name }}" class="avatar-img" src="{{ chat_request.caregiver.profile_picture.url }}"/>
+                  <img alt="{{ chat_request.caregiver.get_full_name }}" class="rounded-circle" src="{{ chat_request.caregiver.profile_picture.url }}" style="width:40px; height:40px; object-fit:cover;"/>
                 {% else %}
                   {{ chat_request.caregiver.get_full_name|first }}
                 {% endif %}
               {% else %}
                 {% if chat_request.elder.profile_picture %}
-                  <img alt="{{ chat_request.elder.get_full_name }}" class="avatar-img" src="{{ chat_request.elder.profile_picture.url }}"/>
+                  <img alt="{{ chat_request.elder.get_full_name }}" class="rounded-circle" src="{{ chat_request.elder.profile_picture.url }}" style="width:40px; height:40px; object-fit:cover;"/>
                 {% else %}
                   {{ chat_request.elder.get_full_name|first }}
                 {% endif %}

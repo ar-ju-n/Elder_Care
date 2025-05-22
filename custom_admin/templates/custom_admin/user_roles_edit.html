@@ -1,0 +1,165 @@
+{% extends 'custom_admin/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+    .permissions-select {
+        min-height: 300px;
+    }
+    .section {
+        margin-bottom: 2rem;
+    }
+    .section-title {
+        border-bottom: 1px solid #dee2e6;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">{{ title }}</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" class="form-horizontal">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="id_username" class="form-label">Username</label>
+                                    {{ form.username }}
+                                    {% if form.username.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.username.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="id_email" class="form-label">Email</label>
+                                    {{ form.email }}
+                                    {% if form.email.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.email.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="id_first_name" class="form-label">First Name</label>
+                                            {{ form.first_name }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="id_last_name" class="form-label">Last Name</label>
+                                            {{ form.last_name }}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-check form-switch mb-3">
+                                    {{ form.is_active }}
+                                    <label class="form-check-label" for="id_is_active">Active</label>
+                                </div>
+                                
+                                <div class="form-check form-switch mb-3">
+                                    {{ form.is_staff }}
+                                    <label class="form-check-label" for="id_is_staff">Staff status</label>
+                                    <small class="form-text text-muted d-block">Designates whether the user can log into this admin site.</small>
+                                </div>
+                                
+                                <div class="form-check form-switch mb-3">
+                                    {{ form.is_superuser }}
+                                    <label class="form-check-label" for="id_is_superuser">Superuser status</label>
+                                    <small class="form-text text-muted d-block">User has all permissions without explicitly assigning them.</small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="section">
+                                    <h5 class="section-title">Groups</h5>
+                                    <div class="form-group">
+                                        {{ form.groups }}
+                                        {% if form.groups.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.groups.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="section">
+                                    <h5 class="section-title">User Permissions</h5>
+                                    <div class="form-group">
+                                        {{ form.user_permissions }}
+                                        <small class="form-text text-muted">
+                                            Hold down "Control", or "Command" on a Mac, to select more than one.
+                                        </small>
+                                        {% if form.user_permissions.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.user_permissions.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            <a href="{% url 'custom_admin:user_management' %}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extrajs %}
+<script>
+    // Initialize tooltips
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        // Make permission select searchable
+        const permissionSelect = document.getElementById('id_user_permissions');
+        if (permissionSelect) {
+            // Add search box
+            const searchBox = document.createElement('input');
+            searchBox.type = 'text';
+            searchBox.className = 'form-control mb-2';
+            searchBox.placeholder = 'Search permissions...';
+            permissionSelect.parentNode.insertBefore(searchBox, permissionSelect);
+            
+            // Add search functionality
+            searchBox.addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const options = permissionSelect.options;
+                
+                for (let i = 0; i < options.length; i++) {
+                    const option = options[i];
+                    const text = option.text.toLowerCase();
+                    option.style.display = text.includes(searchTerm) ? '' : 'none';
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

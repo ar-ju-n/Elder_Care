@@ -4,7 +4,9 @@ from . import views
 
 app_name = 'accounts'
 
+# All views and templates referenced here use only the global templates directory.
 urlpatterns = [
+    path('notifications/', views.notifications_list, name='notifications_list'),
     path('notifications/api/recent/', views.notifications_api_recent, name='notifications_api_recent'),
     path('notifications/api/mark_read/', views.notifications_api_mark_read, name='notifications_api_mark_read'),
     path('messages/api/recent/', views.messages_api_recent, name='messages_api_recent'),
@@ -38,6 +40,12 @@ urlpatterns = [
     path('request-account-deletion/', views.request_account_deletion, name='request_account_deletion'),
     path('delete-account/', views.delete_account, name='delete_account'),
     path('cancel-account-deletion/', views.cancel_account_deletion, name='cancel_account_deletion'),
+    
+    # Connection requests
+    path('connections/request/<int:caregiver_id>/', views.send_connection_request, name='send_connection_request'),
+    path('connections/requests/', views.connection_requests, name='connection_requests'),
+    path('connections/requests/<int:request_id>/<str:action>/', views.respond_to_connection_request, 
+         name='respond_connection_request'),
     
     # Password change URLs for regular users
     path('password_change/', auth_views.PasswordChangeView.as_view(

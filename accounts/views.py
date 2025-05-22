@@ -3,7 +3,7 @@ import qrcode
 import qrcode.image.svg
 from io import BytesIO
 import os
-from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
+from django.shortcuts import render, redirect, get_object_or_404, HttpResponse, Http404
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.tokens import default_token_generator
@@ -25,7 +25,7 @@ from django.contrib.auth.views import LoginView
 from django import forms
 from .forms import ProfileForm, UserSettingsForm, CustomAuthenticationForm, CustomUserCreationForm
 from .services import login_user
-from .models import AccountDeletionRequest, EmergencyContact
+from .models import AccountDeletionRequest, EmergencyContact, ConnectionRequest, User, Notification
 from django.utils import timezone
 from datetime import timedelta
 from django.core.mail import send_mail
@@ -37,6 +37,8 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 import os
 from .models import Notification, User
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 from django.http import JsonResponse, HttpResponse
 import json
 from PIL import Image
@@ -89,24 +91,95 @@ def messages_api_mark_read(request):
     return JsonResponse({'success': True})
 
 @login_required
-def notifications_api_mark_read(request):
-    if request.method == 'POST':
-        Notification.objects.filter(recipient=request.user, is_read=False).update(is_read=True)
-        return JsonResponse({'success': True})
-    return JsonResponse({'error': 'Invalid request'}, status=400)
-
-    notifications = Notification.objects.filter(recipient=request.user).order_by('-created_at')[:10]
-    data = {
-        "notifications": [
+def send_notification(recipient, title, message, url=''):
+    """
+    Utility function to send a notification to a user
+    """
+    notification = Notification.objects.create(
+        recipient=recipient,
+        title=title,
+        message=message,
+        url=url
+    )
+    
+    # Send WebSocket notification if user is connected
+    try:
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f'notifications_{recipient.id}',
             {
-                "message": n.message,
-                "url": n.url,
-                "created_at": n.created_at.strftime('%Y-%m-%d %H:%M'),
-                "is_read": n.is_read,
-            } for n in notifications
-        ]
+                'type': 'send_notification',
+                'content': {
+                    'type': 'new_notification',
+                    'title': title,
+                    'message': message,
+                    'url': url,
+                    'unread_count': Notification.objects.filter(
+                        recipient=recipient,
+                        is_read=False
+                    ).count()
+                }
+            }
+        )
+    except Exception as e:
+        print(f"Error sending WebSocket notification: {e}")
+    
+    return notification
+
+@login_required
+def notifications_list(request):
+    """
+    Display all notifications for the current user with pagination
+    """
+    from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+    
+    # Get all notifications for the user, ordered by most recent
+    notifications_list = Notification.objects.filter(
+        recipient=request.user
+    ).order_by('-created_at')
+    
+    # Mark notifications as read when viewed
+    unread_notifications = notifications_list.filter(is_read=False)
+    unread_count = unread_notifications.count()
+    unread_notifications.update(is_read=True)
+    
+    # Pagination - 10 items per page
+    paginator = Paginator(notifications_list, 10)
+    page = request.GET.get('page')
+    
+    try:
+        notifications = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page
+        notifications = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range, deliver last page of results
+        notifications = paginator.page(paginator.num_pages)
+    
+    context = {
+        'notifications': notifications,
+        'unread_count': unread_count
     }
-    return JsonResponse(data)
+    return render(request, 'accounts/notifications_list.html', context)
+
+@login_required
+def notifications_api_mark_read(request):
+    """
+    Mark all notifications as read for the current user
+    """
+    if request.method == 'POST':
+        # Mark all unread notifications as read
+        updated = Notification.objects.filter(
+            recipient=request.user,
+            is_read=False
+        ).update(is_read=True)
+        
+        return JsonResponse({
+            'success': True,
+            'updated': updated
+        })
+    
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 # AJAX endpoints for live username/email validation
 
@@ -462,9 +535,19 @@ def profile_view(request, user_id):
                 print(f"Form errors: {form.errors}")
         else:
             form = ProfileForm(instance=user)
+    # Safely handle profile picture access
+    profile_picture_url = None
     if user.profile_picture:
-        print(f"Existing profile picture: {user.profile_picture.name}")
-        print(f"Existing profile picture URL: {user.profile_picture.url}")
+        try:
+            # Just get the name without accessing file
+            print(f"Profile picture found: {user.profile_picture.name}")
+            # Use build_absolute_uri to construct the URL instead of .url
+            from django.urls import reverse
+            from django.conf import settings
+            from urllib.parse import urljoin
+            profile_picture_url = urljoin(settings.MEDIA_URL, user.profile_picture.name)
+        except Exception as e:
+            print(f"Error accessing profile picture: {str(e)}")
     pending_deletion = user.is_pending_deletion
     scheduled_deletion_at = user.scheduled_deletion_at
     from events.models import Event
@@ -571,6 +654,13 @@ def profile_view(request, user_id):
         'date_joined': user.date_joined,
         'last_login': user.last_login,
     }
+    # Find existing connection request from request.user to user (if any)
+    existing_request = None
+    if request.user.is_authenticated and hasattr(request.user, 'sent_connection_requests') and user.is_caregiver and request.user != user and hasattr(user, 'is_caregiver') and user.is_caregiver():
+        try:
+            existing_request = request.user.sent_connection_requests.filter(to_user=user).first()
+        except Exception as e:
+            existing_request = None
     context = {
         'form': form,
         'pending_deletion': pending_deletion,
@@ -582,6 +672,8 @@ def profile_view(request, user_id):
         'badges': badges,
         'activity_stats': activity_stats,
         'profile_user': user,
+        'profile_picture_url': profile_picture_url,
+        'existing_request': existing_request,
     }
     if user.is_caregiver() and CaregiverVerificationModel:
         context['verification_form'] = verification_form
@@ -603,6 +695,7 @@ def profile_view(request, user_id):
     else:
         print("[DEBUG] No authenticated user; emergency_contacts empty.")
         context['emergency_contacts'] = []
+        
     return render(request, 'accounts/profile.html', context)
 
 
@@ -614,24 +707,21 @@ def update_profile(request):
     """
     if request.method == 'POST':
         user = request.user
-        user.first_name = request.POST.get('first_name', user.first_name)
-        user.last_name = request.POST.get('last_name', user.last_name)
-        user.bio = request.POST.get('bio', user.bio)
-        user.phone = request.POST.get('phone', user.phone)
+        form = ProfileForm(request.POST, request.FILES, instance=user)
         
-        # Handle profile visibility
-        user.profile_visibility = request.POST.get('profile_visibility', user.PUBLIC)
-        
-        # Handle email notifications
-        user.email_notifications = 'email_notifications' in request.POST
-        
-        try:
-            user.save()
-            messages.success(request, 'Your profile has been updated successfully.')
-        except Exception as e:
-            messages.error(request, f'Error updating profile: {str(e)}')
-        
-        return redirect('accounts:profile', user_id=user.id)
+        if form.is_valid():
+            try:
+                form.save()
+                messages.success(request, 'Your profile has been updated successfully.')
+            except Exception as e:
+                messages.error(request, f'Error updating profile: {str(e)}')
+            return redirect('accounts:profile', user_id=user.id)
+        else:
+            # If form is not valid, show the errors
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error}")
+            return redirect('accounts:profile', user_id=user.id)
     
     return redirect('accounts:profile', user_id=request.user.id)
 
@@ -642,9 +732,28 @@ def update_contact(request):
     """
     if request.method == 'POST':
         user = request.user
-        user.email = request.POST.get('email', user.email)
-        user.phone = request.POST.get('phone', user.phone)
-        user.address = request.POST.get('address', user.address)
+        
+        # Update the fields directly from request.POST
+        email = request.POST.get('email')
+        phone = request.POST.get('phone', '').strip()
+        address = request.POST.get('address', '').strip()
+        
+        # Basic validation
+        if email:
+            user.email = email
+        
+        # Clean and validate phone number if provided
+        if phone:
+            # Simple validation - you might want to enhance this
+            if not phone.startswith('+') or len(phone) < 10:
+                messages.error(request, 'Please enter a valid phone number with country code (e.g., +9779812345678)')
+                return redirect('accounts:profile', user_id=user.id)
+            user.phone = phone
+        else:
+            user.phone = ''  # Clear the phone number if empty
+            
+        # Update address
+        user.address = address
         
         try:
             user.save()
@@ -988,15 +1097,133 @@ def auth_status(request):
     return render(request, 'accounts/auth_status.html', context)
 
 @login_required
+def send_connection_request(request, caregiver_id):
+    """
+    Send a connection request to a caregiver
+    """
+    if not request.user.is_authenticated or not request.user.is_family:
+        messages.error(request, 'Only family members can send connection requests.')
+        return redirect('home')
+    
+    caregiver = get_object_or_404(User, id=caregiver_id, role='caregiver')
+    
+    # Check if a request already exists
+    existing_request = ConnectionRequest.objects.filter(
+        from_user=request.user,
+        to_user=caregiver
+    ).first()
+    
+    if existing_request:
+        if existing_request.status == 'pending':
+            messages.info(request, 'You have already sent a connection request to this caregiver.')
+        elif existing_request.status == 'accepted':
+            messages.info(request, 'You are already connected with this caregiver.')
+        else:  # rejected
+            messages.info(request, 'Your previous connection request was declined.')
+        return redirect('profile', user_id=caregiver_id)
+    
+    if request.method == 'POST':
+        message = request.POST.get('message', '').strip()
+        
+        # Create the connection request
+        connection_request = ConnectionRequest.objects.create(
+            from_user=request.user,
+            to_user=caregiver,
+            message=message,
+            status='pending'
+        )
+        
+        # Send notification to the caregiver
+        send_notification(
+            recipient=caregiver,
+            title='New Connection Request',
+            message=f"{request.user.get_full_name() or request.user.username} has sent you a connection request.",
+            url=f'/accounts/connections/requests/'
+        )
+        
+        messages.success(request, 'Connection request sent successfully!')
+        return redirect('profile', user_id=caregiver_id)
+    
+    return render(request, 'accounts/send_connection_request.html', {
+        'caregiver': caregiver
+    })
+
+@login_required
+def connection_requests(request):
+    """
+    View for caregivers to see their connection requests
+    """
+    if not request.user.is_authenticated or not request.user.is_caregiver:
+        messages.error(request, 'Only caregivers can view connection requests.')
+        return redirect('home')
+    
+    # Get pending connection requests for the current user
+    connection_requests = ConnectionRequest.objects.filter(
+        to_user=request.user,
+        status='pending'
+    ).select_related('from_user').order_by('-created_at')
+    
+    return render(request, 'accounts/connection_requests.html', {
+        'connection_requests': connection_requests,
+        'active_tab': 'connections'
+    })
+
+@login_required
+@require_http_methods(['POST'])
+def respond_to_connection_request(request, request_id, action):
+    """
+    Handle accepting or rejecting a connection request
+    """
+    if action not in ['accept', 'reject']:
+        messages.error(request, 'Invalid action.')
+        return redirect('connection_requests')
+    
+    try:
+        connection_request = ConnectionRequest.objects.get(
+            id=request_id,
+            to_user=request.user,
+            status='pending'
+        )
+        
+        if action == 'accept':
+            connection_request.status = 'accepted'
+            connection_request.save()
+            
+            # Create a connection between users
+            request.user.connections.add(connection_request.from_user)
+            connection_request.from_user.connections.add(request.user)
+            
+            messages.success(request, f'You are now connected with {connection_request.from_user.get_full_name() or connection_request.from_user.username}!')
+            
+            # Send notification to the family member
+            send_notification(
+                recipient=connection_request.from_user,
+                title='Connection Accepted',
+                message=f"{request.user.get_full_name() or request.user.username} has accepted your connection request.",
+                url=f'/profile/{request.user.id}/'
+            )
+            
+        else:  # reject
+            connection_request.status = 'rejected'
+            connection_request.save()
+            messages.info(request, 'Connection request declined.')
+        
+        return redirect('connection_requests')
+        
+    except ConnectionRequest.DoesNotExist:
+        messages.error(request, 'Connection request not found or already processed.')
+        return redirect('connection_requests')
+
+@login_required
 def cancel_account_deletion(request):
-    if request.method == 'POST' and request.user.is_authenticated:
+    if request.method == 'POST':
         try:
-            deletion_request = AccountDeletionRequest.objects.get(user=request.user, is_processed=False)
+            deletion_request = AccountDeletionRequest.objects.get(user=request.user)
             deletion_request.delete()
             messages.success(request, 'Account deletion request has been cancelled.')
         except AccountDeletionRequest.DoesNotExist:
             messages.info(request, 'No active account deletion request found.')
-        return redirect('accounts:settings')
+        return redirect('settings')
     return redirect('landing')
 
 @login_required

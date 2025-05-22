@@ -1,0 +1,101 @@
+{% extends 'content/base_content.html' %}
+{% load static %}
+
+{% block page_title %}Delete Video{% endblock %}
+
+{% block content_area %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-exclamation-triangle"></i> Confirm Deletion
+                </h5>
+            </div>
+            <div class="card-body">
+                <h4>Are you sure you want to delete this video?</h4>
+                <p class="lead">
+                    <strong>{{ video.title }}</strong>
+                </p>
+                
+                {% if video.file %}
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-circle"></i> 
+                    <strong>Warning:</strong> This will permanently delete the video file from the server.
+                </div>
+                {% endif %}
+                
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Video Details</h5>
+                        <dl class="row mb-0">
+                            <dt class="col-sm-4">Type</dt>
+                            <dd class="col-sm-8">
+                                {% if video.url %}
+                                    External Video
+                                {% else %}
+                                    Uploaded Video
+                                {% endif %}
+                            </dd>
+                            
+                            <dt class="col-sm-4">Published</dt>
+                            <dd class="col-sm-8">{{ video.published_at|date:"F j, Y" }}</dd>
+                            
+                            <dt class="col-sm-4">Status</dt>
+                            <dd class="col-sm-8">
+                                <span class="badge {% if video.is_active %}badge-success{% else %}badge-secondary{% end %}">
+                                    {{ video.is_active|yesno:"Active,Inactive" }}
+                                </span>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+                
+                <form method="post" class="mt-4">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="confirmText">
+                            Type <strong>DELETE</strong> to confirm
+                        </label>
+                        <input type="text" class="form-control" id="confirmText" 
+                               placeholder="Type DELETE" required 
+                               pattern="DELETE" title="Please type DELETE to confirm">
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% url 'video_detail' video.pk %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Delete Permanently
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Disable form submission unless DELETE is typed
+    $('form').on('submit', function(e) {
+        if ($('#confirmText').val() !== 'DELETE') {
+            e.preventDefault();
+            $('#confirmText').addClass('is-invalid');
+        }
+    });
+    
+    // Remove invalid class when user starts typing
+    $('#confirmText').on('input', function() {
+        if ($(this).val() === 'DELETE') {
+            $(this).removeClass('is-invalid');
+        } else {
+            $(this).addClass('is-invalid');
+        }
+    });
+});
+</script>
+{% endblock %}

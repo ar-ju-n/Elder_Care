@@ -1,0 +1,363 @@
+{# Refactored: This template uses only the global base.html and global URL/template policy #}
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/forms.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        .video-type-radio {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        .video-type-radio .form-check {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .video-preview {
+            max-width: 100%;
+            margin: 1rem 0;
+            border-radius: 0.25rem;
+        }
+        .tag-input {
+            margin-bottom: 0.5rem;
+        }
+        .add-tag {
+            margin-bottom: 1rem;
+        }
+        .video-upload-help {
+            font-size: 0.875rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-camera-video me-2"></i>
+                        {{ action }} Video
+                    </h5>
+                    <a href="{% url 'custom_admin:content:video_list' %}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-arrow-left me-1"></i> Back to List
+                    </a>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <div class="row mb-4">
+                            <div class="col-md-8">
+                                <!-- Title -->
+                                <div class="mb-3">
+                                    <label for="{{ form.title.id_for_label }}" class="form-label">
+                                        {{ form.title.label }}
+                                        {% if form.title.field.required %}<span class="text-danger">*</span>{% endif %}
+                                    </label>
+                                    {{ form.title }}
+                                    {% if form.title.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.title.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Description -->
+                                <div class="mb-3">
+                                    <label for="{{ form.description.id_for_label }}" class="form-label">
+                                        {{ form.description.label }}
+                                        {% if form.description.field.required %}<span class="text-danger">*</span>{% endif %}
+                                    </label>
+                                    {{ form.description }}
+                                    {% if form.description.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.description.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Video Type -->
+                                <div class="mb-3">
+                                    <label class="form-label d-block">
+                                        Video Type
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="video-type-radio">
+                                        {% for radio in form.video_type %}
+                                            <div class="form-check">
+                                                {{ radio.tag }}
+                                                <label class="form-check-label" for="{{ radio.id_for_label }}">
+                                                    {{ radio.choice_label }}
+                                                </label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% if form.video_type.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.video_type.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- URL Input (shown/hidden based on video type) -->
+                                <div id="url-field" class="mb-3" style="display: none;">
+                                    <label for="{{ form.url.id_for_label }}" class="form-label">
+                                        Video URL
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.url }}
+                                    <div class="form-text">
+                                        Enter the full URL of the video (YouTube, Vimeo, etc.)
+                                    </div>
+                                    {% if form.url.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.url.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- File Upload (shown/hidden based on video type) -->
+                                <div id="file-field" class="mb-3" style="display: none;">
+                                    <label for="{{ form.file.id_for_label }}" class="form-label">
+                                        Video File
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.file }}
+                                    <div class="video-upload-help">
+                                        Maximum file size: 100MB. Supported formats: MP4, WebM, Ogg.
+                                    </div>
+                                    {% if form.file.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.file.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                    
+                                    {% if action == 'Edit' and video.file %}
+                                        <div class="mt-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="clear_file" id="clear_file">
+                                                <label class="form-check-label" for="clear_file">
+                                                    Clear current file
+                                                </label>
+                                            </div>
+                                            <div class="mt-2">
+                                                <span class="text-muted">Current file:</span>
+                                                <a href="{{ video.file.url }}" target="_blank">{{ video.file.name|slice:":30" }}...</a>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Thumbnail -->
+                                <div class="mb-3">
+                                    <label for="{{ form.thumbnail.id_for_label }}" class="form-label">
+                                        Thumbnail
+                                        {% if form.thumbnail.field.required %}<span class="text-danger">*</span>{% endif %}
+                                    </label>
+                                    {{ form.thumbnail }}
+                                    <div class="video-upload-help">
+                                        Upload a thumbnail image for the video (optional).
+                                    </div>
+                                    {% if form.thumbnail.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.thumbnail.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                    
+                                    {% if action == 'Edit' and video.thumbnail %}
+                                        <div class="mt-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="clear_thumbnail" id="clear_thumbnail">
+                                                <label class="form-check-label" for="clear_thumbnail">
+                                                    Clear current thumbnail
+                                                </label>
+                                            </div>
+                                            <div class="mt-2">
+                                                <img src="{{ video.thumbnail.url }}" alt="Current thumbnail" class="img-thumbnail" style="max-height: 100px;">
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Tags -->
+                                <div class="mb-3">
+                                    <label for="{{ form.tags.id_for_label }}" class="form-label">
+                                        Tags
+                                    </label>
+                                    <div class="tags-input-container">
+                                        {{ form.tags }}
+                                    </div>
+                                    <div class="form-text">
+                                        Add tags separated by commas. Press Enter after each tag.
+                                    </div>
+                                    {% if form.tags.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.tags.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Is Featured -->
+                                <div class="mb-3">
+                                    <div class="form-check form-switch">
+                                        {{ form.is_featured }}
+                                        <label class="form-check-label" for="{{ form.is_featured.id_for_label }}">
+                                            {{ form.is_featured.label }}
+                                        </label>
+                                    </div>
+                                    {% if form.is_featured.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.is_featured.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <!-- Preview Section -->
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">Preview</h6>
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <div id="video-preview" class="mb-3">
+                                            {% if action == 'Edit' and video.thumbnail %}
+                                                <img src="{{ video.thumbnail.url }}" alt="Video Thumbnail" class="img-fluid rounded">
+                                            {% else %}
+                                                <div class="bg-light p-5 rounded text-muted">
+                                                    <i class="bi bi-camera-video" style="font-size: 3rem;"></i>
+                                                    <p class="mt-2 mb-0">Video preview will appear here</p>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <div id="video-info">
+                                            <h5 id="preview-title" class="mb-1">{{ form.instance.title|default:"Video Title" }}</h5>
+                                            <p class="text-muted small mb-0" id="preview-description">
+                                                {{ form.instance.description|truncatewords:15|default:"Video description will appear here" }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                {% if action == 'Edit' %}
+                                    <a href="{% url 'custom_admin:content:video_delete' video.id %}" class="btn btn-outline-danger" onclick="return confirm('Are you sure you want to delete this video?')">
+                                        <i class="bi bi-trash me-1"></i> Delete
+                                    </a>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <a href="{% url 'custom_admin:content:video_list' %}" class="btn btn-outline-secondary me-2">
+                                    Cancel
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save me-1"></i>
+                                    {{ action }} Video
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Toggle between URL and File upload fields based on video type
+    const videoTypeRadios = document.querySelectorAll('input[name="video_type"]');
+    const urlField = document.getElementById('url-field');
+    const fileField = document.getElementById('file-field');
+    
+    function updateVideoTypeFields() {
+        const selectedType = document.querySelector('input[name="video_type"]:checked').value;
+        
+        if (selectedType === 'url') {
+            urlField.style.display = 'block';
+            fileField.style.display = 'none';
+        } else {
+            urlField.style.display = 'none';
+            fileField.style.display = 'block';
+        }
+    }
+    
+    // Set initial state
+    updateVideoTypeFields();
+    
+    // Update on change
+    videoTypeRadios.forEach(radio => {
+        radio.addEventListener('change', updateVideoTypeFields);
+    });
+    
+    // Update preview when title or description changes
+    const titleInput = document.getElementById('{{ form.title.id_for_label }}');
+    const descriptionInput = document.getElementById('{{ form.description.id_for_label }}');
+    const previewTitle = document.getElementById('preview-title');
+    const previewDescription = document.getElementById('preview-description');
+    
+    if (titleInput) {
+        titleInput.addEventListener('input', function() {
+            previewTitle.textContent = this.value || 'Video Title';
+        });
+    }
+    
+    if (descriptionInput) {
+        descriptionInput.addEventListener('input', function() {
+            previewDescription.textContent = this.value ? 
+                (this.value.length > 100 ? this.value.substring(0, 100) + '...' : this.value) : 
+                'Video description will appear here';
+        });
+    }
+    
+    // Preview thumbnail when selected
+    const thumbnailInput = document.getElementById('{{ form.thumbnail.id_for_label }}');
+    const previewContainer = document.getElementById('video-preview');
+    
+    if (thumbnailInput) {
+        thumbnailInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewContainer.innerHTML = `<img src="${e.target.result}" class="img-fluid rounded" alt="Preview">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+    
+    // Handle form validation
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => {
+        form.addEventListener('submit', event => {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+    });
+});
+</script>
+{% endblock %}

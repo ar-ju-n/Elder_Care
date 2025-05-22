@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth.models import Group, Permission
 from accounts.models import User, Notification
 from events.models import Event
 from content.models import Article, Link
@@ -53,6 +54,44 @@ class AdminLinkForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'class': 'form-control bg-dark text-white', 'rows': 2, 'placeholder': 'Short Description'}),
             'url': forms.URLInput(attrs={'class': 'form-control bg-dark text-white', 'placeholder': 'https://example.com'}),
         }
+
+class UserRoleForm(forms.ModelForm):
+    """
+    Form for managing user roles and permissions in the admin panel.
+    """
+    groups = forms.ModelMultipleChoiceField(
+        queryset=Group.objects.all(),
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
+        required=False,
+        label='Groups'
+    )
+    
+    user_permissions = forms.ModelMultipleChoiceField(
+        queryset=Permission.objects.all(),
+        widget=forms.SelectMultiple(attrs={'class': 'form-select', 'size': '10'}),
+        required=False,
+        label='Additional Permissions',
+        help_text='Specific permissions for this user.'
+    )
+    
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'first_name', 'last_name', 'is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions']
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'is_staff': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'is_superuser': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            self.fields['user_permissions'].queryset = Permission.objects.select_related('content_type')
+
 
 class AdminIntegrationForm(forms.ModelForm):
     class Meta:

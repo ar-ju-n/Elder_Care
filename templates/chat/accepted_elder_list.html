@@ -1,3 +1,4 @@
+{# Refactored: This template uses only the global base.html and global URL/template policy #}
 {% extends 'base.html' %}
 {% load custom_filters %}
 {% block content %}
@@ -21,7 +22,7 @@
 </div>
 </div>
 <div class="d-flex align-items-center">
-                    {% if item.unread_count and item.unread_count &gt; 0 %}
+                    {% if item.unread_count and item.unread_count > 0 %}
                         <span class="badge bg-danger me-2">{{ item.unread_count }} new</span>
                     {% endif %}
                     <a class="btn btn-primary btn-sm" href="{% url 'chat:chat_room' item.request.id|slugify_dir %}">

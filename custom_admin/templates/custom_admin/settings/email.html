@@ -1,0 +1,188 @@
+{% extends 'custom_admin/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Email Settings</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="emailSettingsForm">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>SMTP Configuration</h5>
+                                <div class="form-group">
+                                    <label for="email_host">SMTP Host</label>
+                                    <input type="text" class="form-control" id="email_host" name="email_host" 
+                                           value="{{ form.email_host.value|default:'' }}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email_port">SMTP Port</label>
+                                    <input type="number" class="form-control" id="email_port" name="email_port" 
+                                           value="{{ form.email_port.value|default:'587' }}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email_host_user">SMTP Username</label>
+                                    <input type="text" class="form-control" id="email_host_user" name="email_host_user" 
+                                           value="{{ form.email_host_user.value|default:'' }}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="email_host_password">SMTP Password</label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" id="email_host_password" 
+                                               name="email_host_password" value="" placeholder="Leave blank to keep current">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary toggle-password" type="button">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Email Options</h5>
+                                <div class="form-group">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="email_use_tls" 
+                                               name="email_use_tls" {% if form.email_use_tls.value %}checked{% endif %}>
+                                        <label class="custom-control-label" for="email_use_tls">Use TLS</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="email_use_ssl" 
+                                               name="email_use_ssl" {% if form.email_use_ssl.value %}checked{% endif %}>
+                                        <label class="custom-control-label" for="email_use_ssl">Use SSL</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="default_from_email">Default From Email</label>
+                                    <input type="email" class="form-control" id="default_from_email" name="default_from_email" 
+                                           value="{{ form.default_from_email.value|default:'' }}" required>
+                                    <small class="form-text text-muted">The default email address to use for various automated correspondence.</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="server_email">Server Email</label>
+                                    <input type="email" class="form-control" id="server_email" name="server_email" 
+                                           value="{{ form.server_email.value|default:'' }}">
+                                    <small class="form-text text-muted">Email address that error messages come from.</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group mt-3">
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <button type="button" id="testEmailBtn" class="btn btn-info">
+                                <i class="fas fa-paper-plane"></i> Send Test Email
+                            </button>
+                            <a href="{% url 'custom_admin:dashboard' %}" class="btn btn-default">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Test Email Modal -->
+<div class="modal fade" id="testEmailModal" tabindex="-1" role="dialog" aria-labelledby="testEmailModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="testEmailModalLabel">Send Test Email</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="testEmailAlert" class="alert" style="display: none;"></div>
+                <div class="form-group">
+                    <label for="test_email_recipient">Recipient Email</label>
+                    <input type="email" class="form-control" id="test_email_recipient" 
+                           value="{{ request.user.email }}">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="confirmTestEmail">Send Test Email</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Toggle password visibility
+    $('.toggle-password').click(function() {
+        const input = $(this).parent().prev();
+        const icon = $(this).find('i');
+        if (input.attr('type') === 'password') {
+            input.attr('type', 'text');
+            icon.removeClass('fa-eye').addClass('fa-eye-slash');
+        } else {
+            input.attr('type', 'password');
+            icon.removeClass('fa-eye-slash').addClass('fa-eye');
+        }
+    });
+
+    // Handle test email button click
+    $('#testEmailBtn').click(function() {
+        $('#testEmailModal').modal('show');
+    });
+
+    // Handle test email submission
+    $('#confirmTestEmail').click(function() {
+        const email = $('#test_email_recipient').val();
+        const alertDiv = $('#testEmailAlert');
+        
+        if (!email) {
+            alertDiv.removeClass('alert-success').addClass('alert-danger')
+                   .text('Please enter a valid email address').show();
+            return;
+        }
+
+        // Disable button and show loading state
+        const btn = $(this);
+        btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Sending...');
+        
+        // Send AJAX request
+        $.ajax({
+            url: '{% url "custom_admin:test_email" %}',
+            method: 'POST',
+            data: {
+                email: email,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: function(response) {
+                if (response.status === 'success') {
+                    alertDiv.removeClass('alert-danger').addClass('alert-success')
+                           .text('Test email sent successfully!').show();
+                } else {
+                    throw new Error(response.message || 'Failed to send test email');
+                }
+            },
+            error: function(xhr, status, error) {
+                const errorMsg = xhr.responseJSON && xhr.responseJSON.message 
+                    ? xhr.responseJSON.message 
+                    : 'An error occurred while sending the test email';
+                alertDiv.removeClass('alert-success').addClass('alert-danger')
+                       .text(errorMsg).show();
+            },
+            complete: function() {
+                btn.prop('disabled', false).html('Send Test Email');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,57 @@
+{# This template follows the global URL/template policy #}
+{% extends "admin/base.html" %}
+{% load i18n static %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Elder Care Admin') }}{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'admin/css/custom_admin.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">
+    <a href="{% url 'admin:index' %}">
+        <img src="{% static 'images/logo.png' %}" height="40px" alt="Elder Care Logo">
+        {{ site_header|default:_('Elder Care Administration') }}
+    </a>
+</h1>
+{% endblock %}
+
+{% block nav-global %}
+<div class="admin-navigation">
+    <a href="{% url 'admin:index' %}" class="nav-item">
+        <i class="fas fa-tachometer-alt"></i> Dashboard
+    </a>
+    <div class="nav-dropdown">
+        <button class="nav-dropbtn">
+            <i class="fas fa-cog"></i> System
+            <i class="fas fa-caret-down"></i>
+        </button>
+        <div class="nav-dropdown-content">
+            <a href="{% url 'admin:index' %}system/status/">
+                <i class="fas fa-heartbeat"></i> System Status
+            </a>
+            <a href="{% url 'admin:index' %}system/settings/">
+                <i class="fas fa-cog"></i> Settings
+            </a>
+        </div>
+    </div>
+    <!-- Add more navigation items as needed -->
+</div>
+{% endblock %}
+
+{% block footer %}
+{{ block.super }}
+<script>
+    // Add any custom JavaScript here
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize tooltips
+        const tooltipTriggers = document.querySelectorAll('[data-toggle="tooltip"]');
+        tooltipTriggers.forEach(function(element) {
+            new bootstrap.Tooltip(element);
+        });
+    });
+</script>
+{% endblock %}

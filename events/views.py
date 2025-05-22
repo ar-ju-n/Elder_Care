@@ -24,12 +24,11 @@ def event_rsvp(request, pk):
             # Notify event creator if not self
             if event.created_by and event.created_by != request.user:
                 Notification.objects.create(
-                    user=event.created_by,
+                    recipient=event.created_by,
                     message=f"{request.user.get_full_name() or request.user.username} has RSVP'd to your event: {event.title}",
-                    url=reverse('event_detail', args=[event.pk]),
-                    notif_type='event_rsvp',
+                    url=reverse('events:event_detail', args=[event.pk]),
                 )
-    return HttpResponseRedirect(reverse('event_detail', args=[pk]))
+    return HttpResponseRedirect(reverse('events:event_detail', args=[pk]))
 
 # Stub for event creation notification
 # To be called after an event is created (in your event creation view):
@@ -38,10 +37,9 @@ def notify_family_members_event_created(event):
     family_members = User.objects.filter(role=User.FAMILY)
     for user in family_members:
         Notification.objects.create(
-            user=user,
+            recipient=user,
             message=f"A new event has been created: {event.title}",
-            url=reverse('event_detail', args=[event.pk]),
-            notif_type='event_new',
+            url=reverse('events:event_detail', args=[event.pk]),
         )
 
 @login_required
@@ -67,7 +65,7 @@ def event_create(request):
                 created_by=request.user
             )
             notify_family_members_event_created(event)
-            return HttpResponseRedirect(reverse('event_detail', args=[event.pk]))
+            return HttpResponseRedirect(reverse('events:event_detail', args=[event.pk]))
         else:
             return render(request, 'events/event_form.html', {'error': 'Please fill out all required fields.'})
     return render(request, 'events/event_form.html')

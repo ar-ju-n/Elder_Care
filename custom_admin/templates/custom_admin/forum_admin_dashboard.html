@@ -1,0 +1,78 @@
+{% extends 'custom_admin/base.html' %}
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mb-4">Forum Moderation Dashboard</h1>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header fw-bold">All Topics</div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Category</th>
+                                    <th>Author</th>
+                                    <th>Replies</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for topic in topics %}
+                                <tr>
+                                    <td>{{ topic.title }}</td>
+                                    <td>{% if topic.category %}{{ topic.category.name }}{% else %}Uncategorized{% endif %}</td>
+                                    <td>{{ topic.author.get_full_name|default:topic.author.username }}</td>
+                                    <td>{{ topic.replies.count }}</td>
+                                    <td>{{ topic.created_at|date:'M d, Y H:i' }}</td>
+                                    <td>
+                                        <a href="{% url 'forum:topic_detail' topic.id %}" class="btn btn-sm btn-outline-info" target="_blank"><i class="fas fa-eye"></i></a>
+                                        <!-- Add moderation actions here -->
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="6" class="text-center text-muted">No topics found.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header fw-bold">Categories</div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        {% for category in categories %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ category.name }}
+                            <span class="badge bg-secondary">{{ category.topics.count }}</span>
+                        </li>
+                        {% empty %}
+                        <li class="list-group-item text-muted">No categories found.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <div class="card mb-4">
+                <div class="card-header fw-bold">Latest Replies</div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        {% for reply in replies|slice:":5" %}
+                        <li class="list-group-item">
+                            <div><strong>{{ reply.author.get_full_name|default:reply.author.username }}</strong> on <em>{{ reply.topic.title }}</em></div>
+                            <div class="small text-muted">{{ reply.created_at|date:'M d, Y H:i' }}</div>
+                        </li>
+                        {% empty %}
+                        <li class="list-group-item text-muted">No replies yet.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

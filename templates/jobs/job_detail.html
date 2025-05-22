@@ -1,5 +1,20 @@
+{# Refactored: This template uses only the global base.html and global URL/template policy #}
 {% extends 'base.html' %}
 {% block content %}
+<!-- DEBUG INFO - Job Status: {{ job.status }}, Assigned: {{ job.assigned_caregiver_id }}, User: {{ user.id }} -->
+<div class="container mt-4">
+  {% if user.is_staff %}
+  <div class="alert alert-warning">
+    <h5>Debug Information (Admin Only)</h5>
+    <p>Job ID: {{ job.id }}</p>
+    <p>Status: {{ job.status }} ({{ job.get_status_display }})</p>
+    <p>Assigned Caregiver ID: {{ job.assigned_caregiver_id|default:'None' }}</p>
+    <p>Current User ID: {{ user.id }}</p>
+    <p>Is Authenticated: {{ user.is_authenticated }}</p>
+    <p>Is Caregiver: {{ user.is_caregiver|yesno:'Yes,No' }}</p>
+    <p>Already Applied: {{ already_applied|yesno:'Yes,No' }}</p>
+  </div>
+  {% endif %}
 <div class="job-detail-section py-5">
 <div class="container">
 <div class="row justify-content-center mb-4">
@@ -45,6 +60,22 @@
 </div>
 <div class="mt-4">
 <div class="mt-4">
+        {% if job.status != 'open' %}
+          <div class="alert alert-{% if job.status == 'in_progress' %}info{% elif job.status == 'completed' %}success{% else %}secondary{% endif %} mb-4">
+            <i class="bi bi-{% if job.status == 'in_progress' %}hourglass-split{% elif job.status == 'completed' %}check-circle{% else %}info-circle{% endif %} me-2"></i>
+            This job is currently <strong>{{ job.get_status_display }}</strong>.
+            {% if job.assigned_caregiver %}
+              <div class="mt-2">
+                <i class="bi bi-person-check me-1"></i>
+                Assigned to: {{ job.assigned_caregiver.get_full_name|default:job.assigned_caregiver.username }}
+                {% if job.assigned_caregiver == user %}
+                  <span class="badge bg-success ms-2">You!</span>
+                {% endif %}
+              </div>
+            {% endif %}
+          </div>
+        {% endif %}
+        
         {% if already_applied %}
           <div class="alert alert-info">
 <h5><i class="bi bi-check-circle me-2"></i>You have already applied to this job</h5>
@@ -76,9 +107,9 @@
 </div>
             {% endif %}
           </div>
-        {% elif user.is_authenticated and user.is_caregiver %}
+        {% elif user.is_authenticated and user.is_caregiver and job.status == 'open' and not already_applied %}
           <a class="btn btn-success" href="{% url 'jobs:apply_job' job.id %}">
-<i class="bi bi-file-earmark-text me-2"></i>Apply Now with Resume
+            <i class="bi bi-file-earmark-text me-2"></i>Apply Now with Resume
           </a>
         {% endif %}
       </div>
@@ -138,20 +169,20 @@
 <i class="bi bi-eye"></i> Cover Letter
                     </button>
                     {% if application.status == 'pending' %}
-                    <a class="btn btn-sm btn-success" href="#" onclick="document.getElementById('accept-form-{{ application.id }}').submit();">
-<i class="bi bi-check-circle"></i> Accept
-                    </a>
-<form action="{% url 'jobs:update_application_status' application.id %}" class="d-none" id="accept-form-{{ application.id }}" method="post">
+                    <form action="{% url 'jobs:update_application_status' application.id %}" method="post" class="d-inline">
                       {% csrf_token %}
-                      <input name="status" type="hidden" value="accepted"/>
-</form>
-<a class="btn btn-sm btn-danger" href="#" onclick="document.getElementById('reject-form-{{ application.id }}').submit();">
-<i class="bi bi-x-circle"></i> Reject
-                    </a>
-<form action="{% url 'jobs:update_application_status' application.id %}" class="d-none" id="reject-form-{{ application.id }}" method="post">
+                      <input type="hidden" name="status" value="accepted">
+                      <button type="submit" class="btn btn-sm btn-success">
+                        <i class="bi bi-check-circle"></i> Accept
+                      </button>
+                    </form>
+                    <form action="{% url 'jobs:update_application_status' application.id %}" method="post" class="d-inline">
                       {% csrf_token %}
-                      <input name="status" type="hidden" value="rejected"/>
-</form>
+                      <input type="hidden" name="status" value="rejected">
+                      <button type="submit" class="btn btn-sm btn-danger">
+                        <i class="bi bi-x-circle"></i> Reject
+                      </button>
+                    </form>
                     {% endif %}
                   </div>
 </td>

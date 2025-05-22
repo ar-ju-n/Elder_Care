@@ -295,6 +295,16 @@
                         </div>
                         <!-- Job Actions -->
                         <div class="job-actions">
+                            {% if job.assigned_caregiver and (user == job.posted_by or user == job.assigned_caregiver) %}
+                                {# Find the accepted application for this job and caregiver #}
+                                {% for application in applications %}
+                                    {% if application.caregiver == job.assigned_caregiver and application.status == 'accepted' %}
+                                        <a href="{% url 'chat:chat_room' application.id %}" class="btn btn-outline-primary ms-2">
+                                            <i class="fas fa-comments me-1"></i> Chat
+                                        </a>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
                             {% if can_manage or job.assigned_caregiver == user %}
                                 <form action="{% url 'jobs:update_job_status' job.id %}" class="d-inline-block me-2 mb-2" id="statusForm" method="post">
                                     {% csrf_token %}

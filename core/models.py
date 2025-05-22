@@ -40,11 +40,16 @@ from django.utils import timezone
 from django.conf import settings
 
 class Notification(models.Model):
+    STATUS_CHOICES = [
+        ('unread', 'Unread'),
+        ('read', 'Read'),
+    ]
     recipient = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='core_notifications')
     subject = models.CharField(max_length=200)
     message = models.TextField()
     url = models.URLField(blank=True, null=True)
     is_read = models.BooleanField(default=False)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='unread')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

@@ -1,3 +1,4 @@
+{# This partial follows the global URL/template policy #}
 {{ user.id|default:"null"|json_script:"user-id" }}
 {{ user.is_authenticated|yesno:"true,false"|json_script:"user-authenticated" }}
 <script>

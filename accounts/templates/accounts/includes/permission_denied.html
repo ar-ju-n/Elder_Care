@@ -1,0 +1,16 @@
+{% load i18n %}
+
+<div class="alert alert-danger" role="alert">
+  <h4 class="alert-heading">{% trans "Permission Denied" %}</h4>
+  <p>{% trans "You don't have permission to access this page." %}</p>
+  <hr>
+  <p class="mb-0">
+    {% if request.user.is_authenticated %}
+      {% trans "Please contact an administrator if you believe this is an error." %}
+    {% else %}
+      <a href="{% url 'login' %}?next={{ request.path }}" class="alert-link">
+        {% trans "Please log in to access this page."
+      </a>
+    {% endif %}
+  </p>
+</div>

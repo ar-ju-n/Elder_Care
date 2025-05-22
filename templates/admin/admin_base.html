@@ -1,0 +1,39 @@
+{# This template follows the global URL/template policy #}
+{% extends "admin/base.html" %}
+{% load i18n static %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'admin/css/custom_admin.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}
+
+{% block title %}{{ title }} | {{ site_title|default:'Elder Care Admin' }}{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">
+    <a href="{% url 'admin:index' %}">
+        <img src="{% static 'images/logo.png' %}" height="40px" alt="Elder Care Logo">
+        {{ site_header|default:'Elder Care Administration' }}
+    </a>
+</h1>
+{% endblock %}
+
+{% block usertools %}
+    <div class="user-tools">
+        {% if user.is_active and user.is_staff %}
+            {% if user.has_usable_password %}
+            <a href="{% url 'admin:password_change' %}">
+                {% translate 'Change password' %}
+            </a>
+            {% endif %}
+            <a href="{% url 'admin:logout' %}">
+                {% translate 'Log out' %}
+            </a>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block nav-global %}
+    <!-- Custom global navigation items can go here -->
+{% endblock %}

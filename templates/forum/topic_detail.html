@@ -1,3 +1,4 @@
+{# Refactored: This template uses only the global base.html and global URL/template policy #}
 {% extends 'base.html' %}
 {% block content %}
 <div class="container py-4">
@@ -34,8 +35,13 @@
               {% csrf_token %}
               <input name="action" type="hidden" value="upvote"/>
 <input name="reply_id" type="hidden" value="{{ reply.id }}"/>
-<button %}="" %}disabled{%="" class="btn {% if reply_info.user_has_upvoted %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm d-flex align-items-center" endif="" if="" not="" or="" title="{% if reply_info.user_has_upvoted %}Remove Upvote{% else %}Upvote{% endif %}" type="submit" user="reply.author" user.is_authenticated="" {%="">
-<i class="bi bi-hand-thumbs-up{% if reply_info.user_has_upvoted %}-fill{% endif %}"></i> <span class="ms-1">{{ reply_info.upvotes }}</span>
+<button
+  class="btn {% if reply_info.user_has_upvoted %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm d-flex align-items-center"
+  type="submit"
+  title="{% if reply_info.user_has_upvoted %}Remove Upvote{% else %}Upvote{% endif %}"
+  {% if not user.is_authenticated or user == reply.author %}disabled{% endif %}
+>
+  <i class="bi bi-hand-thumbs-up{% if reply_info.user_has_upvoted %}-fill{% endif %}"></i> <span class="ms-1">{{ reply_info.upvotes }}</span>
 </button>
 </form>
             {% if user.is_authenticated and user == topic.author and not reply_info.is_best_answer or user.is_authenticated and user.is_staff and not reply_info.is_best_answer %}

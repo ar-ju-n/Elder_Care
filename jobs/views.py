@@ -218,6 +218,7 @@ def job_detail(request, job_id):
         'applications': applications,
         'user_application': user_application,
         'title': job.title,
+        'assigned_caregiver': job.assigned_caregiver,  # Add this line
         'can_apply': request.user.is_caregiver and not job.assigned_caregiver and not user_application,
         'can_manage': request.user == job.posted_by or request.user.is_admin_role()
     }
@@ -234,9 +235,12 @@ class JobCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     
     def form_valid(self, form):
         form.instance.posted_by = self.request.user
+        # Automatically approve if posted by family
+        if self.request.user.is_family():
+            form.instance.approved = True
         response = super().form_valid(form)
         messages.success(self.request, 'Job posted successfully.' + 
-                        (' It will be visible after admin approval.' if not self.request.user.is_admin_role() else ''))
+                        (' It will be visible after admin approval.' if not (self.request.user.is_admin_role() or self.request.user.is_family()) else ''))
         return response
     
     def get_success_url(self):
@@ -317,33 +321,88 @@ def apply_job_view(request, job_id):
 @login_required
 @user_passes_test(lambda u: u.is_family() or u.is_admin_role())
 def update_application_status(request, application_id):
-    application = get_object_or_404(Application, id=application_id)
-    job = application.job
-    
-    # Ensure only the job poster or an admin can update the status
-    if not (request.user.is_admin_role() or (request.user.is_family() and job.posted_by == request.user)):
-        messages.error(request, 'You do not have permission to update this application.')
-        return redirect('jobs:job_detail', job_id=job.id)
-    
-    if request.method == 'POST':
-        new_status = request.POST.get('status')
-        if new_status in ['accepted', 'rejected']:
-            application.status = new_status
-            application.save()
+    try:
+        print(f"Updating application status for application_id: {application_id}")
+        application = get_object_or_404(Application, id=application_id)
+        job = application.job
+        
+        print(f"Job ID: {job.id}, Current status: {job.status}, Assigned to: {job.assigned_caregiver_id}")
+        
+        # Ensure only the job poster or an admin can update the status
+        if not (request.user.is_admin_role() or (request.user.is_family() and job.posted_by == request.user)):
+            messages.error(request, 'You do not have permission to update this application.')
+            return redirect('jobs:job_detail', job_id=job.id)
+        
+        if request.method == 'POST':
+            new_status = request.POST.get('status')
+            print(f"New status from form: {new_status}")
             
-            # If accepted, assign the caregiver to the job
-            if new_status == 'accepted':
-                job.assigned_caregiver = application.caregiver
-                job.save()
-                # Reject all other applications for this job
-                Application.objects.filter(job=job).exclude(id=application.id).update(status='rejected')
-                messages.success(request, f'Application from {application.caregiver.get_full_name()} has been accepted.')
+            if new_status in ['accepted', 'rejected']:
+                # Update the application status
+                application.status = new_status
+                application.save()
+                print(f"Application {application_id} status updated to {new_status}")
+                
+                # If accepted, assign the caregiver to the job and update job status
+                if new_status == 'accepted':
+                    try:
+                        # Update the job status and assigned caregiver
+                        job.assigned_caregiver = application.caregiver
+                        job.status = 'in_progress'
+                        job.save()  # Save all fields to ensure no field is missed
+                        
+                        print(f"Job {job.id} updated - Status: {job.status}, Assigned to: {job.assigned_caregiver_id}")
+                        
+                        # Reject all other applications for this job
+                        updated = Application.objects.filter(
+                            job=job, 
+                            status='pending'
+                        ).exclude(id=application.id).update(status='rejected')
+                        
+                        print(f"Rejected {updated} other applications for job {job.id}")
+                        
+                        # Send notification to the caregiver using our new system
+                        from accounts.views import send_notification
+                        send_notification(
+                            recipient=application.caregiver,
+                            title='Application Accepted',
+                            message=f'Your application for "{job.title}" has been accepted!',
+                            url=f'/jobs/{job.id}/'
+                        )
+                        
+                        messages.success(request, f'Application from {application.caregiver.get_full_name()} has been accepted. They have been assigned to the job.')
+                    except Exception as e:
+                        import traceback
+                        error_msg = f"Error updating job status: {str(e)}\n{traceback.format_exc()}"
+                        print(error_msg)
+                        messages.error(request, f'Failed to update job status. Error: {str(e)}')
+                        return redirect('jobs:job_detail', job_id=job.id)
+                else:
+                    # If rejected, send notification to the caregiver using our new system
+                    from accounts.views import send_notification
+                    send_notification(
+                        recipient=application.caregiver,
+                        title='Application Rejected',
+                        message=f'Your application for "{job.title}" has been reviewed but not selected.',
+                        url=f'/jobs/{job.id}/'
+                    )
+                    messages.info(request, f'Application from {application.caregiver.get_full_name()} has been rejected.')
             else:
-                messages.info(request, f'Application from {application.caregiver.get_full_name()} has been rejected.')
-        else:
-            messages.error(request, 'Invalid status provided.')
-    
-    return redirect('jobs:job_detail', job_id=job.id)
+                messages.error(request, 'Invalid status provided.')
+                print(f"Invalid status provided: {new_status}")
+        
+        # Refresh the job from the database to ensure we have the latest data
+        job.refresh_from_db()
+        print(f"After update - Job {job.id} status: {job.status}, Assigned to: {job.assigned_caregiver_id}")
+        
+        return redirect('jobs:job_detail', job_id=job.id)
+        
+    except Exception as e:
+        import traceback
+        error_msg = f"Unexpected error: {str(e)}\n{traceback.format_exc()}"
+        print(error_msg)
+        messages.error(request, 'An unexpected error occurred. Please try again.')
+        return redirect('jobs:job_list')
 
 @login_required
 @user_passes_test(is_admin)

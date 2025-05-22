@@ -1,3 +1,4 @@
+{# Refactored: This template uses only the global base.html and global URL/template policy #}
 {% extends 'base.html' %}
 {% load static %}
 
@@ -12,42 +13,251 @@
 
 {% block content %}
 <main class="profile-page">
-<!-- Alert for unverified caregivers -->
-    {% if user.is_authenticated and user.is_caregiver and not user.is_verified %}
-    <div class="alert alert-warning alert-dismissible fade show mb-4" role="alert">
-<div class="d-flex align-items-center">
-<i class="bi bi-hourglass-split me-2"></i>
-<div>
-<strong>Verification Pending</strong>
-<p class="mb-0">Your caregiver account is pending admin verification. You will not have full access until approved.</p>
-</div>
-<button aria-label="Close" class="btn-close" data-bs-dismiss="alert" type="button"></button>
-</div>
-</div>
-    {% endif %}
+    <div class="container py-4">
+        <div class="row align-items-center mb-4">
+            <div class="col-auto">
+                <div class="position-relative d-inline-block">
+                    {% if user.profile_picture %}
+                        <img alt="{{ user.get_full_name|default:user.username }}" class="rounded-circle border" src="{{ user.profile_picture.url }}" style="width: 120px; height: 120px; object-fit: cover;" id="avatarPreview"/>
+                    {% else %}
+                        <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center" style="width: 120px; height: 120px; font-size: 2.5rem;" id="avatarPreview">
+                            {{ user.get_initials|default:user.username|first|upper }}
+                        </div>
+                    {% endif %}
+                    {% if request.user == user %}
+                        <button class="btn btn-sm btn-primary position-absolute bottom-0 end-0 rounded-circle" style="transform: translate(25%, 25%);" data-bs-toggle="modal" data-bs-target="#avatarModal">
+                            <i class="bi bi-camera"></i>
+                        </button>
+                    {% endif %}
+                </div>
 
-    <div class="container">
-<!-- Profile Header -->
-<div class="profile-header">
-<div class="row align-items-center">
-<div class="col-auto">
-<div class="profile-avatar-wrapper">
-                        {% if user.profile_picture %}
-                            <img alt="{{ user.get_full_name|default:user.username }}" class="profile-avatar" src="{{ user.profile_picture.url }}" style="max-width: 120px; max-height: 120px; object-fit: cover;"/>
-                        {% else %}
-                            <div class="profile-avatar-initials">
-                                {{ user.get_initials|default:user.username|first|upper }}
+                <!-- Avatar Upload Modal -->
+                <div class="modal fade" id="avatarModal" tabindex="-1" aria-labelledby="avatarModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="avatarModalLabel">Change Profile Picture</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
+                            <form method="post" enctype="multipart/form-data" action="{% url 'accounts:upload_avatar' %}" id="avatarForm">
+                                {% csrf_token %}
+                                <div class="modal-body">
+                                    <input class="form-control" type="file" name="profile_picture" id="avatarInput" accept="image/*" required>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Upload</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <h2 class="mb-1">{{ user.get_full_name|default:user.username }}</h2>
+                <div class="text-muted">@{{ user.username }}</div>
+                <div class="small text-muted">Member since {{ user.date_joined|date:"d M Y" }}{% if user.last_login %} · Last Active {{ user.last_login|timesince }} ago{% endif %}</div>
+                <div class="mt-2">
+                    {% if request.user == user %}
+                        <a href="#" class="btn btn-primary btn-sm me-2" onclick="toggleEditProfile(true); return false;"><i class="bi bi-pencil-square me-1"></i> Edit Profile</a>
+                        <a href="{% url 'accounts:change_password' %}" class="btn btn-outline-secondary btn-sm">Change Password</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <!-- About Card -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <div class="card p-3 mb-3">
+                    <h5 class="mb-3">About</h5>
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Full Name</dt>
+                        <dd class="col-sm-8">{{ user.full_name }}</dd>
+                        <dt class="col-sm-4">Username</dt>
+                        <dd class="col-sm-8">@{{ user.username }}</dd>
+                        {% if user.bio %}
+                        <dt class="col-sm-4">Bio</dt>
+                        <dd class="col-sm-8">{{ user.bio }}</dd>
                         {% endif %}
-                        <button class="btn btn-sm btn-primary btn-upload" data-bs-target="#uploadAvatarModal" data-bs-toggle="modal">
-<i class="bi bi-camera"></i>
-</button>
-</div>
-</div>
-<div class="col">
-<div class="d-flex flex-column">
-<h1 class="profile-name">{{ user.get_full_name|default:user.username }}</h1>
-<p class="profile-username text-muted mb-2">@{{ user.username }}</p>
+                        {% if user.gender %}
+                        <dt class="col-sm-4">Gender</dt>
+                        <dd class="col-sm-8">{{ user.get_gender_display }}</dd>
+                        {% endif %}
+                        {% if user.date_of_birth %}
+                        <dt class="col-sm-4">Date of Birth</dt>
+                        <dd class="col-sm-8">{{ user.date_of_birth|date:'F j, Y' }}</dd>
+                        {% endif %}
+                        {% if user.phone %}
+                        <dt class="col-sm-4">Phone</dt>
+                        <dd class="col-sm-8">{{ user.phone }}</dd>
+                        {% endif %}
+                        {% if user.address %}
+                        <dt class="col-sm-4">Address</dt>
+                        <dd class="col-sm-8">{{ user.address }}</dd>
+                        {% endif %}
+                        {% if user.city %}
+                        <dt class="col-sm-4">City</dt>
+                        <dd class="col-sm-8">{{ user.city }}</dd>
+                        {% endif %}
+                        {% if user.country %}
+                        <dt class="col-sm-4">Country</dt>
+                        <dd class="col-sm-8">{{ user.country }}</dd>
+                        {% endif %}
+                        <dt class="col-sm-4">Role</dt>
+                        <dd class="col-sm-8">{{ user.get_role_display }}</dd>
+                        <dt class="col-sm-4">Language</dt>
+                        <dd class="col-sm-8">{{ user.get_language_preference_display }}</dd>
+                        <dt class="col-sm-4">Timezone</dt>
+                        <dd class="col-sm-8">{{ user.timezone }}</dd>
+                        
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Profile Modal -->
+        {% if request.user == user %}
+        <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <form method="post" action="{% url 'accounts:update_profile' %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                  <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="mb-3">
+                    <label for="full_name" class="form-label">Full Name</label>
+                    <input type="text" class="form-control" id="full_name" name="full_name" value="{{ user.full_name }}" required>
+                  </div>
+                  <div class="mb-3">
+                    <label for="bio" class="form-label">Bio</label>
+                    <textarea class="form-control" id="bio" name="bio">{{ user.bio }}</textarea>
+                  </div>
+                  <div class="mb-3">
+                    <label for="gender" class="form-label">Gender</label>
+                    <select class="form-select" id="gender" name="gender">
+                      <option value="">Select Gender</option>
+                      <option value="male" {% if user.gender == 'male' %}selected{% endif %}>Male</option>
+                      <option value="female" {% if user.gender == 'female' %}selected{% endif %}>Female</option>
+                      <option value="other" {% if user.gender == 'other' %}selected{% endif %}>Other</option>
+                    </select>
+                  </div>
+                  <div class="mb-3">
+                    <label for="date_of_birth" class="form-label">Date of Birth</label>
+                    <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" value="{{ user.date_of_birth|date:'Y-m-d' }}">
+                  </div>
+                  <div class="mb-3">
+                    <label for="phone" class="form-label">Phone</label>
+                    <input type="text" class="form-control" id="phone" name="phone" value="{{ user.phone }}">
+                  </div>
+                  <div class="mb-3">
+                    <label for="address" class="form-label">Address</label>
+                    <input type="text" class="form-control" id="address" name="address" value="{{ user.address }}">
+                  </div>
+                  <div class="mb-3">
+                    <label for="city" class="form-label">City</label>
+                    <input type="text" class="form-control" id="city" name="city" value="{{ user.city }}">
+                  </div>
+                  <div class="mb-3">
+                    <label for="country" class="form-label">Country</label>
+                    <input type="text" class="form-control" id="country" name="country" value="{{ user.country }}">
+                  </div>
+                  <div class="mb-3">
+                    <label for="language_preference" class="form-label">Language</label>
+                    <select class="form-select" id="language_preference" name="language_preference">
+                      <option value="en" {% if user.language_preference == 'en' %}selected{% endif %}>English</option>
+                      <option value="ne" {% if user.language_preference == 'ne' %}selected{% endif %}>Nepali</option>
+                      <option value="hi" {% if user.language_preference == 'hi' %}selected{% endif %}>Hindi</option>
+                    </select>
+                  </div>
+                  <div class="mb-3">
+                    <label for="timezone" class="form-label">Timezone</label>
+                    <input type="text" class="form-control" id="timezone" name="timezone" value="{{ user.timezone }}">
+                  </div>
+                  <div class="mb-3">
+                    <label for="profile_visibility" class="form-label">Profile Visibility</label>
+                    <select class="form-select" id="profile_visibility" name="profile_visibility" required>
+                      <option value="public" {% if user.profile_visibility == 'public' %}selected{% endif %}>Public</option>
+                      <option value="private" {% if user.profile_visibility == 'private' %}selected{% endif %}>Private</option>
+                    </select>
+                  </div>
+                  {% if user.role == 'caregiver' %}
+                  <div class="mb-3">
+                    <label for="rate_per_hour" class="form-label">Rate per Hour (NPR)</label>
+                    <input type="number" class="form-control" id="rate_per_hour" name="rate_per_hour" value="{{ user.rate_per_hour }}">
+                  </div>
+                  {% endif %}
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                  <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <script>
+          function toggleEditProfile(show) {
+            var modal = new bootstrap.Modal(document.getElementById('editProfileModal'));
+            if (show) { modal.show(); }
+          }
+        </script>
+        {% endif %}
+
+            <div class="col-md-6 mb-3">
+                <div class="card p-3 mb-3">
+                    <h5 class="mb-2">Contact Information</h5>
+                    <div><strong>Email:</strong> {{ user.email }}</div>
+                    {% if user.phone %}<div><strong>Phone:</strong> {{ user.phone }}</div>{% endif %}
+                    {% if user.address %}<div><strong>Address:</strong> {{ user.address }}</div>{% endif %}
+                    {% if user.city %}<div><strong>City:</strong> {{ user.city }}</div>{% endif %}
+                    {% if user.country %}<div><strong>Country:</strong> {{ user.country }}</div>{% endif %}
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="card p-3">
+                    <h5 class="mb-2">Account Status</h5>
+                    <div><strong>Email Verified:</strong> {% if user.is_email_verified %}<span class="badge bg-success">Yes</span>{% else %}<span class="badge bg-secondary">No</span>{% endif %}</div>
+                    <div><strong>Two-Factor Auth:</strong> {% if user.two_factor_enabled %}<span class="badge bg-success">Enabled</span>{% else %}<span class="badge bg-secondary">Not Set</span>{% endif %}</div>
+                </div>
+            </div>
+        </div>
+        {% if request.user == user %}
+        <div class="row mb-4">
+            <div class="col">
+                <div class="card p-3 border-danger">
+                    <h5 class="mb-2 text-danger">Danger Zone</h5>
+                    <a href="{% url 'accounts:delete_account' %}" class="btn btn-danger">Delete Account</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</main>
+{% endblock %}
+        {% if request.user.is_authenticated and request.user.is_family and request.user != user and user.is_caregiver %}
+            {% if existing_request %}
+                    {% if existing_request.status == 'pending' %}
+                        <button class="btn btn-outline-secondary" disabled>
+                            <i class="bi bi-hourglass me-1"></i> Request Sent
+                        </button>
+                    {% elif existing_request.status == 'accepted' %}
+                        <button class="btn btn-outline-success" disabled>
+                            <i class="bi bi-check-circle me-1"></i> Connected
+                        </button>
+                    {% else %}
+                        <a href="{% url 'send_connection_request' user.id %}" class="btn btn-primary">
+                            <i class="bi bi-person-plus me-1"></i> Connect
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <a href="{% url 'send_connection_request' user.id %}" class="btn btn-primary">
+                        <i class="bi bi-person-plus me-1"></i> Connect
+                    </a>
+                {% endif %}
+        {% endif %}
+    </div>
 <!-- Badges -->
                         {% if badges %}
                         <div class="profile-badges mb-3">
@@ -627,147 +837,6 @@ function showToast(message, type = 'info') {
     toast.addEventListener('hidden.bs.toast', function() {
         toast.remove();
     });
-}
-</script>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-// Profile editing toggle function
-function toggleEditProfile(edit) {
-    const viewMode = document.getElementById('viewMode');
-    const editMode = document.getElementById('editMode');
-    
-    if (viewMode && editMode) {
-        viewMode.style.display = edit ? 'none' : 'block';
-        editMode.style.display = edit ? 'block' : 'none';
-    }
-}
-
-// Handle avatar removal
-if (removeAvatarBtn) {
-    removeAvatarBtn.addEventListener('click', function() {
-        if (!confirm('Are you sure you want to remove your profile picture?')) {
-            return;
-        }
-        
-        const btn = this;
-        btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Removing...';
-        
-        showAvatarMessage('Removing profile picture...', 'info');
-        
-        fetch('{% url "accounts:upload_avatar" %}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRFToken': '{{ csrf_token }}',
-            },
-            body: JSON.stringify({ remove: true })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showAvatarMessage(data.message, 'success');
-                updateAllAvatars('');
-                btn.classList.add('d-none');
-                if (avatarInput) avatarInput.value = '';
-                if (avatarPreview) {
-                    avatarPreview.innerHTML = `
-                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 200px; height: 200px; margin: 0 auto;">
-                            <i class="fas fa-user text-secondary" style="font-size: 80px;"></i>
-                        </div>`;
-                }
-            } else {
-                showAvatarMessage(data.error || 'Failed to remove profile picture', 'danger');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showAvatarMessage('An error occurred while removing the profile picture', 'danger');
-        })
-        .finally(() => {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-trash-alt me-1"></i> Remove Picture';
-        });
-    });
-}
-
-// Helper function to update all avatar placeholders
-function updateAllAvatars(avatarUrl) {
-    const avatarElements = document.querySelectorAll('.user-avatar');
-    const timestamp = new Date().getTime();
-    
-    avatarElements.forEach(el => {
-        if (avatarUrl) {
-            el.src = `${avatarUrl}?t=${timestamp}`;
-            el.classList.remove('d-none');
-            const defaultIcon = el.parentElement.querySelector('.default-avatar');
-            if (defaultIcon) {
-                defaultIcon.classList.add('d-none');
-            }
-        } else {
-            el.classList.add('d-none');
-            const defaultIcon = el.parentElement.querySelector('.default-avatar');
-            if (defaultIcon) {
-                defaultIcon.classList.remove('d-none');
-            }
-        }
-    });
-}
-
-// Helper function to show messages in the avatar modal
-function showAvatarMessage(message, type) {
-    if (!avatarMessage) return;
-    
-    if (!message) {
-        avatarMessage.innerHTML = '';
-        avatarMessage.className = 'mt-3 text-center';
-        return;
-    }
-    
-    avatarMessage.className = `mt-3 text-center text-${type}`;
-    avatarMessage.innerHTML = message;
-}
-
-// Show toast notification
-function showToast(message, type = 'info') {
-    const toastContainer = document.getElementById('toast-container');
-    if (!toastContainer) return;
-    
-    const toastId = 'toast-' + Date.now();
-    const toast = document.createElement('div');
-    toast.id = toastId;
-    toast.className = `toast align-items-center text-white bg-${type} border-0`;
-    toast.role = 'alert';
-    toast.setAttribute('aria-live', 'assertive');
-    toast.setAttribute('aria-atomic', 'true');
-    
-    toast.innerHTML = `
-        <div class="d-flex">
-            <div class="toast-body">
-                ${message}
-            </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-    `;
-    
-    toastContainer.appendChild(toast);
-    
-    const bsToast = new bootstrap.Toast(toast, {
-        autohide: true,
-        delay: 5000
-    });
-    
-    toast.addEventListener('hidden.bs.toast', function() {
-        toast.remove();
-    });
-    
-    bsToast.show();
-}
-</script>
-<!-- Upcoming Events -->
 {% if attending_events %}
 <div class="mt-4">
     <hr/>
@@ -968,6 +1037,3 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 </script>
-
-</main>
-{% endblock %}
