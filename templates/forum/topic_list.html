@@ -23,7 +23,7 @@
 <div class="d-flex justify-content-between align-items-center">
 <div>
 <a href="{% url 'forum:topic_detail' topic.pk %}"><strong>{{ topic.title }}</strong></a>
-<span class="badge bg-secondary ms-2">{{ topic.category.name }}</span>
+{% if topic.category %}<span class="badge bg-secondary ms-2">{{ topic.category.name }}</span>{% else %}<span class="badge bg-light text-dark ms-2">Uncategorized</span>{% endif %}
 </div>
 </div>
 <div class="small text-muted">by <span class="text-info">{{ topic.author }}</span> on {{ topic.created_at|date:"M d, Y H:i" }}</div>
