@@ -2,68 +2,78 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container py-4">
-<div class="d-flex justify-content-between align-items-center">
-<div>
-<h2 class="d-inline">{{ topic.title }}</h2>
+  <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+    <div>
+      <h2 class="d-inline">{{ topic.title }}</h2>
       {% if topic.category %}
         <span class="badge bg-secondary ms-2">{{ topic.category.name }}</span>
       {% endif %}
     </div>
-    {% if user.is_authenticated and user == topic.author or user.is_authenticated and user.is_staff %}
-      <div>
-<a class="btn btn-sm btn-outline-primary" href="{% url 'forum:topic_edit' topic.pk %}">Edit</a>
-<a class="btn btn-sm btn-outline-danger" href="{% url 'forum:topic_delete' topic.pk %}">Delete</a>
-</div>
+    {% if user.is_authenticated %}
+      {% if user == topic.author or user.is_staff %}
+        <div>
+          <a class="btn btn-sm btn-outline-primary" href="{% url 'forum:topic_edit' topic.pk %}">Edit</a>
+          <a class="btn btn-sm btn-outline-danger" href="{% url 'forum:topic_delete' topic.pk %}">Delete</a>
+        </div>
+      {% endif %}
     {% endif %}
   </div>
-<div class="mb-3 text-muted">by <span class="text-info">{{ topic.author }}</span> on {{ topic.created_at|date:"M d, Y H:i" }}</div>
-<div class="mb-4">{{ topic.body|linebreaks }}</div>
-<h4>Replies</h4>
-<ul class="list-group mb-4" id="replies-list">
+
+  <div class="mb-3 text-muted">by <span class="text-info">{{ topic.author }}</span> on {{ topic.created_at|date:"M d, Y H:i" }}</div>
+  <div class="mb-4">{{ topic.body|linebreaks }}</div>
+
+  <h4>Replies</h4>
+  <ul class="list-group mb-4" id="replies-list">
     {% for reply_info in reply_infos %}
       {% with reply=reply_info.obj %}
       <li class="list-group-item {% if reply_info.is_best_answer %}bg-success bg-opacity-10 border-success{% endif %}">
-<div class="d-flex justify-content-between align-items-center">
-<div>
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
             {{ reply.body|linebreaks }}
             {% if reply_info.is_best_answer %}
               <span class="badge bg-success ms-2"><i class="bi bi-award-fill"></i> Best Answer</span>
             {% endif %}
           </div>
-<div class="d-flex align-items-center">
-<form action="" class="me-2" method="post">
+          <div class="d-flex align-items-center">
+            <form action="" class="me-2" method="post">
               {% csrf_token %}
               <input name="action" type="hidden" value="upvote"/>
-<input name="reply_id" type="hidden" value="{{ reply.id }}"/>
-<button
-  class="btn {% if reply_info.user_has_upvoted %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm d-flex align-items-center"
-  type="submit"
-  title="{% if reply_info.user_has_upvoted %}Remove Upvote{% else %}Upvote{% endif %}"
-  {% if not user.is_authenticated or user == reply.author %}disabled{% endif %}
->
-  <i class="bi bi-hand-thumbs-up{% if reply_info.user_has_upvoted %}-fill{% endif %}"></i> <span class="ms-1">{{ reply_info.upvotes }}</span>
-</button>
-</form>
-            {% if user.is_authenticated and user == topic.author and not reply_info.is_best_answer or user.is_authenticated and user.is_staff and not reply_info.is_best_answer %}
-            <form action="" method="post">
-              {% csrf_token %}
-              <input name="action" type="hidden" value="best_answer"/>
-<input name="reply_id" type="hidden" value="{{ reply.id }}"/>
-<button class="btn btn-outline-success btn-sm ms-1" title="Mark as Best Answer" type="submit">
-<i class="bi bi-award"></i>
-</button>
-</form>
+              <input name="reply_id" type="hidden" value="{{ reply.id }}"/>
+              <button
+                class="btn {% if reply_info.user_has_upvoted %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm d-flex align-items-center"
+                type="submit"
+                title="{% if reply_info.user_has_upvoted %}Remove Upvote{% else %}Upvote{% endif %}"
+                {% if not user.is_authenticated or user == reply.author %}disabled{% endif %}
+              >
+                <i class="bi bi-hand-thumbs-up{% if reply_info.user_has_upvoted %}-fill{% endif %}"></i> <span class="ms-1">{{ reply_info.upvotes }}</span>
+              </button>
+            </form>
+
+            {% if user.is_authenticated and not reply_info.is_best_answer %}
+              {% if user == topic.author or user.is_staff %}
+                <form action="" method="post">
+                  {% csrf_token %}
+                  <input name="action" type="hidden" value="best_answer"/>
+                  <input name="reply_id" type="hidden" value="{{ reply.id }}"/>
+                  <button class="btn btn-outline-success btn-sm ms-1" title="Mark as Best Answer" type="submit">
+                    <i class="bi bi-award"></i>
+                  </button>
+                </form>
+              {% endif %}
             {% endif %}
-            {% if user.is_authenticated and user == reply.author or user.is_authenticated and user.is_staff %}
-              <div class="ms-2">
-<a class="btn btn-sm btn-outline-primary" href="{% url 'forum:reply_edit' reply.pk %}">Edit</a>
-<a class="btn btn-sm btn-outline-danger" href="{% url 'forum:reply_delete' reply.pk %}">Delete</a>
-</div>
+
+            {% if user.is_authenticated %}
+              {% if user == reply.author or user.is_staff %}
+                <div class="ms-2">
+                  <a class="btn btn-sm btn-outline-primary" href="{% url 'forum:reply_edit' reply.pk %}">Edit</a>
+                  <a class="btn btn-sm btn-outline-danger" href="{% url 'forum:reply_delete' reply.pk %}">Delete</a>
+                </div>
+              {% endif %}
             {% endif %}
           </div>
-</div>
-<div class="small text-muted">by <span class="text-info">{{ reply.author }}</span> on {{ reply.created_at|date:"M d, Y H:i" }}</div>
-</li>
+        </div>
+        <div class="small text-muted">by <span class="text-info">{{ reply.author }}</span> on {{ reply.created_at|date:"M d, Y H:i" }}</div>
+      </li>
       {% endwith %}
     {% empty %}
       <li class="list-group-item">No replies yet.</li>
@@ -74,10 +84,10 @@
   <form action="{% url 'forum:reply_create' topic.pk %}" method="post">
     {% csrf_token %}
     <div class="mb-3">
-<textarea class="form-control" name="body" placeholder="Write your reply..." required="" rows="3"></textarea>
-</div>
-<button class="btn btn-success" type="submit">Post Reply</button>
-</form>
+      <textarea class="form-control" name="body" placeholder="Write your reply..." required rows="3"></textarea>
+    </div>
+    <button class="btn btn-success" type="submit">Post Reply</button>
+  </form>
   {% else %}
     <a class="btn btn-outline-primary" href="{% url 'accounts:login' %}?next={% url 'forum:topic_detail' topic.pk %}">Log in to reply</a>
   {% endif %}

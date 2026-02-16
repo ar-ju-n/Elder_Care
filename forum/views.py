@@ -49,7 +49,7 @@ def topic_detail(request, pk):
                 # Notify reply author (if not the same as marker)
                 from .models import Notification
                 if reply.author != request.user:
-                    notif = Notification.objects.create(
+                    Notification.objects.create(
                         user=reply.author,
                         message=f"Your reply was marked as the Best Answer in: {topic.title}",
                         url=request.build_absolute_uri(),
