@@ -1,29 +1,27 @@
-from django.shortcuts import render
-
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Topic, Reply
+from django.db.models import Count
+from .models import Topic, Reply, ReplyUpvote, Category, Notification
 from django.utils import timezone
 
 # List all topics (with optional category filter)
 def topic_list(request):
-    from .models import Category
     categories = Category.objects.all()
     category_id = request.GET.get('category')
+    topics = Topic.objects.select_related('category', 'author').order_by('-created_at')
+
     if category_id:
-        topics = Topic.objects.filter(category_id=category_id).order_by('-created_at')
+        topics = topics.filter(category_id=category_id)
         selected_category = Category.objects.filter(id=category_id).first()
     else:
-        topics = Topic.objects.order_by('-created_at')
         selected_category = None
+
     return render(request, 'forum/topic_list.html', {'topics': topics, 'categories': categories, 'selected_category': selected_category})
 
 # Show topic detail and replies
-from .models import ReplyUpvote
-
 def topic_detail(request, pk):
-    topic = get_object_or_404(Topic, pk=pk)
-    replies = topic.replies.order_by('created_at')
+    topic = get_object_or_404(Topic.objects.select_related('author', 'category'), pk=pk)
+    replies = topic.replies.select_related('author').annotate(upvotes_count=Count('upvotes')).order_by('created_at')
     user_upvoted_reply_ids = set()
     if request.user.is_authenticated:
         user_upvoted_reply_ids = set(ReplyUpvote.objects.filter(user=request.user, reply__in=replies).values_list('reply_id', flat=True))
@@ -67,7 +65,7 @@ def topic_detail(request, pk):
     for reply in replies:
         reply_infos.append({
             'obj': reply,
-            'upvotes': reply.upvotes.count(),
+            'upvotes': reply.upvotes_count,
             'is_best_answer': reply.is_best_answer,
             'user_has_upvoted': reply.id in user_upvoted_reply_ids,
         })
@@ -76,9 +74,6 @@ def topic_detail(request, pk):
         'reply_infos': reply_infos,
         'replies': replies,  # for backward compatibility
     })
-
-# Create new topic
-from .models import Category
 
 @login_required
 def topic_create(request):
@@ -199,8 +194,6 @@ def user_replies(request, user_id):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     return render(request, 'forum/user_replies.html', {'profile_user': user, 'page_obj': page_obj})
-
-from .models import Notification
 
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
