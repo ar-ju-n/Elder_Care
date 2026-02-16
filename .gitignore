@@ -1,0 +1,13 @@
+# Python cache artifacts
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Local environment and build artifacts
+*.log
+*.sqlite3
+.DS_Store
